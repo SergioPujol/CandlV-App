@@ -1,0 +1,19 @@
+{
+  "name": "nodejstfg",
+  "version": "1.0.0",
+  "description": "tfg with nodejs lenguage",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node ./index.ts"
+  },
+  "author": "Sergio Pujol",
+  "license": "ISC",
+  "dependencies": {
+    "@types/npm": "^7.19.0",
+    "got": "^12.1.0",
+    "ts-node": "^10.8.2",
+    "typescript": "^4.7.4"
+  }
+}
