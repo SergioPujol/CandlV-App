@@ -1,19 +1,17 @@
-const { Candle } = require('./Classes/Candle.ts')
-const BinanceAPI = require('./Classes/BinanceAPI.ts')
+import { Candle } from './Classes/Candle';
+import { BinanceAPI } from './Classes/BinanceAPI';
 
-const binanceAPI = new BinanceAPI()
+class App {
+    public static async run(symbol: string, interval: string, limit: string) {
+        const binanceAPI = new BinanceAPI();
 
-async function flow() {
-    const data = await binanceAPI.getKlines('BTCUSDT', '5m', '50')
-    const candleList = data.map((list: []) => new Candle(list))
-    console.log(candleList)
-    /**
-     * Flow:
-     * 
-     * - obtain info from API, call getKlines
-     * - create Candle with data
-     * 
-     */
+        const data = await binanceAPI.getKlines(symbol, interval, limit)
+
+        const candleList = data.map((list: []) => new Candle(list))
+        console.log(candleList)
+    }
 }
 
-flow()
+(async () => {
+    App.run('BTCUSDT', '5m', '50');
+})();
