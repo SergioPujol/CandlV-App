@@ -1,14 +1,21 @@
-import { Candle } from "./Candle"
-import { EMA } from './types'
-
-class EMAClass {
+class EMA {
 
     private listValues: Array<{ EMA: number, date: number }>;
-    private quantityValues: number;
+    private nPeriod: number;
+    //private quantityValues: number;
 
-    constructor(listValues: Array<{ EMA: number, date: number }>) {
+    constructor(listValues: Array<{ EMA: number, date: number }>, nPeriod: number) {
         this.listValues = listValues
-        this.quantityValues = listValues.length
+        //this.quantityValues = listValues.length
+        this.nPeriod = nPeriod
+    }
+
+    getListValues() {
+        return this.listValues
+    }
+
+    getNPeriod() {
+        return this.nPeriod
     }
 
     getLast2Points() {
@@ -16,4 +23,4 @@ class EMAClass {
     }
 }
 
-export { EMAClass }
+export { EMA }

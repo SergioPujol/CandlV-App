@@ -1,10 +1,10 @@
-import { EMAClass } from "./EMA"
+import { EMA } from "./EMA"
 import { Candle } from "./Candle"
 
 class ThreeEMA {
 
-    calculateEMA(previousEmaValue: number, multiplicator: number, actualClosePrice: number) {
-        return (actualClosePrice - previousEmaValue) * multiplicator + previousEmaValue
+    calculateEMA(previousEmaValue: number, multiplicator: number, actualClosePrice: string) {
+        return (parseFloat(actualClosePrice) - previousEmaValue) * multiplicator + previousEmaValue
     }
 
     calculateSMA(dataset: Array<Candle>, n: number) {
@@ -22,14 +22,14 @@ class ThreeEMA {
         return 2/(nPeriod+1)
     }
 
-    crossedEMAS(firstEMA: EMAClass, secondEMA: EMAClass) {
+    crossedEMAS(firstEMA: EMA, secondEMA: EMA) {
         const firstEMAPoints = firstEMA.getLast2Points()
         const secondEMAPoints = secondEMA.getLast2Points()
         if(((firstEMAPoints[0].EMA - secondEMAPoints[0].EMA > 0) && (firstEMAPoints[1].EMA - secondEMAPoints[1].EMA < 0)) || ((firstEMAPoints[0].EMA - secondEMAPoints[0].EMA < 0) && (firstEMAPoints[1].EMA - secondEMAPoints[1].EMA > 0))) return true
         return false
     }
 
-    getCrossPoint(firstEMA: EMAClass, secondEMA: EMAClass) { // de momento unicamente hacerlo de 2 emas
+    getCrossPoint(firstEMA: EMA, secondEMA: EMA) { // de momento unicamente hacerlo de 2 emas
         const firstEMAPoints = firstEMA.getLast2Points()
         const secondEMAPoints = secondEMA.getLast2Points()
 
