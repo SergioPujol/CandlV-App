@@ -3,43 +3,60 @@ import { BinanceAPI } from './Classes/BinanceAPI';
 import { ThreeEMA } from './Classes/Strategies';
 import { EMA } from './Classes/EMA';
 
-const threeEma = new ThreeEMA()
+const threeEma = new ThreeEMA();
+const binanceAPI = new BinanceAPI();
 
 class App {
     public static async run(symbol: string, interval: string, limit: string, periods: Array<number>) {
-        const binanceAPI = new BinanceAPI();
 
-        const data = await binanceAPI.getKlines(symbol, interval, limit)
+        const func = async () => {
 
-        const candleList: Array<Candle> = data.map((list: []) => new Candle(list))
-        console.log(candleList)
+            var now = new Date();
+            // convert date to a string in UTC timezone format:
+            console.log(now.toUTCString());
+            // Output: Wed, 21 Jun 2017 09:13:01 GMT
 
-        const EMAs: Array<EMA> = [] 
+            const data = await binanceAPI.getKlines(symbol, interval, limit)
 
-        // for get array of new EMA 's objects + previous values for each
+            const candleList: Array<Candle> = data.map((list: []) => new Candle(list))
 
-        periods.forEach(period => {
-            let previousEma = threeEma.calculateSMA(candleList, period)
-            let multiplicator = threeEma.calculateMultiplicator(period);
-            let listEMAs: Array<{ EMA: number, date: number }> = [];
-            for(let ind = 0; ind < (parseInt(limit) - period ); ind++) {
-                let actualCandel = candleList[ind + period];
-                let ema = threeEma.calculateEMA(previousEma, multiplicator, actualCandel.getClose())
-                listEMAs.push({EMA: ema, date: actualCandel.getOpenTime()})
-                previousEma = ema
+            const EMAs: Array<EMA> = []
+
+            // for get array of new EMA 's objects + previous values for each
+
+            periods.forEach(period => {
+                let previousEma = threeEma.calculateSMA(candleList, period)
+                let multiplicator = threeEma.calculateMultiplicator(period);
+                let listEMAs: Array<{ EMA: number, date: number }> = [];
+                for (let ind = 0; ind < (parseInt(limit) - period); ind++) {
+                    let actualCandel = candleList[ind + period];
+                    let ema = threeEma.calculateEMA(previousEma, multiplicator, actualCandel.getClose())
+                    listEMAs.push({ EMA: ema, date: actualCandel.getOpenTime() })
+                    previousEma = ema
+                }
+
+                EMAs.push(new EMA(listEMAs, period))
+            });
+
+            /*EMAs.forEach((ema: EMA) => {
+                console.log('Period: ' + ema.getNPeriod())
+                let str = ''
+                ema.getListValues().forEach((val: { EMA: number, date: number }) => {
+                    str += `[${val.date},${val.EMA}],`
+                })
+                //console.log('List: ' + str)
+            })*/
+            if (threeEma.crossedEMAS(EMAs[0], EMAs[1])) {
+                console.log(true)
+                console.log(threeEma.getCrossPoint(EMAs[0], EMAs[1]))
             }
-            
-            EMAs.push(new EMA(listEMAs, period))
-        });
+        }
 
-        EMAs.forEach((ema: EMA) => {
-            console.log('Period: ' + ema.getNPeriod())
-            let str = ''
-            ema.getListValues().forEach((val: { EMA: number, date: number }) => {
-                str += `[${val.date},${val.EMA}],`
-            })
-            //console.log('List: ' + str)
-        })
+        func()
+        let interv = setInterval(func, 1 * 60 * 1000)
+
+
+
 
         /**
          * Flow:
@@ -57,9 +74,8 @@ class App {
          */
     }
 
-
 }
 
 (async () => {
-    App.run('BTCUSDT', '5m', '400', [3, 6]);
+    App.run('BTCUSDT', '1m', '400', [3, 6]);
 })();

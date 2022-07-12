@@ -12,3 +12,13 @@
     "28.46694368",      // Taker buy quote asset volume - Pos: 10
     "17928899.62484339" // Ignore.
 ]
+
+To Do List:
+- create html and add echarts and update every minut
+- when cross, BUY or SELL? Cross: 
+    * Small Period > Big Period --> Buy (EMA from small period is higher EMA from big period)
+    * Big Period > Small Period --> Sell (EMA from big period is higher EMA from small period)
+- create function for get % between last crosses
+- if EMAs has crossed, on the next interval check if its still crossed. (For ex: Has crossed, time to buy, SMALL P > BIG P, but next minut, SMALL P < BIG P --> Sell, it has not been enough and its going down)
+- If you have bought, check monitoring if EMA Small is still > Big High (same with Sell)
+- think with 3 periods -> 3, 6, 9
