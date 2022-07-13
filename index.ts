@@ -3,8 +3,18 @@ import { BinanceAPI } from './Classes/BinanceAPI';
 import { ThreeEMA } from './Classes/Strategies';
 import { EMA } from './Classes/EMA';
 
+import express from 'express';
+import * as path from 'path';
+
+const app = express();
+const router = express.Router();
+
 const threeEma = new ThreeEMA();
 const binanceAPI = new BinanceAPI();
+
+var emas: Array<any> = []
+
+var foo: {x: number, y: number} | boolean;
 
 class App {
     public static async run(symbol: string, interval: string, limit: string, periods: Array<number>) {
@@ -38,25 +48,23 @@ class App {
                 EMAs.push(new EMA(listEMAs, period))
             });
 
-            /*EMAs.forEach((ema: EMA) => {
-                console.log('Period: ' + ema.getNPeriod())
-                let str = ''
+            emas = []
+            EMAs.forEach((ema: EMA) => {
+                let list: any = []
                 ema.getListValues().forEach((val: { EMA: number, date: number }) => {
-                    str += `[${val.date},${val.EMA}],`
+                    list.push([val.date,val.EMA])
                 })
-                //console.log('List: ' + str)
-            })*/
+                emas.push(list)
+            })
             if (threeEma.crossedEMAS(EMAs[0], EMAs[1])) {
                 console.log(true)
                 console.log(threeEma.getCrossPoint(EMAs[0], EMAs[1]))
-            }
+                foo = threeEma.getCrossPoint(EMAs[0], EMAs[1])
+            } else foo = false
         }
 
         func()
         let interv = setInterval(func, 1 * 60 * 1000)
-
-
-
 
         /**
          * Flow:
@@ -77,5 +85,29 @@ class App {
 }
 
 (async () => {
+    
+    router.get('/',function(req: any,res: any){
+        res.sendFile(path.join(__dirname+'/public/index.html'));
+        //__dirname : It will resolve to your project folder.
+    });
+
+    router.get('/foo',function(req: any,res: any){
+        res.send(foo);
+        //__dirname : It will resolve to your project folder.
+    });
+
+    router.get('/getEMAsData',function(req: any,res: any){
+        res.send(emas);
+        //__dirname : It will resolve to your project folder.
+    });
+
+    //add the router
+    app.use(express.static('public'));
+    app.use('/', router);
+    app.listen(process.env.port || 3000);
+
+    console.log('Running at Port 3000');
+
     App.run('BTCUSDT', '1m', '400', [3, 6]);
+
 })();
