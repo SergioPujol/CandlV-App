@@ -21,6 +21,10 @@ class EMA {
     getLast2Points() {
         return this.listValues.slice(-2)
     }
+
+    getLastPoint() {
+        return this.listValues[this.listValues.length - 1]
+    }
 }
 
 export { EMA }

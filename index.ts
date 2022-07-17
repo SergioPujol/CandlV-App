@@ -2,6 +2,7 @@ import { Candle } from './Classes/Candle';
 import { BinanceAPI } from './Classes/BinanceAPI';
 import { ThreeEMA } from './Classes/Strategies';
 import { EMA } from './Classes/EMA';
+import { Utils } from './Classes/Utils';
 
 import express from 'express';
 import * as path from 'path';
@@ -11,26 +12,25 @@ const router = express.Router();
 
 const threeEma = new ThreeEMA();
 const binanceAPI = new BinanceAPI();
+const utils = new Utils();
 
-var emas: Array<any> = []
+var EMAs: Array<EMA> = []
+var candleList : Array<Candle>;
 
 var foo: {x: number, y: number} | boolean;
 
 class App {
     public static async run(symbol: string, interval: string, limit: string, periods: Array<number>) {
 
-        const func = async () => {
+        periods = periods.sort((a,b) => a-b)
 
-            var now = new Date();
-            // convert date to a string in UTC timezone format:
-            console.log(now.toUTCString());
-            // Output: Wed, 21 Jun 2017 09:13:01 GMT
+        const func = async () => {
 
             const data = await binanceAPI.getKlines(symbol, interval, limit)
 
-            const candleList: Array<Candle> = data.map((list: []) => new Candle(list))
+            candleList = data.map((list: []) => new Candle(list))
 
-            const EMAs: Array<EMA> = []
+            EMAs = []; 
 
             // for get array of new EMA 's objects + previous values for each
 
@@ -48,38 +48,18 @@ class App {
                 EMAs.push(new EMA(listEMAs, period))
             });
 
-            emas = []
-            EMAs.forEach((ema: EMA) => {
-                let list: any = []
-                ema.getListValues().forEach((val: { EMA: number, date: number }) => {
-                    list.push([val.date,val.EMA])
-                })
-                emas.push(list)
-            })
-            if (threeEma.crossedEMAS(EMAs[0], EMAs[1])) {
-                console.log(true)
-                console.log(threeEma.getCrossPoint(EMAs[0], EMAs[1]))
+            const actualPrice = candleList[candleList.length-1].getClose()
+            threeEma.updateSignal(EMAs[0], EMAs[1], actualPrice)
+
+            /*if (threeEma.crossedEMAS(EMAs[0], EMAs[1])) {
+                console.log(`Crossed in ${threeEma.getCrossPoint(EMAs[0], EMAs[1]).y}`)
+                console.log('Trade to do: ', threeEma.trade(EMAs[0], EMAs[1], actualPrice))
                 foo = threeEma.getCrossPoint(EMAs[0], EMAs[1])
-            } else foo = false
+            } else foo = false*/
         }
 
         func()
         let interv = setInterval(func, 1 * 60 * 1000)
-
-        /**
-         * Flow:
-         * 
-         * Obtener datos de la informacion que se desea obtener: ej. Symbol: BTCUSDT, Interval: 5m, Periodos: [3, 6]
-         * Si es la primera vez que se inicia la APP, obtener la SMA de cada uno de los periodos (previous EMA)
-         * Iniciar intervalo para iniciar monitorizacion, ej. Interval: 5m, realizar intervalo cada 5 minutos
-         * { 
-         *  - Recorrer lista de periodos para obtener la ema de cada uno de ellos
-         *  {
-         *      - 
-         *  }
-         * }
-         * 
-         */
     }
 
 }
@@ -96,9 +76,13 @@ class App {
         //__dirname : It will resolve to your project folder.
     });
 
-    router.get('/getEMAsData',function(req: any,res: any){
-        res.send(emas);
-        //__dirname : It will resolve to your project folder.
+    router.get('/getChartData',function(req: any,res: any){
+        if(EMAs.length < 1) return
+        const info = EMAs.map((ema: EMA) => { return { n: ema.getNPeriod(), listData: [...Array(ema.getNPeriod()).fill('-') , ...ema.getListValues().map((value: any) => {
+                return value.EMA
+            })]
+        }})
+        res.send({EMAData: info, CandlesData: utils.getCandlesForChart(candleList) });
     });
 
     //add the router
@@ -108,6 +92,11 @@ class App {
 
     console.log('Running at Port 3000');
 
-    App.run('BTCUSDT', '1m', '400', [3, 6]);
+    var time = new Date(), secondsRemaining = (60 - time.getSeconds()) * 1000;
+
+    utils.logInfo(`Waiting ${secondsRemaining/1000} seconds to start`)
+    setTimeout(function() {
+        App.run('BTCUSDT', '1m', '400', [3, 6]);
+    }, secondsRemaining);
 
 })();

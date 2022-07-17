@@ -14,11 +14,21 @@
 ]
 
 To Do List:
+- NUEVO SISTEMA DE CRUCE:
+Si han cambiado de posicion las emas, pero no ha habido ningun cruce nuevo, es que la enterior trade no vale
+entonces si se ha comprado, se vende en ese momento, etc
+
+- añadir lineas cada trade
+
 - create html and add echarts and update every minut
 - when cross, BUY or SELL? Cross: 
-    * Small Period > Big Period --> Buy (EMA from small period is higher EMA from big period)
-    * Big Period > Small Period --> Sell (EMA from big period is higher EMA from small period)
+    * Small Period > Big Period --> Buy - Long (EMA from small period is higher EMA from big period)
+    * Big Period > Small Period --> Sell - Short (EMA from big period is higher EMA from small period)
 - create function for get % between last crosses
 - if EMAs has crossed, on the next interval check if its still crossed. (For ex: Has crossed, time to buy, SMALL P > BIG P, but next minut, SMALL P < BIG P --> Sell, it has not been enough and its going down)
 - If you have bought, check monitoring if EMA Small is still > Big High (same with Sell)
+- Add crossed points in the chart
+- añadir seguimiento de las lineas emas, si antes ema big > ema small, y despues es ema small > ema big --> ha habido un cross, no tiene porque ser en los anteriores puntos
+' rework on the code
+- empezar proceso justo 1 segundo despues del 00 de el siguiente minuto al empezar la app
 - think with 3 periods -> 3, 6, 9
