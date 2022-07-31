@@ -14,15 +14,15 @@ body {
 /** Scrollbar **/
 
 ::-webkit-scrollbar {
-    width: 14px;
+    width: 10px;
   }
 
 ::-webkit-scrollbar-thumb
 {
-    border: 4px solid rgba(0, 0, 0, 0);
+    border: 3px solid rgba(0, 0, 0, 0);
     background-clip: padding-box;
     border-radius: 9999px;
-    background-color: var(--blue-color);
+    background-color: var(--tertiary-color);
 }
 
 /** Header **/
@@ -43,10 +43,14 @@ header ul li a.selected {
 
 /** Main **/
 
+main {
+    background-color: var(--secondary-color);
+}
+
 main .charts-information {
-    background-color: var(--primary-color);
-    border-top: 2px solid var(--white-color);
-    border-bottom: 2px solid var(--white-color);
+    margin: 0 0 20px 10px;
+    display: flex;
+    position: relative;
 }
 
 main .trades-notificacions {
@@ -54,10 +58,15 @@ main .trades-notificacions {
 }
 
 main .charts-information .window {
+    flex: 1;
+    margin-right: 10px;
+    border: 1px solid var(--white-color);
     height: 100%;
     display: flex;
     flex-direction: row;
+    background: var(--primary-color);
     padding: 5px;
+    border-radius: 15px;
 }
 
 main .charts-information .window .chart {
@@ -76,6 +85,10 @@ main .charts-information .window .data {
     padding: 10px;
 }
 
+main .charts-information .window .data.hide-data {
+    display: none !important;
+}
+
 main .charts-information .window .data .bot-settings.collapse.show {
     display: flex;
     flex-direction: column;
@@ -89,6 +102,27 @@ main .charts-information .window .data .bot-settings.collapse.show {
 
 .charts-information .window .button-collapse .charts-info-button-container .charts-info-button-container-span {
     flex: 1;
+}
+
+.charts-information .minimized-charts {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    right: 0;
+    bottom: -20px;
+}
+
+.charts-information .minimized-charts .minimized-window {
+    width: 220px;
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px 10px 0 0;
+    margin-right: 10px;
+    display: flex;
+}
+
+.charts-information .minimized-charts .minimized-window .minimized-name {
+    flex: 1
 }
 
 .button-collapse[aria-expanded=false] .text-expanded {
@@ -135,6 +169,12 @@ main .charts-information .window .data .bot-settings.collapse.show {
     position: absolute;
     top: 5px;
     right: 10px;
+}
+
+.window .chart .chart-options {
+    position: absolute;
+    top: 5px;
+    left: 5px;
 }
 
 /** Elementos definidos **/
@@ -185,3 +225,28 @@ main .charts-information .window .data .bot-settings.collapse.show {
     display: none !important;
 }
 
+/** Trades - Notifications **/
+
+.trades-notificacions {
+    height: calc(25% - 20px);
+    border-top: 2px solid var(--white-color);
+}
+
+#trades {
+    width: 45%;
+    padding: 10px;
+    border-right: 2px solid var(--white-color);
+}
+
+#notifications {
+    width: 45%;
+    padding: 10px;
+    border-right: 2px solid var(--white-color);
+}
+
+#add-chart {
+    width: 10%;
+    padding: 10px;
+    justify-content: center;
+    color: var(--white-color);
+}

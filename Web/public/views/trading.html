@@ -35,13 +35,26 @@
     <div class="h-75 charts-information"> <!-- Contenedores de las charts -->
       <div id="window-5mj43s" class="window"> <!-- Contenedor con id 5mj43s (generado aleatorio) de chart + desplegable con info -->
         <div id="window-5mj43s-chart" class="chart flex-grow-1">
-          <div class="chart-menu" id="window-5mj43s-chart-menu"> <!-- MENU -->
-            <button type="button" class="btn btn-2" data-bs-toggle="collapse" data-bs-target="#window-5mj43s-data" aria-expanded="false" aria-controls="window-5mj43s-data">
-              <i class="bi bi-list"></i>
-            </button>
+          <div id="window-5mj43s-chart-buttons" class="chart-buttons">
+            <div class="chart-menu" id="window-5mj43s-chart-menu"> <!-- MENU -->
+              <button type="button" class="btn btn-2">
+                <i class="bi bi-list"></i>
+              </button>
+            </div>
+            <div class="chart-options" id="window-5mj43s-chart-options"> <!-- MENU -->
+              <button type="button" class="btn btn-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <i class="bi bi-x"></i>
+              </button>
+              <button type="button" class="btn btn-2" id="window-5mj43s-chart-options-minimize">
+                <i class="bi bi-dash"></i>
+              </button>
+            </div>
           </div>
+          
+          <div class="position-absolute top-50 start-50 translate-middle"><h1 style="color: white;">Chart 5mj43s</h1></div>
+          
         </div>
-        <div id="window-5mj43s-data" class="data d-flex flex-column collapse">
+        <div id="window-5mj43s-data" class="data d-flex flex-column">
 
           <div class="d-flex flex-column">
             <button class="btn btn-2 mb-2 button-collapse" type="button" data-bs-toggle="collapse" data-bs-target="#window-5mj43s-data-market" aria-expanded="false" aria-controls="window-5mj43s-data-market">
@@ -189,11 +202,225 @@
           </div>
           
         </div>
+
+        <!-- MODAL -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Are you sure you want to delete Chart 5mj43s</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-1" id="window-5mj43s-chart-options-close" data-bs-dismiss="modal">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- CLOSE MODAL -->
+
+      </div>
+      <div id="window-421ad4" class="window"> <!-- Contenedor con id 421ad4 (generado aleatorio) de chart + desplegable con info -->
+        <div id="window-421ad4-chart" class="chart flex-grow-1">
+          <div id="window-421ad4-chart-buttons" class="chart-buttons">
+            <div class="chart-menu" id="window-421ad4-chart-menu"> <!-- MENU -->
+              <button type="button" class="btn btn-2">
+                <i class="bi bi-list"></i>
+              </button>
+            </div>
+            <div class="chart-options" id="window-421ad4-chart-options"> <!-- MENU -->
+              <button type="button" class="btn btn-2" id="window-421ad4-chart-options-close">
+                <i class="bi bi-x"></i>
+              </button>
+              <button type="button" class="btn btn-2" id="window-421ad4-chart-options-minimize">
+                <i class="bi bi-dash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="window-421ad4-data" class="data d-flex flex-column">
+
+          <div class="d-flex flex-column">
+            <button class="btn btn-2 mb-2 button-collapse" type="button" data-bs-toggle="collapse" data-bs-target="#window-421ad4-data-market" aria-expanded="false" aria-controls="window-421ad4-data-market">
+              <div class="charts-info-button-container">
+                <span class="charts-info-button-container-span">Market Settings</span>
+                <i class="bi bi-caret-down-fill text-collapsed"></i>
+                <i class="bi bi-caret-up-fill text-expanded"></i>
+              </div>
+            </button>
+  
+            <div class="collapse multi-collapse market-settings" id="window-421ad4-data-market">
+              <div class="d-flex flex-column">
+                <div class="d-flex flex-row align-items-center mb-2">
+                  <span class="col-md-6">Symbol</span>
+                  <select class="col-md-6 form-select">
+                    <option value="btcusdt" selected>BTCUSDT</option>
+                    <option value="ethusdt">ETHUSDT</option>
+                    <option value="bnbusdt">BNBUSDT</option>
+                  </select>
+                </div>
+                <div class="d-flex flex-row align-items-center mb-2">
+                  <span class="col-md-6">Symbol</span>
+                  <select class="col-md-6 form-select">
+                    <option value="btcusdt" selected>BTCUSDT</option>
+                    <option value="ethusdt">ETHUSDT</option>
+                    <option value="bnbusdt">BNBUSDT</option>
+                  </select>
+                </div>
+                <div class="d-flex flex-row align-items-center mb-2">
+                  <span class="col-md-6">Symbol</span>
+                  <select class="col-md-6 form-select">
+                    <option value="btcusdt" selected>BTCUSDT</option>
+                    <option value="ethusdt">ETHUSDT</option>
+                    <option value="bnbusdt">BNBUSDT</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="d-flex flex-column overflow-hidden">
+            <button class="btn btn-2 mb-2 button-collapse" type="button" data-bs-toggle="collapse" data-bs-target="#window-421ad4-data-bot" aria-expanded="false" aria-controls="window-421ad4-data-bot">
+              <div class="charts-info-button-container">
+                <span class="charts-info-button-container-span">Bot Settings</span>
+                <i class="bi bi-caret-down-fill text-collapsed"></i>
+                <i class="bi bi-caret-up-fill text-expanded"></i>
+              </div>
+            </button>
+  
+            <div class="collapse multi-collapse overflow-hidden bot-settings" id="window-421ad4-data-bot">
+                <div class="overflow-auto">
+                  <div class="accordion" id="accordionExample">
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                          <div class="accordion-button-container">
+                            <span class="accordion-button-container-span">Bot 1</span>
+                            <i class="bi bi-trash-fill"></i>
+                            <i class="bi bi-caret-down-fill text-collapsed"></i>
+                            <i class="bi bi-caret-up-fill text-expanded"></i>
+                          </div>
+                        </button>
+                      </h2>
+                      <div id="collapseOne" class="accordion-collapse collapse show p-2" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                        <div class="d-flex flex-column">
+                          <div class="d-flex flex-row align-items-center mb-2">
+                            <span class="col-md-6">Name</span>
+                            <input class="col-md-6 form-control" type="text" placeholder="Default input" aria-label="default input example">
+                          </div>
+                          <div class="d-flex flex-row align-items-center mb-2">
+                            <span class="col-md-6">Symbol</span>
+                            <select class="col-md-6 form-select">
+                              <option value="btcusdt" selected>BTCUSDT</option>
+                              <option value="ethusdt">ETHUSDT</option>
+                              <option value="bnbusdt">BNBUSDT</option>
+                            </select>
+                          </div>
+                          <div class="d-flex flex-row align-items-center mb-2">
+                            <span class="col-md-6">Symbol</span>
+                            <select class="col-md-6 form-select">
+                              <option value="btcusdt" selected>BTCUSDT</option>
+                              <option value="ethusdt">ETHUSDT</option>
+                              <option value="bnbusdt">BNBUSDT</option>
+                            </select>
+                          </div>
+                          <div class="d-flex flex-row align-items-center mb-2">
+                            <span class="col-md-6">Symbol</span>
+                            <select class="col-md-6 form-select">
+                              <option value="btcusdt" selected>BTCUSDT</option>
+                              <option value="ethusdt">ETHUSDT</option>
+                              <option value="bnbusdt">BNBUSDT</option>
+                            </select>
+                          </div>
+                          <div class="d-flex flex-row align-items-center mb-2">
+                            <span class="col-md-6">Symbol</span>
+                            <select class="col-md-6 form-select">
+                              <option value="btcusdt" selected>BTCUSDT</option>
+                              <option value="ethusdt">ETHUSDT</option>
+                              <option value="bnbusdt">BNBUSDT</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                          Accordion Item #2
+                        </button>
+                      </h2>
+                      <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                          Accordion Item #3
+                        </button>
+                      </h2>
+                      <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingFour">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                          Accordion Item #3
+                        </button>
+                      </h2>
+                      <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-1 mt-2">Add Bot</button>
+              </div>
+          </div>
+          
+        </div>
+      </div>
+      <div class="minimized-charts">
+        <div id="window-5mj43s-minimized" class="minimized-window">
+          <span class="minimized-name" style="place-self: center;">Chart 5mj43s</span>
+          <button type="button" class="btn btn-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            <i class="bi bi-x"></i>
+          </button>
+          <button type="button" class="btn btn-2" id="window-5mj43s-chart-options-minimize">
+            <i class="bi bi-arrows-angle-expand"></i>
+          </button>
+        </div>
+        <div id="window-421ad4-minimized" class="minimized-window">
+          Chart 421ad4
+        </div>
       </div>
     </div>
 
-    <div class="h-25 trades-notificacions"> <!-- Contenedor de todos los trades e info, posibilidad de minimizar cada uno -->
-
+    <div class="trades-notificacions d-flex flex-row"> <!-- Contenedor de todos los trades e info, posibilidad de minimizar cada uno -->
+      
+      <div id="trades"></div>
+      <div id="notifications"></div>
+      <div id="add-chart" class="d-flex flex-column">
+        <div class="d-flex flex-row align-items-center mb-2">
+          <span class="col-md-6">Symbol</span>
+          <select class="col-md-6 form-select">
+            <option value="btcusdt" selected>BTCUSDT</option>
+            <option value="ethusdt">ETHUSDT</option>
+            <option value="bnbusdt">BNBUSDT</option>
+          </select>
+        </div>
+        <button type="button" class="btn btn-1">Create chart</button>
+      </div>
+      
+      
     </div>
 
   </main>
