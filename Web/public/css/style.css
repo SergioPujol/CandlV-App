@@ -1,0 +1,187 @@
+:root {
+    --primary-color: #282c34;
+    --secondary-color: #21252b;
+    --tertiary-color: #3a3d41;
+
+    --blue-color: #4d78cc;
+    --white-color: #fff;
+}
+
+body {
+    background:var(--primary-color) !important;
+}
+
+/** Scrollbar **/
+
+::-webkit-scrollbar {
+    width: 14px;
+  }
+
+::-webkit-scrollbar-thumb
+{
+    border: 4px solid rgba(0, 0, 0, 0);
+    background-clip: padding-box;
+    border-radius: 9999px;
+    background-color: var(--blue-color);
+}
+
+/** Header **/
+
+header ul li a {
+    text-decoration: none;
+    color: var(--white-color);
+}
+
+header ul li a.selected {
+    color: var(--blue-color);
+}
+
+.header-colors {
+    color: var(--white-color)!important;
+    background-color: var(--secondary-color) !important;
+}
+
+/** Main **/
+
+main .charts-information {
+    background-color: var(--primary-color);
+    border-top: 2px solid var(--white-color);
+    border-bottom: 2px solid var(--white-color);
+}
+
+main .trades-notificacions {
+    background-color: var(--primary-color);
+}
+
+main .charts-information .window {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+}
+
+main .charts-information .window .chart {
+    height: 100%;
+    padding: 10px;
+}
+
+main .charts-information .window .chart.full-screen {
+    width: 100%;
+}
+
+main .charts-information .window .data {
+    height: 100%;
+    border-left: 1px solid var(--white-color);
+    width: 25%;
+    padding: 10px;
+}
+
+main .charts-information .window .data .bot-settings.collapse.show {
+    display: flex;
+    flex-direction: column;
+}
+
+.charts-information .window .button-collapse .charts-info-button-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.charts-information .window .button-collapse .charts-info-button-container .charts-info-button-container-span {
+    flex: 1;
+}
+
+.button-collapse[aria-expanded=false] .text-expanded {
+    display: none;
+}   
+.button-collapse[aria-expanded=true] .text-collapsed {
+    display: none;
+}
+
+.accordion-button::after {
+    background-image: none !important;
+}
+
+.bot-settings .accordion-button {
+    display: block;
+}
+
+.bot-settings .accordion-button[aria-expanded=false] .text-expanded {
+    display: none;
+}   
+.bot-settings .accordion-button[aria-expanded=true] .text-collapsed {
+    display: none;
+}
+
+.bot-settings .accordion-button .accordion-button-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.bot-settings .accordion-button .accordion-button-container .accordion-button-container-span {
+    flex: 1;
+}
+
+.market-settings span {
+    color: var(--white-color);
+}
+
+.window .chart {
+    position: relative;
+}
+
+.window .chart .chart-menu {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+}
+
+/** Elementos definidos **/
+
+.btn-1 {
+    background-color: var(--blue-color) !important;
+    color: var(--white-color) !important;
+}
+
+.btn-2 {
+    background-color: var(--tertiary-color) !important;
+    color: var(--white-color) !important;
+}
+
+.accordion-collapse span {
+    color: var(--white-color);
+}
+
+.form-select {
+    width: 50% !important;
+}
+.form-control {
+    width: 50% !important;
+}
+
+.accordion-item {
+    background-color: var(--tertiary-color) !important;
+}
+
+.accordion-button {
+    background-color: var(--tertiary-color) !important;
+    color: var(--white-color);
+}
+
+.accordion-button:not(.collapsed) {
+    color: var(--blue-color) !important
+}
+
+.accordion-button.collapsed {
+    color: var(--white-color) !important
+}
+
+.accordion-button-container i.bi-trash-fill {
+    margin-right: 3px;
+}
+
+.window .data.collapse:not(.show) {
+    display: none !important;
+}
+
