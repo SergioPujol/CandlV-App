@@ -112,9 +112,20 @@ main .charts-information .window .data .bot-settings.collapse.show {
     bottom: -20px;
 }
 
+.charts-information .minimized-charts .minimized-window.maximized-chart {
+    display: none !important;
+}
+
+.charts-information .window.minimize-chart {
+    display: none !important;
+}
+
 .charts-information .minimized-charts .minimized-window {
     width: 220px;
-    background-color: white;
+    background-color: var(--primary-color);
+    border: 1px solid var(--white-color);
+    border-bottom: 0;
+    color: var(--white-color);
     padding: 10px;
     border-radius: 10px 10px 0 0;
     margin-right: 10px;

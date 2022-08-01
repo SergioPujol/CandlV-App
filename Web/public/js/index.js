@@ -7,5 +7,16 @@ document.querySelectorAll('.window').forEach(window => {
 
     document.getElementById(`${id}-chart-options-close`).onclick = ()=>{
         window.remove()
+        document.getElementById(`${id}-minimized`).remove()
+    }
+
+    document.getElementById(`${id}-chart-options-minimize`).onclick = ()=>{
+        window.classList.add('minimize-chart')
+        document.getElementById(`${id}-minimized`).classList.remove('maximized-chart')
+    }
+
+    document.getElementById(`${id}-chart-options-maximize`).onclick = ()=>{
+        window.classList.remove('minimize-chart')
+        document.getElementById(`${id}-minimized`).classList.add('maximized-chart')
     }
 })
