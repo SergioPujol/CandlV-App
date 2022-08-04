@@ -1,8 +1,8 @@
-import { Candle } from './Server/Classes/Candle';
-import { BinanceAPI } from './Server/Classes/BinanceAPI';
-import { ThreeEMA } from './Server/Classes/Strategies';
-import { EMA } from './Server/Classes/EMA';
-import { Utils } from './Server/Classes/Utils';
+import { Candle } from '../Server/Classes/Candle';
+import { BinanceAPI } from '../Server/Classes/BinanceAPI';
+import { ThreeEMA } from '../Server/Classes/Strategies';
+import { EMA } from '../Server/Classes/EMA';
+import { Utils } from '../Server/Classes/Utils';
 
 import express from 'express';
 import * as path from 'path';

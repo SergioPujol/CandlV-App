@@ -1,0 +1,23 @@
+{
+  "name": "processcandlv",
+  "version": "1.0.0",
+  "description": "Server for main process for Candlv",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node ./index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/npm": "^7.19.0",
+    "express": "^4.18.1",
+    "got": "^11.8.0",
+    "path": "^0.12.7",
+    "ts-node": "^10.8.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13"
+  }
+}
