@@ -41,6 +41,10 @@ header ul li a.selected {
     background-color: var(--secondary-color) !important;
 }
 
+header .login-container-hide {
+    display: none;
+}
+
 /** Main **/
 
 main {

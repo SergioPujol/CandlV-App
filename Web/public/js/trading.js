@@ -19,4 +19,10 @@ document.querySelectorAll('.window').forEach(window => {
         window.classList.remove('minimize-chart')
         document.getElementById(`${id}-minimized`).classList.add('maximized-chart')
     }
-})
+});
+
+(async function () {
+    console.log('check login status')
+    const status = await checkLoginStatus()
+    if(!status) location.href = 'home.html'
+})();

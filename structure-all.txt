@@ -1,0 +1,21 @@
+Carpetas:
+
+- Web: formado por Web publica y Servidor "publico"
+web publica:
+servidor "publico": realizar posts y gets a los servidores de DataBase y Process. Conexión entre web publica y servidores
+- Server_DB
+servidor donde se realizaran las peticiones de la base de datos - **post, put, get, delete**
+- Server_Process
+servidor dedicado para realizar los procesos de trading, se encontraran alojadas las tasks
+
+
+Conexiones:
+
+- Web Publica - Servidor publico
+
+- Servidor publico -  Server_DB
+
+- Servidor publico - Server_Process:
+conexion por websockets
+s publico -> s process: generar bots, parar bots
+
