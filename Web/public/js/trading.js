@@ -21,6 +21,15 @@ document.querySelectorAll('.window').forEach(window => {
     }
 });
 
+// MODAL
+const strategies = {
+    '2EMA': {
+        ema_short_period: 3, // default value
+        ema_long_period: 6 // default value
+        // TODO, add more options to 2EMA
+    }
+}
+
 addBot('5mj43s')
 // Add Bot button
 function addBot(chartId) {
@@ -28,23 +37,35 @@ function addBot(chartId) {
     const popup = document.querySelector(`#window-${chartId} #add-bot-modal-${chartId}`);
 
     // TODO automatic way for the moment, will be added 2EMA
-    const strategies = {
-        '2EMA': {
-            ema_short_period: 3, // default value
-            ema_long_period: 6 // default value
-            // TODO, add more options to 2EMA
-        },
-    }
+    
     const strategySelect = popup.querySelector('.strategies-select')
     Object.keys(strategies).forEach(strategy => {
-        let option = new DOMParser().parseFromString(`<option value="${strategy}">${strategy}</option>`, "text/xml");
-        strategySelect.appendChild(option.documentElement)
+        let opt = document.createElement('option');
+        opt.value = strategy;
+        opt.innerHTML = strategy;
+        strategySelect.appendChild(opt)
     })
-    strategySelect.firstElementChild.setAttribute("selected", "");
+
+    strategySelect.addEventListener('change', updateModalWithStrategy(chartId, strategySelect.value))
+}
+
+function updateModalWithStrategy(chartId, strategy) {
+    console.log(chartId, strategy)
+    const strategyContainer = document.querySelector(`#window-${chartId} #add-bot-modal-${chartId} .container-strategy-options`);
+    const strategyOptions = strategies[strategy]
+
+    Object.keys(strategyOptions).forEach(option => {
+        let div = document.createElement('div')
+        div.classList.add('d-flex', 'flex-row', 'align-items-center', 'mb-2')
+        div.innerHTML = `
+            <span class="col-md-6">${option.replaceAll('_', ' ')}</span>
+            <input class="col-md-6 form-control" type="text" placeholder="Bot name" value="${strategyOptions[option]}">`;
+        strategyContainer.appendChild(div)
+    })
 }
 
 (async function () {
     console.log('check login status')
     const status = await checkLoginStatus()
-    if(!status) location.href = 'home.html'
+    //if(!status) location.href = 'home.html'
 })();
