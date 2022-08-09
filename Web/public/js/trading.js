@@ -21,6 +21,28 @@ document.querySelectorAll('.window').forEach(window => {
     }
 });
 
+addBot('5mj43s')
+// Add Bot button
+function addBot(chartId) {
+    // acced to the chart window and then to the Add Bot popup
+    const popup = document.querySelector(`#window-${chartId} #add-bot-modal-${chartId}`);
+
+    // TODO automatic way for the moment, will be added 2EMA
+    const strategies = {
+        '2EMA': {
+            ema_short_period: 3, // default value
+            ema_long_period: 6 // default value
+            // TODO, add more options to 2EMA
+        },
+    }
+    const strategySelect = popup.querySelector('.strategies-select')
+    Object.keys(strategies).forEach(strategy => {
+        let option = new DOMParser().parseFromString(`<option value="${strategy}">${strategy}</option>`, "text/xml");
+        strategySelect.appendChild(option.documentElement)
+    })
+    strategySelect.firstElementChild.setAttribute("selected", "");
+}
+
 (async function () {
     console.log('check login status')
     const status = await checkLoginStatus()
