@@ -155,10 +155,10 @@ main .charts-information .window .data .bot-settings.collapse.show {
     display: block;
 }
 
-.bot-settings .accordion-button[aria-expanded=false] .text-expanded {
+.bot-settings i.text-expanded[aria-expanded=false] {
     display: none;
 }   
-.bot-settings .accordion-button[aria-expanded=true] .text-collapsed {
+.bot-settings i.text-collapsed[aria-expanded=true] {
     display: none;
 }
 
