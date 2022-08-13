@@ -5,6 +5,7 @@ require('dotenv').config({ path: './config.env' });
 const JWT_SECRET = process.env.JWT_SECRET
 
 const register = async (userData) => {
+    console.log('register')
     const { username, plainTextPassword } = userData
 
     const password = await bcrypt.hash(plainTextPassword, 10)
@@ -27,6 +28,7 @@ const register = async (userData) => {
 }
 
 const login = async (userData) => {
+    console.log('login')
     const { username, password } = userData
     const user = await User.findOne({ username }).lean()
 
@@ -56,10 +58,21 @@ const checkToken = async (data) => {
     console.log('checkToken')
     const user = jwt.verify(data.token, JWT_SECRET)
     if(user) return { status: 'ok', data: user.username }
-} 
+}
+
+const getIdByName = async (username) => {
+    console.log('getIdByName')
+	const user = await User.findOne({ username }).lean();
+	if (!user) {
+		return false
+	}
+
+	return user._id
+}
 
 module.exports = {
     register,
     login,
-    checkToken
+    checkToken,
+	getIdByName
 }

@@ -125,7 +125,7 @@ main .charts-information .window .data .bot-settings.collapse.show {
 }
 
 .charts-information .minimized-charts .minimized-window {
-    width: 220px;
+    width: 250px;
     background-color: var(--primary-color);
     border: 1px solid var(--white-color);
     border-bottom: 0;

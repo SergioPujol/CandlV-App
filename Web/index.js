@@ -56,6 +56,27 @@ app.post('/api/checktoken', async (req, res) => {
 	}))
 })
 
+app.post('/api/createChart', async (req, res) => {
+	return await res.json(await serverDBReq('chart', {
+		method: 'createChart',
+		data: req.body
+	}))
+})
+
+app.post('/api/getCharts', async (req, res) => {
+	return await res.json(await serverDBReq('chart', {
+		method: 'getCharts',
+		data: req.body
+	}))
+})
+
+app.post('/api/deleteChart', async (req, res) => {
+	return await res.json(await serverDBReq('chart', {
+		method: 'deleteChart',
+		data: req.body
+	}))
+})
+
 app.listen(port, () => console.log(`Server_DB listening on port ${port}!, http://localhost:${port}`));
 
 const serverDBReq = async (req, data) => {

@@ -1,3 +1,5 @@
+var username_gbl = '';
+
 async function checkToken() {
     const result = await fetch('/api/checktoken', {
         method: 'POST',
@@ -32,6 +34,8 @@ async function checkLoginStatus() {
     console.log(tokenRes)
     if(tokenRes.status == 'ok') {
         document.getElementById('usernameButton').textContent = tokenRes.data
+        username_gbl = tokenRes.data
+        console.log(username_gbl)
         toggleContainer(true)
         return true
     } else {
@@ -103,4 +107,9 @@ async function login(event) {
     } else {
         alert(result.error)
     }
+}
+
+function showError(message) {
+    // TODO add toast message
+    console.log(message)
 }

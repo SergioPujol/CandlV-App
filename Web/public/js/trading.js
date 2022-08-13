@@ -1,24 +1,27 @@
 function minmaxWindows() {
     document.querySelectorAll('.window').forEach(window => {
         let id = window.id
-        document.getElementById(`${id}-chart-menu`).querySelector('button').onclick = ()=>{
-            if(document.getElementById(`${id}-data`).classList.contains('hide-data')) document.getElementById(`${id}-data`).classList.remove('hide-data')
+        document.getElementById(`window-${id}-chart-menu`).querySelector('button').onclick = ()=>{
+            if(document.getElementById(`${id}-data`).classList.contains('hide-data')) document.getElementById(`window-${id}-data`).classList.remove('hide-data')
             else document.getElementById(`${id}-data`).classList.add('hide-data')        
         }
     
-        document.getElementById(`${id}-chart-options-close`).onclick = ()=>{
-            window.remove()
-            document.getElementById(`${id}-minimized`).remove()
+        document.getElementById(`window-${id}-chart-options-close`).onclick = async ()=>{
+            const response = await deleteChartFromDB(id)
+            if(response) {
+                window.remove()
+                document.getElementById(`window-${id}-minimized`).remove()
+            }
         }
     
-        document.getElementById(`${id}-chart-options-minimize`).onclick = ()=>{
+        document.getElementById(`window-${id}-chart-options-minimize`).onclick = ()=>{
             window.classList.add('minimize-chart')
-            document.getElementById(`${id}-minimized`).classList.remove('maximized-chart')
+            document.getElementById(`window-${id}-minimized`).classList.remove('maximized-chart')
         }
     
-        document.getElementById(`${id}-chart-options-maximize`).onclick = ()=>{
+        document.getElementById(`window-${id}-chart-options-maximize`).onclick = ()=>{
             window.classList.remove('minimize-chart')
-            document.getElementById(`${id}-minimized`).classList.add('maximized-chart')
+            document.getElementById(`window-${id}-minimized`).classList.add('maximized-chart')
         }
     });
 }
@@ -43,21 +46,22 @@ function appendOptionsToStrategySelect(element) {
 
 function updateModalWithStrategy(chartId, strategy) {
     console.log(chartId, strategy)
-    const strategyContainer = document.querySelector(`#window-${chartId} #add-bot-modal-${chartId} .container-strategy-options`);
+    const strategyContainer = document.querySelector(`#${chartId} #add-bot-modal-${chartId} .container-strategy-options`);
     const strategyOptions = strategies[strategy]
 
     Object.keys(strategyOptions).forEach(option => {
         let div = document.createElement('div')
         div.classList.add('d-flex', 'flex-row', 'align-items-center', 'mb-2')
+        div.id = option
         div.innerHTML = `
-            <span class="col-md-6">${option.replaceAll('_', ' ')}</span>
+            <span class="col-md-6" value="option">${option.replaceAll('_', ' ')}</span>
             <input class="col-md-6 form-control" type="text" placeholder="Bot name" value="${strategyOptions[option]}"/>`;
         strategyContainer.appendChild(div)
     })
 }
 
-document.getElementById('add-chart').querySelector('button').addEventListener('click', ()=>createWindow())
-function createWindow() {
+document.getElementById('add-chart').querySelector('button').addEventListener('click', async ()=> await createWindow())
+async function createWindow() {
 
     // create chart id
     const chartId = createId()
@@ -71,20 +75,31 @@ function createWindow() {
         symbol: addChartContainer.querySelector('#add-chart-symbol').value,
         interval: addChartContainer.querySelector('#add-chart-interval').value
     }
+
+    const status = await createChartDB({
+        chartId, chartOptions: { symbol: values.symbol, interval: values.interval }, minimized: false
+    }, username_gbl)
+    console.log(status)
+    if(!status) return
+
+    loadChartIntoHtml(chartId, values)
+
+}
+
+function loadChartIntoHtml(chartId, values) {
     const { window, minimizedChart, modal } = createHtmlWindow(chartId, values);
     document.querySelector('.charts-information').appendChild(window);
     document.querySelector('.charts-information > .minimized-charts').appendChild(minimizedChart);
     document.querySelector('.charts-information > .modals').appendChild(modal);
 
-    addBotButttonAndModal(chartId)
+    addBotButtonAndModal(chartId)
 
     minmaxWindows()
-
 }
 
 function createHtmlWindow(chartId, options) {
     const window = document.createElement('div')
-    window.id = `window-${chartId}`
+    window.id = `${chartId}`
     window.classList.add('window')
     window.innerHTML = `
         <div id="window-${chartId}-chart" class="chart flex-grow-1">
@@ -120,17 +135,11 @@ function createHtmlWindow(chartId, options) {
 
             <div class="collapse multi-collapse market-settings" id="window-${chartId}-data-market">
             <div class="d-flex flex-column">
-                <div class="d-flex flex-row align-items-center mb-2">
-                <span class="col-md-6">Symbol</span>
-                <select class="col-md-6 form-select">
-                    <option value="btcusdt" selected>BTCUSDT</option>
-                    <option value="ethusdt">ETHUSDT</option>
-                    <option value="bnbusdt">BNBUSDT</option>
-                </select>
+                <div class="d-flex flex-row align-items-center mb-2 symbol-select">
+                    <span class="col-md-6">Symbol</span>
                 </div>
-                <div class="d-flex flex-row align-items-center mb-2">
-                <span class="col-md-6">Interval</span>
-                <input class="col-md-6 form-control" type="text" placeholder="Interval"  id="add-chart-interval">
+                <div class="d-flex flex-row align-items-center mb-2 interval-select">
+                    <span class="col-md-6">Interval</span>
                 </div>
             </div>
             </div>
@@ -165,19 +174,19 @@ function createHtmlWindow(chartId, options) {
             </div>
             <div class="modal-body">
                 <!-- MODAL BODY FOR THE CREATION OF THE BOT -->
-                <div>
+                <div class="static-bot-values">
 
-                <!-- container with the name and strategy to select -->
-                <div class="d-flex flex-row align-items-center mb-2">
-                    <span class="col-md-6">Name</span>
-                    <input class="col-md-6 form-control" type="text" placeholder="Bot name">
-                </div>
-                <div class="d-flex flex-row align-items-center mb-2">
-                    <span class="col-md-6">Strategy</span>
-                    <select class="col-md-6 form-select strategies-select">
-                    <!-- <option value="2EMA" selected>2EMA</option>-->
-                    </select>
-                </div>
+                    <!-- container with the name and strategy to select -->
+                    <div class="d-flex flex-row align-items-center mb-2">
+                        <span class="col-md-6">Name</span>
+                        <input class="col-md-6 form-control" type="text" placeholder="Bot name">
+                    </div>
+                    <div class="d-flex flex-row align-items-center mb-2">
+                        <span class="col-md-6">Strategy</span>
+                        <select class="col-md-6 form-select strategies-select">
+                        <!-- <option value="2EMA" selected>2EMA</option>-->
+                        </select>
+                    </div>
 
                 </div>
                 <div class="container-strategy-options d-flex flex-column">
@@ -193,9 +202,11 @@ function createHtmlWindow(chartId, options) {
         </div>`
 
     const marketSettings = window.querySelector(`#window-${chartId}-data-market`);
-    console.log(marketSettings)
-    marketSettings.querySelector('select').value = options.symbol.toLowerCase()
-    marketSettings.querySelector('input').value = options.interval
+
+    marketSettings.querySelector('.symbol-select').appendChild(createSelectSymbol())
+    marketSettings.querySelector('.symbol-select select').value = options.symbol.toLowerCase()
+    marketSettings.querySelector('.interval-select').appendChild(createSelectInterval())
+    marketSettings.querySelector('.interval-select select').value = options.interval
 
     const minimizedChart = document.createElement('div');
     minimizedChart.id = `window-${chartId}-minimized`
@@ -233,9 +244,9 @@ function createHtmlWindow(chartId, options) {
 }
 
 // Add Bot button
-function addBotButttonAndModal(chartId) {
+function addBotButtonAndModal(chartId) {
     // acced to the chart window and then to the Add Bot popup
-    const popup = document.querySelector(`#window-${chartId} #add-bot-modal-${chartId}`);
+    const popup = document.querySelector(`#${chartId} #add-bot-modal-${chartId}`);
 
     // TODO automatic way for the moment, will be added 2EMA
     
@@ -261,14 +272,27 @@ function createBot(chartId) { // what do I need? options from modal and Id of th
     // if the response from the request is ok, add it to html
     // if not, toast bad request
 
-    document.querySelector(`#botAccordion-${chartId}`).appendChild(createHtmlBot(botId,{
-        name: '2emote',
-        strategy: '2EMA',
-        custom: [
-            { ema_short_period: 3 },
-            { ema_long_period: 6 }
-        ]
-    }))
+    const addBotModalContainer = document.getElementById(`add-bot-modal-${chartId}`);
+    const staticValuesContainer = addBotModalContainer.querySelector('.static-bot-values');
+    const optionsContainer = addBotModalContainer.querySelectorAll('.container-strategy-options > div')
+    
+    let customOptions = [];
+    optionsContainer.forEach(optionContainer => {
+        let temp_obj = {}
+        temp_obj[optionContainer.id] = optionContainer.querySelector('input').value;
+        customOptions.push(temp_obj)
+    });
+
+    const values = {
+        name: staticValuesContainer.querySelector('input').value,
+        strategy: staticValuesContainer.querySelector('select.strategies-select').value,
+        custom: customOptions
+    }
+    loadBotIntoHtml(chartId, botId, values)
+}
+
+function loadBotIntoHtml(chartId, botId, values) {
+    document.querySelector(`#botAccordion-${chartId}`).appendChild(createHtmlBot(botId,values))
 }
 
 function createHtmlBot(botId, options) { 
@@ -344,17 +368,137 @@ function createSelectSymbol() {
     return select
 }
 
+function createSelectInterval() {
+    const select = document.createElement('select')
+    select.classList.add('col-md-6','form-select')
+
+    const intervals = getIntervals();
+    intervals.forEach(interval => {
+        let opt = document.createElement('option');
+        opt.value = interval;
+        opt.innerHTML = interval;
+        select.appendChild(opt)
+    })
+
+    return select
+}
+
 function getSymbols() {
     // get posible symbols with fetch
     return ['BTCUSDT','ETHUSDT','BNBUSDT']
+}
+
+function getIntervals() {
+    return ['1m','3m','5m','15m','30m','1h','2h','4h','6h','8h','12h','1d','3d','1w','1M']
 }
 
 function createId() {
     return (Math.random()+1).toString(36).substring(2);
 }
 
+async function createChartDB(options, username) {
+    /** options
+     * chart_id
+     * chart_options: { symbol, interval }
+     * minimized
+     */
+
+    const result = await fetch('/api/createChart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ...options, username })
+    }).then((res) => res.json())
+
+    if (result.status === 'ok') {
+        // everythign went fine
+        return true
+        
+    } else {
+        alert(result.error)
+        return false
+    }
+}
+
+async function loadChartsFromDB(username) {
+    /**process
+     * 1. Obtener nombre de usuario
+     * --- en bbdd server ----
+     * 2. obtener id del userc
+     * 3. obtener todos los charts con id de usuario obtenida
+     * 4. Enviar de vuelta lista con charts
+     * --- en web ---
+     * 5. recorrer listado devuelto para añadir las charts
+     */
+     const result = await fetch('/api/getCharts', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username })
+    }).then((res) => res.json())
+
+    if (result.status === 'ok') {
+        // everythign went fine
+        console.log(result)
+        result.data.forEach(chart => {
+            loadChartIntoHtml(chart.chartId, chart.chartOptions)
+        })
+        return true
+        
+    } else {
+        alert(result.error)
+        return false
+    }
+
+}
+
+async function deleteChartFromDB(chartId) {
+
+    const username = username_gbl;
+    const result = await fetch('/api/deleteChart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ chartId, username })
+    }).then((res) => res.json())
+
+    if (result.status === 'ok') {
+        // everythign went fine
+        return true
+        
+    } else {
+        alert(result.error)
+        return false
+    }
+    
+}
+
+async function createBotDB(options, chartId) {
+
+    const result = await fetch('/api/createBot', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ...options, chartId })
+    }).then((res) => res.json())
+
+    if (result.status === 'ok') {
+        // everythign went fine
+        return true
+        
+    } else {
+        alert(result.error)
+        return false
+    }
+}
+
 (async function () {
     console.log('check login status')
     const status = await checkLoginStatus()
-    //if(!status) location.href = 'home.html'
+    if(!status) location.href = 'home.html'
+    loadChartsFromDB(username_gbl)
 })();
