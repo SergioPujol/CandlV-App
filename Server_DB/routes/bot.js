@@ -1,5 +1,6 @@
 const Bot = require('../model/bot');
 const Chart = require('./chart')
+const _ = require('lodash');
 
 /**
  * TODO:
@@ -89,16 +90,19 @@ const getChartsBots = async (data) => {
 const updateStatusBot = async (data) => {
     console.log('updateStatusBot')
 
+	const { botId, chartId, status } = data;
+    const chart_id = chartId, bot_id = botId;
+
     try {
-		const response = await Chart.updateOne({ chart_id: data.chartId }, { chart_options: data.chartOptions })
-        console.log('Chart updated: ', response)
+		const response = await Bot.updateOne({ bot_id, chart_id }, { status })
+        console.log('Bot updated: ', response)
         if(response.nModified == 0) {
-            return { status: 'error', error: 'Chart trying to update does not exist' }
+            return { status: 'error', error: 'Bot trying to update does not exist' }
         }
 	} catch (error) {
 		if (error.code === 11000) {
 			// duplicate key
-			return { status: 'error', error: 'Chart could not be updated' }
+			return { status: 'error', error: 'Bot could not be updated' }
 		}
 		throw error
 	}
@@ -108,6 +112,51 @@ const updateStatusBot = async (data) => {
 
 const updateOptionsBot = async (data) => {
     console.log('updateOptionsBot')
+
+	/**Process
+	 * 1. get bot by charts id and bot id
+	 * 2. check if strategies from request and current on DB are the same
+	 * 3. if are the same, dont do anything, status: ok
+	 * 4. if not the same, SEND REQUEST TO SERVER PROCESS TO CHANGE BOT, 
+	 * 5. IF request from server Process is OK, change on db
+	*/
+
+	const { botId, chartId, strategy, strategyOptions } = data;
+	const chart_id = chartId, bot_id = botId;
+
+	const bot = await Bot.findOne({ chart_id, bot_id, bot_strategy: strategy });
+
+	if(bot) {
+		if(_.isEqual(bot.bot_strategy_options, strategyOptions)) return { status: 'ok' }
+		else {
+			// Update values and send request to server process
+			console.log('bot', bot)
+			try {
+				const response = await Bot.updateOne({ bot_id, chart_id, bot_strategy: strategy }, { bot_strategy_options: strategyOptions })
+				console.log('Bot updated: ', response)
+				if(response.nModified == 0) {
+					return { status: 'error', error: 'Bot trying to update does not exist' }
+				}
+			} catch (error) {
+				if (error.code === 11000) {
+					// duplicate key
+					return { status: 'error', error: 'Bot could not be updated' }
+				}
+				throw error
+			}
+		}
+	}
+	else return { status: 'error', error: 'Bot does not exist' }
+
+    return { status: 'ok' }
+}
+
+const updateStrategyAndOptionsBot = async (data) => {
+    console.log('updateOptionsBot')
+
+	/* 
+		changed strategy and options
+	 */
 
     try {
 		const response = await Chart.updateOne({ chart_id: data.chartId }, { chart_options: data.chartOptions })
@@ -130,5 +179,6 @@ module.exports = {
 	createBot,
 	getChartsBots,
 	deleteBot,
-
+	updateStatusBot,
+	updateOptionsBot
 }

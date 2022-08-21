@@ -1,36 +1,44 @@
 TODO LIST:
 
+NEXT TASK:
+ - 5, 17
+
+task counter: 26
+
 WEB
 
-- *** on change of the chart options -> symbol or interval
-- delete button on bot, add functionality --> modal to confirm
-- slider status bot add functionality
-- button to save bot options
-- save function of bot options
-- trades html structure
-- notifications html structure
-- add loader image once loading values
+- *** 1. on change of the chart options -> symbol or interval
+- *** 2. delete button on bot, add functionality --> modal to confirm
+- *** 3. slider status bot add functionality
+- *** 4. add html button to save bot options
+- 5. save function of bot strategy custom options
+- 24: on change strategy select --> change inputs of the strategy
+- 6. trades html structure
+- 7. notifications html structure
+- 8. add loader image once loading values
 
-- add TradingView Chart Library into web
+- 9. add TradingView Chart Library into web
 
-- websocket structure to receive data into Web Server
-- websocket from Web Server to WEB ????? # I dont think its necessary, just do correspondent functions in server
+- 10. websocket structure to receive data into Web Server
+- 11. websocket from Web Server to WEB ????? # I dont think its necessary, just do correspondent functions in server
 
 SERVER DB
 
-- on delete chart, delete bots related to that chart
-- update chart
-- delete bot
-- change status bot
-- structure to interact with server Process when bot CREATED, DELETED, UPDATED 
-- update bot options
-- trades Schema
-- notifications Schema
+- 12. on delete chart, delete bots related to that chart
+- 13. update chart
+- *** 14. delete bot
+- *** 15. change status bot
+- 25: update bot strategy and custom options
+- 16. structure to interact with server Process when bot CREATED, DELETED, UPDATED 
+- 17. update bot custom strategy options
+- 18. trades Schema
+- 19. notifications Schema
 
 SERVER PROCESS
 
-- structure to create Bots
-- function delete bot
-- function update bot
+- 20. structure to create Bots
+- 21. function delete bot
+- 22. function update full bot
+- 26. function update only custom options bot
 
-- websocket structure to send data
+- 23. websocket structure to send data

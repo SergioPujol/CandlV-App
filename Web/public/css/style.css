@@ -244,6 +244,11 @@ main .charts-information .window .data .bot-settings.collapse.show {
     display: none !important;
 }
 
+.accordion-collapse div.strategy-container {
+    padding-bottom: 0.5rem !important;
+    border-bottom: 1px solid var(--white-color);
+}
+
 /** Trades - Notifications **/
 
 .trades-notificacions {

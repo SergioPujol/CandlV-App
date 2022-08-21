@@ -98,6 +98,20 @@ app.post('/api/deleteBot', async (req, res) => {
 	}))
 })
 
+app.post('/api/updateStatusBot', async (req, res) => {
+	return await res.json(await serverDBReq('bot', {
+		method: 'updateStatusBot',
+		data: req.body
+	}))
+})
+
+app.post('/api/updateStrategyOptionsBot', async (req, res) => {
+	return await res.json(await serverDBReq('bot', {
+		method: 'updateStrategyOptionsBot',
+		data: req.body
+	}))
+})
+
 app.post('/api/getBots', async (req, res) => {
 	return await res.json(await serverDBReq('bot', {
 		method: 'getBots',

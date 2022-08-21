@@ -62,5 +62,7 @@ const callChartMethod = (method, data) => {
 const callBotMethod = (method, data) => {
   if(method == 'createBot') return Bot.createBot(data)
   else if(method == 'deleteBot') return Bot.deleteBot(data)
+  else if(method == 'updateStatusBot') return Bot.updateStatusBot(data)
+  else if(method == 'updateStrategyOptionsBot') return Bot.updateOptionsBot(data)
   else if(method == 'getBots') return Bot.getChartsBots(data)
 }

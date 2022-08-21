@@ -159,7 +159,7 @@ function createHtmlWindow(chartId, options) {
                     <div class="accordion" id="botAccordion-${chartId}">
                     </div>
                 </div>
-                <button class="btn btn-1 mt-2 add-bot" data-bs-toggle="modal" data-bs-target="#add-bot-modal-${chartId}">Add Bot</button>
+                <button class="btn btn-1 mt-2 add-bot" data-bs-toggle="modal" data-bs-target="#add-bot-modal-${chartId}">Add bot</button>
             </div>
         </div>
         
@@ -291,7 +291,8 @@ async function createBot(chartId) { // what do I need? options from modal and Id
     const values = {
         name: staticValuesContainer.querySelector('input').value,
         strategy: staticValuesContainer.querySelector('select.strategies-select').value,
-        custom: customOptions
+        custom: customOptions,
+        status: true
     }
     console.log(customOptions)
 
@@ -319,6 +320,7 @@ function createHtmlBot(chartId, botId, options) {
      *  ]
      * }
      */
+    console.log(options)
     let botHtml = document.createElement('div')
     botHtml.classList.add('accordion-item')
     botHtml.id = `accordion-bot-${botId}`
@@ -328,7 +330,7 @@ function createHtmlBot(chartId, botId, options) {
         <div class="accordion-button-container">
           <span class="accordion-button-container-span">Bot ${options.name}</span>
           <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="status-bot-${botId}" checked>
+            <input class="form-check-input" type="checkbox" id="status-bot-${botId}" ${options.status ? 'checked':''}>
           </div>
           <i class="bi bi-trash-fill" data-bs-toggle="modal" data-bs-target="#modal-bot-${botId}"></i>
           <i class="bi bi-caret-down-fill text-collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-bot-${botId}" aria-expanded="false" aria-controls="collapse-bot-${botId}" type="button"></i>
@@ -342,14 +344,14 @@ function createHtmlBot(chartId, botId, options) {
           <span class="col-md-6">Name</span>
           <input class="col-md-6 form-control" type="text" placeholder="Default input" aria-label="default input example">
         </div>-->
-        <div class="d-flex flex-row align-items-center mb-2">
+        <div class="d-flex flex-row align-items-center mb-2 strategy-container">
           <span class="col-md-6">Strategy</span>
           <select class="col-md-6 form-select" id="strategy-select-bot-${botId}">
           </select>
         </div>
       </div>
       <div class="d-flex flex-column">
-        <button class="btn btn-1 mt-2" id="save-bot-options-${botId}">Save Bot</button>
+        <button class="btn btn-1 mt-2" id="save-bot-options-${botId}">Save bot options</button>
       </div>
     </div>
     <div class="modal fade" id="modal-bot-${botId}" tabindex="-1" aria-labelledby="Modal-bot-${botId}Label" aria-hidden="true">
@@ -373,10 +375,17 @@ function createHtmlBot(chartId, botId, options) {
     // DELETE BOT
     botHtml.querySelector(`#delete-bot-${botId}`).addEventListener('click', () => deleteBot(chartId, botId))
 
-    console.log('options', options)
+    // STATUS BOT
+    botHtml.querySelector(`#status-bot-${botId}`).addEventListener('change', (e) => updateBotStatus(chartId, botId, e.target.checked))
+
+    // STRATEGY OPTIONS BOT
+    botHtml.querySelector(`#save-bot-options-${botId}`).addEventListener('click', (e) => updateBotStrategyOptions(chartId, botId, getInputBotOptions(botHtml.querySelector(`#collapse-bot-${botId} > div`))))
+    
+
     Object.keys(options.custom).forEach(objectKey => {
         let div = document.createElement('div');
-        div.classList.add('d-flex','flex-row','align-items-center','mb-2');
+        div.classList.add('d-flex','flex-row','align-items-center','mb-2', 'bot-options-container');
+        div.id = objectKey
         div.innerHTML =`
         <span class="col-md-6">${objectKey}</span>
         <input class="col-md-6 form-control" type="text" value="${options.custom[objectKey]}">
@@ -419,204 +428,14 @@ function createSelectInterval() {
     return select
 }
 
-function getSymbols() {
-    // get posible symbols with fetch
-    return ['BTCUSDT','ETHUSDT','BNBUSDT']
-}
+function getInputBotOptions(container) {
+    let customOptions = {};
+    const optionsContainers = container.querySelectorAll('div.bot-options-container');
+    optionsContainers.forEach(optionContainer => {
+        customOptions[optionContainer.id] = optionContainer.querySelector('input').value;
+    })
 
-function getIntervals() {
-    return ['1m','3m','5m','15m','30m','1h','2h','4h','6h','8h','12h','1d','3d','1w','1M']
-}
-
-function createId() {
-    return (Math.random()+1).toString(36).substring(2);
-}
-
-async function createChartDB(options, username) {
-    /** options
-     * chart_id
-     * chart_options: { symbol, interval }
-     * minimized
-     */
-
-    const result = await fetch('/api/createChart', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ ...options, username })
-    }).then((res) => res.json())
-
-    if (result.status === 'ok') {
-        // everythign went fine
-        return true
-        
-    } else {
-        alert(result.error)
-        return false
-    }
-}
-
-async function loadChartsFromDB(username) {
-    /**process
-     * 1. Obtener nombre de usuario
-     * --- en bbdd server ----
-     * 2. obtener id del userc
-     * 3. obtener todos los charts con id de usuario obtenida
-     * 4. Enviar de vuelta lista con charts
-     * --- en web ---
-     * 5. recorrer listado devuelto para añadir las charts
-     */
-     const result = await fetch('/api/getCharts', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username })
-    }).then((res) => res.json())
-
-    if (result.status === 'ok') {
-        // everythign went fine
-        console.log(result)
-        result.data.forEach(async (chart) => {
-            await loadChartIntoHtml(chart.chartId, chart.chartOptions)
-            await loadBotsFromDB(chart.chartId)
-        })
-        
-        return true
-        
-    } else {
-        alert(result.error)
-        return false
-    }
-
-}
-
-async function deleteChartFromDB(chartId) {
-
-    const username = username_gbl;
-    const result = await fetch('/api/deleteChart', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ chartId, username })
-    }).then((res) => res.json())
-
-    if (result.status === 'ok') {
-        // everythign went fine
-        return true
-        
-    } else {
-        alert(result.error)
-        return false
-    }
-    
-}
-
-async function createBotDB(options, chartId) {
-
-    const result = await fetch('/api/createBot', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ ...options, chartId })
-    }).then((res) => res.json())
-
-    if (result.status === 'ok') {
-        // everythign went fine
-        return true
-        
-    } else {
-        alert(result.error)
-        return false
-    }
-}
-
-async function loadBotsFromDB(chartId) {
-    
-     const result = await fetch('/api/getBots', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ chartId })
-    }).then((res) => res.json())
-
-    if (result.status === 'ok') {
-        // everythign went fine
-        console.log(result)
-        result.data.forEach(bot => {
-            //chartId, botId, values
-            loadBotIntoHtml(bot.chartId, bot.botId, { name: bot.name, strategy: bot.strategy, custom: bot.botOptions })
-        })
-        return true
-        
-    } else {
-        alert(result.error)
-        return false
-    }
-
-}
-
-async function updateChartOptions(chartId, options) {
-
-    const result = await fetch('/api/updateChart', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ chartId, chartOptions: options })
-    }).then((res) => res.json())
-
-    if (result.status === 'ok') {
-        // everythign went fine
-        return true
-        
-    } else {
-        alert(result.error)
-        return false
-    }
-}
-
-async function deleteBot(chartId, botId) {
-
-    const response = await deleteBotFromDB(chartId, botId)
-    if(response) {
-        const window = document.getElementById(chartId)
-        window.querySelector(`#botAccordion-${chartId} #accordion-bot-${botId}`).remove()
-    }
-
-}
-
-async function deleteBotFromDB(chartId, botId) {
-    
-    const result = await fetch('/api/deleteBot', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ chartId, botId })
-    }).then((res) => res.json())
-
-    if (result.status === 'ok') {
-        // everythign went fine
-        return true
-        
-    } else {
-        alert(result.error)
-        return false
-    }
-
-}
-
-async function uploadBotStatus(chartId, botId, status) {
-
-}
-
-async function uploadBotsStrategyOptions() {
-
+    return {strategy: container.querySelector(`select`).value, strategyOptions: customOptions}
 }
 
 (async function () {

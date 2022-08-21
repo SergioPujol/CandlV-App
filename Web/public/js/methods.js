@@ -72,9 +72,9 @@ async function registerUser(event) {
 
     if (result.status === 'ok') {
         // everythign went fine
-        alert('Success')
+        showSuccess('Registered')
     } else {
-        alert(result.error)
+        showError(result.error)
     }
 }
 
@@ -102,14 +102,43 @@ async function login(event) {
         // everythign went fine
         console.log('Got the token: ', result.data)
         localStorage.setItem('token', result.data)
-        alert('Success')
+        showSuccess('Logged')
         location.reload()
     } else {
-        alert(result.error)
+        showError(result.error)
     }
 }
 
 function showError(message) {
-    // TODO add toast message
-    console.log(message)
+    buildToast(message, 'Error', '#B53737');
+}
+
+function showSuccess(message) {
+    buildToast(message, 'Success', '#00FF00');
+}
+
+function buildToast(text, type, color) {
+    const div = document.createElement('div');
+    div.classList.add('temp-div-container', 'position-fixed', 'top-0', 'end-0', 'p-3');
+    div.style.zIndex = 11;
+    div.innerHTML = `
+        <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <svg class="bd-placeholder-img rounded me-2" width="20" height="20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="100%" height="100%" fill="${color}"></rect></svg>
+                <strong class="me-auto">${type}</strong>
+                <!--<small>Just now</small>-->
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                ${text}
+            </div>
+        </div>`
+    document.body.appendChild(div)
+    var toast = bootstrap.Toast.getOrCreateInstance(div.querySelector('.toast'))
+    toast.show();
+    setTimeout(()=> { 
+        toast.hide();
+        setTimeout(() => div.remove(), 1000)
+    }, 2500);
+
 }
