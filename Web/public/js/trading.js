@@ -79,14 +79,14 @@ async function createWindow() {
     const status = await createChartDB({
         chartId, chartOptions: { symbol: values.symbol, interval: values.interval }, minimized: false
     }, username_gbl)
-    console.log(status)
+    console.log('createChartDB', status)
     if(!status) return
 
     loadChartIntoHtml(chartId, values)
 
 }
 
-function loadChartIntoHtml(chartId, values) {
+async function loadChartIntoHtml(chartId, values) {
     const { window, minimizedChart, modal } = createHtmlWindow(chartId, values);
     document.querySelector('.charts-information').appendChild(window);
     document.querySelector('.charts-information > .minimized-charts').appendChild(minimizedChart);
@@ -133,7 +133,7 @@ function createHtmlWindow(chartId, options) {
             </div>
             </button>
 
-            <div class="collapse multi-collapse market-settings" id="window-${chartId}-data-market">
+            <div class="collapse multi-collapse market-settings show" id="window-${chartId}-data-market">
             <div class="d-flex flex-column">
                 <div class="d-flex flex-row align-items-center mb-2 symbol-select">
                     <span class="col-md-6">Symbol</span>
@@ -156,8 +156,8 @@ function createHtmlWindow(chartId, options) {
 
             <div class="collapse multi-collapse overflow-hidden bot-settings" id="window-${chartId}-data-bot">
                 <div class="overflow-auto">
-                <div class="accordion" id="botAccordion-${chartId}">
-                </div>
+                    <div class="accordion" id="botAccordion-${chartId}">
+                    </div>
                 </div>
                 <button class="btn btn-1 mt-2 add-bot" data-bs-toggle="modal" data-bs-target="#add-bot-modal-${chartId}">Add Bot</button>
             </div>
@@ -203,10 +203,17 @@ function createHtmlWindow(chartId, options) {
 
     const marketSettings = window.querySelector(`#window-${chartId}-data-market`);
 
-    marketSettings.querySelector('.symbol-select').appendChild(createSelectSymbol())
+    const symbolSelect = createSelectSymbol()
+    const intervalSelect = createSelectInterval()
+
+    marketSettings.querySelector('.symbol-select').appendChild(symbolSelect)
     marketSettings.querySelector('.symbol-select select').value = options.symbol.toLowerCase()
-    marketSettings.querySelector('.interval-select').appendChild(createSelectInterval())
+    
+    marketSettings.querySelector('.interval-select').appendChild(intervalSelect)
     marketSettings.querySelector('.interval-select select').value = options.interval
+
+    symbolSelect.addEventListener('change', (e) => updateChartOptions(chartId, { symbol: e.target.value, interval: intervalSelect.value }))
+    intervalSelect.addEventListener('change', (e) => updateChartOptions(chartId, { symbol: symbolSelect.value, interval: e.target.value }))
 
     const minimizedChart = document.createElement('div');
     minimizedChart.id = `window-${chartId}-minimized`
@@ -256,10 +263,10 @@ function addBotButtonAndModal(chartId) {
     strategySelect.addEventListener('change', updateModalWithStrategy(chartId, strategySelect.value));
 
     // once the button for creating a bot is clicked, send request to server DB and server Process, to add this bot
-    popup.querySelector('#addBot-button').addEventListener('click', () => createBot(chartId))
+    popup.querySelector('#addBot-button').addEventListener('click', async () => await createBot(chartId))
 }
 
-function createBot(chartId) { // what do I need? options from modal and Id of the chart for the 
+async function createBot(chartId) { // what do I need? options from modal and Id of the chart for the 
 
     // create bot id
     const botId = createId()
@@ -276,11 +283,9 @@ function createBot(chartId) { // what do I need? options from modal and Id of th
     const staticValuesContainer = addBotModalContainer.querySelector('.static-bot-values');
     const optionsContainer = addBotModalContainer.querySelectorAll('.container-strategy-options > div')
     
-    let customOptions = [];
+    let customOptions = {};
     optionsContainer.forEach(optionContainer => {
-        let temp_obj = {}
-        temp_obj[optionContainer.id] = optionContainer.querySelector('input').value;
-        customOptions.push(temp_obj)
+        customOptions[optionContainer.id] = optionContainer.querySelector('input').value;
     });
 
     const values = {
@@ -288,14 +293,22 @@ function createBot(chartId) { // what do I need? options from modal and Id of th
         strategy: staticValuesContainer.querySelector('select.strategies-select').value,
         custom: customOptions
     }
+    console.log(customOptions)
+
+    const status = await createBotDB({
+        botId, botName: values.name, botStrategy: values.strategy, botOptions: customOptions, botStatus: true
+    }, chartId)
+    console.log('CreateBotDB', status)
+    if(!status) return
+
     loadBotIntoHtml(chartId, botId, values)
 }
 
 function loadBotIntoHtml(chartId, botId, values) {
-    document.querySelector(`#botAccordion-${chartId}`).appendChild(createHtmlBot(botId,values))
+    document.querySelector(`#botAccordion-${chartId}`).appendChild(createHtmlBot(chartId,botId,values))
 }
 
-function createHtmlBot(botId, options) { 
+function createHtmlBot(chartId, botId, options) { 
     /**
      * options: {
      *  name: "",
@@ -308,6 +321,7 @@ function createHtmlBot(botId, options) {
      */
     let botHtml = document.createElement('div')
     botHtml.classList.add('accordion-item')
+    botHtml.id = `accordion-bot-${botId}`
     botHtml.innerHTML = `
     <h2 class="accordion-header" id="heading${botId}">
       <div class="accordion-button">
@@ -316,13 +330,13 @@ function createHtmlBot(botId, options) {
           <div class="form-check form-switch">
             <input class="form-check-input" type="checkbox" id="status-bot-${botId}" checked>
           </div>
-          <i class="bi bi-trash-fill"></i>
-          <i class="bi bi-caret-down-fill text-collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-bot-${botId}" aria-expanded="true" aria-controls="collapse-bot-${botId}" type="button"></i>
-          <i class="bi bi-caret-up-fill text-expanded" data-bs-toggle="collapse" data-bs-target="#collapse-bot-${botId}" aria-expanded="true" aria-controls="collapse-bot-${botId}" type="button"></i>
+          <i class="bi bi-trash-fill" data-bs-toggle="modal" data-bs-target="#modal-bot-${botId}"></i>
+          <i class="bi bi-caret-down-fill text-collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-bot-${botId}" aria-expanded="false" aria-controls="collapse-bot-${botId}" type="button"></i>
+          <i class="bi bi-caret-up-fill text-expanded" data-bs-toggle="collapse" data-bs-target="#collapse-bot-${botId}" aria-expanded="false" aria-controls="collapse-bot-${botId}" type="button"></i>
         </div>
       </div>
     </h2>
-    <div id="collapse-bot-${botId}" class="accordion-collapse collapse show p-2" aria-labelledby="heading${botId}" data-bs-parent="#botAccordion">
+    <div id="collapse-bot-${botId}" class="accordion-collapse collapse p-2" aria-labelledby="heading${botId}" data-bs-parent="#botAccordion-${chartId}">
       <div class="d-flex flex-column">
         <!--<div class="d-flex flex-row align-items-center mb-2">
           <span class="col-md-6">Name</span>
@@ -334,18 +348,38 @@ function createHtmlBot(botId, options) {
           </select>
         </div>
       </div>
+      <div class="d-flex flex-column">
+        <button class="btn btn-1 mt-2" id="save-bot-options-${botId}">Save Bot</button>
+      </div>
+    </div>
+    <div class="modal fade" id="modal-bot-${botId}" tabindex="-1" aria-labelledby="Modal-bot-${botId}Label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="Modal-bot-${botId}Label">Are you sure you want to delete Bot ${options.name}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-1" id="delete-bot-${botId}" data-bs-dismiss="modal">Delete</button>
+            </div>
+        </div>
+        </div>
     </div>`
     const strategySelect = botHtml.querySelector(`#strategy-select-bot-${botId}`)
     appendOptionsToStrategySelect(strategySelect)
     const collapseContainer = botHtml.querySelector(`#collapse-bot-${botId} > div`)
-    options.custom.forEach(object => {
-        const entries = Object.entries(object); // pos 0 name of input, pos 1 value of input
-        console.log(entries)
+
+    // DELETE BOT
+    botHtml.querySelector(`#delete-bot-${botId}`).addEventListener('click', () => deleteBot(chartId, botId))
+
+    console.log('options', options)
+    Object.keys(options.custom).forEach(objectKey => {
         let div = document.createElement('div');
         div.classList.add('d-flex','flex-row','align-items-center','mb-2');
         div.innerHTML =`
-        <span class="col-md-6">${entries[0][0]}</span>
-        <input class="col-md-6 form-control" type="text" value="${entries[0][1]}">
+        <span class="col-md-6">${objectKey}</span>
+        <input class="col-md-6 form-control" type="text" value="${options.custom[objectKey]}">
         `;
         collapseContainer.appendChild(div);
     })
@@ -364,6 +398,8 @@ function createSelectSymbol() {
         opt.innerHTML = symbol;
         select.appendChild(opt)
     })
+
+    // add select on change event listener
 
     return select
 }
@@ -442,9 +478,11 @@ async function loadChartsFromDB(username) {
     if (result.status === 'ok') {
         // everythign went fine
         console.log(result)
-        result.data.forEach(chart => {
-            loadChartIntoHtml(chart.chartId, chart.chartOptions)
+        result.data.forEach(async (chart) => {
+            await loadChartIntoHtml(chart.chartId, chart.chartOptions)
+            await loadBotsFromDB(chart.chartId)
         })
+        
         return true
         
     } else {
@@ -496,9 +534,94 @@ async function createBotDB(options, chartId) {
     }
 }
 
+async function loadBotsFromDB(chartId) {
+    
+     const result = await fetch('/api/getBots', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ chartId })
+    }).then((res) => res.json())
+
+    if (result.status === 'ok') {
+        // everythign went fine
+        console.log(result)
+        result.data.forEach(bot => {
+            //chartId, botId, values
+            loadBotIntoHtml(bot.chartId, bot.botId, { name: bot.name, strategy: bot.strategy, custom: bot.botOptions })
+        })
+        return true
+        
+    } else {
+        alert(result.error)
+        return false
+    }
+
+}
+
+async function updateChartOptions(chartId, options) {
+
+    const result = await fetch('/api/updateChart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ chartId, chartOptions: options })
+    }).then((res) => res.json())
+
+    if (result.status === 'ok') {
+        // everythign went fine
+        return true
+        
+    } else {
+        alert(result.error)
+        return false
+    }
+}
+
+async function deleteBot(chartId, botId) {
+
+    const response = await deleteBotFromDB(chartId, botId)
+    if(response) {
+        const window = document.getElementById(chartId)
+        window.querySelector(`#botAccordion-${chartId} #accordion-bot-${botId}`).remove()
+    }
+
+}
+
+async function deleteBotFromDB(chartId, botId) {
+    
+    const result = await fetch('/api/deleteBot', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ chartId, botId })
+    }).then((res) => res.json())
+
+    if (result.status === 'ok') {
+        // everythign went fine
+        return true
+        
+    } else {
+        alert(result.error)
+        return false
+    }
+
+}
+
+async function uploadBotStatus(chartId, botId, status) {
+
+}
+
+async function uploadBotsStrategyOptions() {
+
+}
+
 (async function () {
     console.log('check login status')
     const status = await checkLoginStatus()
     if(!status) location.href = 'home.html'
-    loadChartsFromDB(username_gbl)
+    await loadChartsFromDB(username_gbl)
 })();

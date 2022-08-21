@@ -77,6 +77,35 @@ app.post('/api/deleteChart', async (req, res) => {
 	}))
 })
 
+app.post('/api/updateChart', async (req, res) => {
+	return await res.json(await serverDBReq('chart', {
+		method: 'updateChart',
+		data: req.body
+	}))
+})
+
+app.post('/api/createBot', async (req, res) => {
+	return await res.json(await serverDBReq('bot', {
+		method: 'createBot',
+		data: req.body
+	}))
+})
+
+app.post('/api/deleteBot', async (req, res) => {
+	return await res.json(await serverDBReq('bot', {
+		method: 'deleteBot',
+		data: req.body
+	}))
+})
+
+app.post('/api/getBots', async (req, res) => {
+	return await res.json(await serverDBReq('bot', {
+		method: 'getBots',
+		data: req.body
+	}))
+})
+
+
 app.listen(port, () => console.log(`Server_DB listening on port ${port}!, http://localhost:${port}`));
 
 const serverDBReq = async (req, data) => {

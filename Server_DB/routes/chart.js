@@ -60,7 +60,7 @@ const getUserCharts = async (data) => {
 }
 
 const deleteChart = async (data) => {
-    console.log('getUserCharts')
+    console.log('deleteChart')
 
     const { username, chartId } = data;
     const chart_id = chartId;
@@ -68,7 +68,6 @@ const deleteChart = async (data) => {
     if(!user_id) {
         return { status: 'error', error: 'User not found' }
     }
-    console.log({ user_id, chart_id })
     try {
 		const response = await Chart.deleteOne({ user_id, chart_id })
         console.log('Chart deleted: ', response)
@@ -86,8 +85,40 @@ const deleteChart = async (data) => {
     return { status: 'ok' }
 }
 
+const updateChart = async (data) => {
+    console.log('updateChart')
+
+    try {
+		const response = await Chart.updateOne({ chart_id: data.chartId }, { chart_options: data.chartOptions })
+        console.log('Chart updated: ', response)
+        if(response.nModified == 0) {
+            return { status: 'error', error: 'Chart trying to update does not exist' }
+        }
+	} catch (error) {
+		if (error.code === 11000) {
+			// duplicate key
+			return { status: 'error', error: 'Chart could not be updated' }
+		}
+		throw error
+	}
+
+    return { status: 'ok' }
+}
+
+const getIdByChartId = async (chart_id) => {
+    console.log('getIdByChartId')
+	const chart = await Chart.findOne({ chart_id }).lean();
+	if (!chart) {
+		return false
+	}
+
+	return chart._id
+}
+
 module.exports = {
     createChart,
     getUserCharts,
-    deleteChart
+    deleteChart,
+    getIdByChartId,
+    updateChart
 }

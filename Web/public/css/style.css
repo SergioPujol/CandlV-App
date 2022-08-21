@@ -168,6 +168,10 @@ main .charts-information .window .data .bot-settings.collapse.show {
     align-items: center;
 }
 
+.bot-settings .accordion-button .accordion-button-container i, .bot-settings .accordion-button .accordion-button-container div {
+    cursor: pointer;
+}
+
 .bot-settings .accordion-button .accordion-button-container .accordion-button-container-span {
     flex: 1;
 }

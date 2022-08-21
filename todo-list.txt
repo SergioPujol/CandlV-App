@@ -1,0 +1,36 @@
+TODO LIST:
+
+WEB
+
+- *** on change of the chart options -> symbol or interval
+- delete button on bot, add functionality --> modal to confirm
+- slider status bot add functionality
+- button to save bot options
+- save function of bot options
+- trades html structure
+- notifications html structure
+- add loader image once loading values
+
+- add TradingView Chart Library into web
+
+- websocket structure to receive data into Web Server
+- websocket from Web Server to WEB ????? # I dont think its necessary, just do correspondent functions in server
+
+SERVER DB
+
+- on delete chart, delete bots related to that chart
+- update chart
+- delete bot
+- change status bot
+- structure to interact with server Process when bot CREATED, DELETED, UPDATED 
+- update bot options
+- trades Schema
+- notifications Schema
+
+SERVER PROCESS
+
+- structure to create Bots
+- function delete bot
+- function update bot
+
+- websocket structure to send data
