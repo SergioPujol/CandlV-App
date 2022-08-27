@@ -130,6 +130,10 @@ class ThreeEMA {
         this.decideAct(firstEMA, secondEMA, actualPrice)
     }
 
+    flow() {
+        
+    }
+
 }
 
 export { ThreeEMA }

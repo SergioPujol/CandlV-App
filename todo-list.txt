@@ -1,7 +1,7 @@
 TODO LIST:
 
 NEXT TASK:
- - 5, 17
+ - 
 
 task counter: 26
 
@@ -11,7 +11,7 @@ WEB
 - *** 2. delete button on bot, add functionality --> modal to confirm
 - *** 3. slider status bot add functionality
 - *** 4. add html button to save bot options
-- 5. save function of bot strategy custom options
+- *** 5. save function of bot strategy custom options
 - 24: on change strategy select --> change inputs of the strategy
 - 6. trades html structure
 - 7. notifications html structure
@@ -30,7 +30,7 @@ SERVER DB
 - *** 15. change status bot
 - 25: update bot strategy and custom options
 - 16. structure to interact with server Process when bot CREATED, DELETED, UPDATED 
-- 17. update bot custom strategy options
+- *** 17. update bot custom strategy options
 - 18. trades Schema
 - 19. notifications Schema
 
