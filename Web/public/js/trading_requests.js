@@ -5,7 +5,7 @@ function getSymbols() {
 }
 
 function getIntervals() {
-    return ['1m','3m','5m','15m','30m','1h','2h','4h','6h','8h','12h','1d','3d','1w','1M']
+    return [{label:'1m', value: '1'},{label:'3m', value: '3'},{label:'5m', value: '5'},{label:'15m', value: '15'},{label:'30m', value: '30'},{label:'1h', value: '60'},{label:'2h', value: '120'},{label:'3h', value: '180'},{label:'4h', value: '240'},{label:'1d', value: 'D'},{label:'1s', value: 'W'},]
 }
 
 function createId() {
@@ -152,6 +152,7 @@ async function updateChartOptions(chartId, options) {
 
     if (result.status === 'ok') {
         // everythign went fine
+        addTradingViewChart(chartId, options)
         return true
         
     } else {

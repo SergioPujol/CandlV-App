@@ -2,8 +2,8 @@ function minmaxWindows() {
     document.querySelectorAll('.window').forEach(window => {
         let id = window.id
         document.getElementById(`window-${id}-chart-menu`).querySelector('button').onclick = ()=>{
-            if(document.getElementById(`${id}-data`).classList.contains('hide-data')) document.getElementById(`window-${id}-data`).classList.remove('hide-data')
-            else document.getElementById(`${id}-data`).classList.add('hide-data')        
+            if(document.getElementById(`window-${id}-data`).classList.contains('hide-data')) document.getElementById(`window-${id}-data`).classList.remove('hide-data')
+            else document.getElementById(`window-${id}-data`).classList.add('hide-data')        
         }
     
         document.getElementById(`window-${id}-chart-options-close`).onclick = async ()=>{
@@ -46,7 +46,7 @@ function appendOptionsToStrategySelect(element) {
 
 function updateModalWithStrategy(chartId, strategy) {
     console.log(chartId, strategy)
-    const strategyContainer = document.querySelector(`#${chartId} #add-bot-modal-${chartId} .container-strategy-options`);
+    const strategyContainer = document.querySelector(`#add-bot-modal-${chartId} .container-strategy-options`);
     const strategyOptions = strategies[strategy]
 
     Object.keys(strategyOptions).forEach(option => {
@@ -82,7 +82,7 @@ async function createWindow() {
     console.log('createChartDB', status)
     if(!status) return
 
-    loadChartIntoHtml(chartId, values)
+    await loadChartIntoHtml(chartId, values)
 
 }
 
@@ -95,6 +95,25 @@ async function loadChartIntoHtml(chartId, values) {
     addBotButtonAndModal(chartId)
 
     minmaxWindows()
+    addTradingViewChart(chartId, values)
+}
+
+function addTradingViewChart(chartId, valuesChart) {
+    new TradingView.widget(
+        {
+            "autosize": true,
+            "symbol": `BINANCE:${valuesChart.symbol}`,
+            "interval": valuesChart.interval,
+            "timezone": "Etc/UTC",
+            "theme": "dark",
+            "style": "1",
+            "locale": "es",
+            "toolbar_bg": "#f1f3f6",
+            "enable_publishing": false,
+            "allow_symbol_change": true,
+            "container_id": `tradingview_${chartId}`
+        }
+    );
 }
 
 function createHtmlWindow(chartId, options) {
@@ -104,22 +123,27 @@ function createHtmlWindow(chartId, options) {
     window.innerHTML = `
         <div id="window-${chartId}-chart" class="chart flex-grow-1">
         <div id="window-${chartId}-chart-buttons" class="chart-buttons">
-            <div class="chart-menu" id="window-${chartId}-chart-menu">
-            <button type="button" class="btn btn-2">
-                <i class="bi bi-list"></i>
-            </button>
-            </div>
             <div class="chart-options" id="window-${chartId}-chart-options">
-            <button type="button" class="btn btn-2" data-bs-toggle="modal" data-bs-target="#modal-${chartId}">
-                <i class="bi bi-x"></i>
-            </button>
-            <button type="button" class="btn btn-2" id="window-${chartId}-chart-options-minimize">
-                <i class="bi bi-dash"></i>
-            </button>
+                <button type="button" class="btn btn-2" data-bs-toggle="modal" data-bs-target="#modal-${chartId}">
+                    <i class="bi bi-x"></i>
+                </button>
+                <button type="button" class="btn btn-2" id="window-${chartId}-chart-options-minimize">
+                    <i class="bi bi-dash"></i>
+                </button>
+            </div>
+            <div class="chart-menu" id="window-${chartId}-chart-menu">
+                <button type="button" class="btn btn-2">
+                    <i class="bi bi-list"></i>
+                </button>
             </div>
         </div>
         
-        <div class="position-absolute top-50 start-50 translate-middle"><h1 style="color: white;">Chart ${chartId}</h1></div>
+        <!-- TradingView Widget BEGIN -->
+        <div class="tradingview-widget-container">
+            <div id="tradingview_${chartId}"></div>
+            <div class="tradingview-widget-copyright"><a href="https://es.tradingview.com/symbols/BTCUSDT/?exchange=BINANCE" rel="noopener" target="_blank"><span class="blue-text">BTCUSDT Gráfico</span></a> por TradingView</div>
+        </div>
+        <!-- TradingView Widget END -->
         
         </div>
         <div id="window-${chartId}-data" class="data d-flex flex-column">
@@ -253,7 +277,7 @@ function createHtmlWindow(chartId, options) {
 // Add Bot button
 function addBotButtonAndModal(chartId) {
     // acced to the chart window and then to the Add Bot popup
-    const popup = document.querySelector(`#${chartId} #add-bot-modal-${chartId}`);
+    const popup = document.getElementById(`add-bot-modal-${chartId}`);
 
     // TODO automatic way for the moment, will be added 2EMA
     
@@ -420,8 +444,8 @@ function createSelectInterval() {
     const intervals = getIntervals();
     intervals.forEach(interval => {
         let opt = document.createElement('option');
-        opt.value = interval;
-        opt.innerHTML = interval;
+        opt.value = interval.value;
+        opt.innerHTML = interval.label;
         select.appendChild(opt)
     })
 

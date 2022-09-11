@@ -127,4 +127,3 @@ const serverDBReq = async (req, data) => {
 	if(res.statusCode == 200) return JSON.parse(res.body)
 	return { status: 'error', error: 'Server not available' }
 }
-
