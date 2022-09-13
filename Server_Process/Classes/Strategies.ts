@@ -1,9 +1,11 @@
 import { EMA } from "./EMA"
 import { Candle } from "./Candle"
 import { Utils } from "./Utils";
+import { BinanceAPI } from "../Requests/BinanceAPI";
 const utils = new Utils();
+const binanceAPI = new BinanceAPI();
 
-class ThreeEMA {
+class DoubleEMA {
 
     private lastCallPrice: string = '0'; // not the same as cross
 
@@ -130,10 +132,29 @@ class ThreeEMA {
         this.decideAct(firstEMA, secondEMA, actualPrice)
     }
 
-    flow() {
-        
+    async flow(symbol: string, interval: string, limit: string, botOptions: any) {
+        const periods: Array<number> = botOptions.period
+        const candles = await binanceAPI.getCandlelist(symbol, interval, limit);
+        var EMAs: Array<EMA> = [];
+
+        periods.forEach(period => {
+            let previousEma = this.calculateSMA(candles, period)
+            let multiplicator = this.calculateMultiplicator(period);
+            let listEMAs: Array<{ EMA: number, date: number }> = [];
+            for (let ind = 0; ind < (parseInt(limit) - period); ind++) {
+                let actualCandel = candles[ind + period];
+                let ema = this.calculateEMA(previousEma, multiplicator, actualCandel.getClose())
+                listEMAs.push({ EMA: ema, date: actualCandel.getOpenTime() })
+                previousEma = ema
+            }
+
+            EMAs.push(new EMA(listEMAs, period))
+        });
+
+        const actualPrice = candles[candles.length-1].getClose()
+        this.updateSignal(EMAs[0], EMAs[1], actualPrice)
     }
 
 }
 
-export { ThreeEMA }
+export { DoubleEMA }

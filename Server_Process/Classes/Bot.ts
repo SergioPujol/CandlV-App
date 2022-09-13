@@ -1,3 +1,6 @@
+import { DoubleEMA } from './Strategies'
+const doubleEMA = new DoubleEMA();
+
 class Bot {
 
     //APIKey: string;
@@ -7,26 +10,34 @@ class Bot {
     botOptions: any = {};
     symbol: string = '';
     interval: string = '';
+    limit: string = '400';
 
     botInterval: NodeJS.Timer | undefined;
 
-    constructor(_id: string/*, _strategy, _status, _botOptions, _symbol, _interval*/) {
+    constructor(_id: string, _symbol, _interval, _strategy, /*_status,*/ _botOptions) {
         this.id = _id;
         this.status = false;
-        /*this.strategy = _strategy;
+        this.strategy = _strategy;
         this.botOptions = _botOptions;
         this.symbol = _symbol;
-        this.interval = _interval;*/
+        this.interval = _interval;
 
         this.botInterval;
     }
 
-    startBot() {
+    async startBot() {
         console.log(`${this.getId()} - bot started`)
+        let temporary_interval = 1
+        await this.waitStart(temporary_interval);
         this.resumeBot()
         this.botInterval = setInterval(()=>{
-            if(this.getStatus()) console.log(`${this.getId()} - bot running`)
-        }, 2500) // change this time 
+            if(this.getStatus()) this.selectStrategy(this.strategy)!.flow(this.symbol, this.interval, this.limit, this.botOptions)
+        }, temporary_interval*60) // change this time 
+    }
+
+    async waitStart(intervalMins: number) {
+        var time = new Date(), timeRemaining = (intervalMins * 60 - time.getSeconds()) * intervalMins * 1000 + 200; //200 ms added to make sure is next Kandle
+        console.log(`Waiting ${timeRemaining/1000} seconds to start`)
     }
 
     resumeBot() {
@@ -51,6 +62,15 @@ class Bot {
 
     getId() {
         return this.id
+    }
+
+    selectStrategy(strategy: string) {
+        console.log(`${this.getId()} - bot running`)
+        switch (strategy) {
+            case 'DEMA':
+                return doubleEMA
+        }
+
     }
 
 }

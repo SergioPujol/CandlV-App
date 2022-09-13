@@ -115,10 +115,32 @@ const getIdByChartId = async (chart_id) => {
 	return chart._id
 }
 
+const getUserIdByChartId = async (chart_id) => {
+    console.log('getUserIdByChartId')
+	const chart = await Chart.findOne({ chart_id }).lean();
+	if (!chart) {
+		return false
+	}
+
+	return chart.user_id
+}
+
+const getChartParamsByChartId = async (chart_id) => {
+    console.log('getUserIdByChartId')
+	const chart = await Chart.findOne({ chart_id }).lean();
+	if (!chart) {
+		return false
+	}
+
+	return chart.chartOptions
+}
+
 module.exports = {
     createChart,
     getUserCharts,
     deleteChart,
     getIdByChartId,
-    updateChart
+    updateChart,
+    getUserIdByChartId,
+    getChartParamsByChartId
 }

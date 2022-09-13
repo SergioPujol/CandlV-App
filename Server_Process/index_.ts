@@ -30,7 +30,7 @@ class App {
 
             candleList = data.map((list: []) => new Candle(list))
 
-            EMAs = []; 
+            EMAs = [];
 
             // for get array of new EMA 's objects + previous values for each
 

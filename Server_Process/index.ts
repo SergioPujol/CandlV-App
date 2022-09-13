@@ -2,7 +2,8 @@
 import { processBot } from './processBot'
 import { ServerDB } from './Servers/serverDB'
 
-const serverDB = new ServerDB()
+const bots = new processBot()
+const serverDB = new ServerDB(bots)
 serverDB.start()
 
 // TODO
@@ -13,7 +14,6 @@ serverDB.start()
 // stop
 // deleteBot
 
-const bots = new processBot()
 
 const delay = (ms:any) => new Promise((resolve) => setTimeout(resolve, ms));
 

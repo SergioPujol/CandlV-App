@@ -1,5 +1,6 @@
 const Bot = require('../model/bot');
-const Chart = require('./chart')
+const Chart = require('./chart');
+const ServerProcess = require('../connections/serverProcess');
 const _ = require('lodash');
 
 /**
@@ -16,9 +17,9 @@ const _ = require('lodash');
     const { botId, botName, botStrategy, botOptions, botStatus, chartId } = data;
     
     const chart_id_relation = await Chart.getIdByChartId(chartId)
-    if(!chart_id_relation) {
-        return { status: 'error', error: 'Chart not found' }
-    }
+    const user_id = await Chart.getUserIdByChartId(chartId)
+    if(!chart_id_relation) return { status: 'error', error: 'Chart not found' }
+    else if(!user_id) return { status: 'error', error: 'User not found' }
 
     try {
 		const response = await Bot.create({
@@ -39,7 +40,13 @@ const _ = require('lodash');
 		throw error
 	}
 
-	return { status: 'ok' }
+	// create bot in server process
+	// if status true from serverProcess, return status 'ok'
+	const chartParams = await Chart.getChartParamsByChartId(chartId) // { symbol, interval }
+	const serverProcessRes = ServerProcess.sendCreateBot({user_id, bot_id: botId, bot_params: { status: botStatus, ...chartParams, strategy: botStrategy }, bot_options: botOptions})
+
+	if(serverProcessRes) return { status: 'ok' }
+	return { status: 'error', error: 'Bot could not be created' }
 
 }
 

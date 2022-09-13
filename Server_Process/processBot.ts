@@ -8,13 +8,19 @@ class processBot {
         this.bots;
     }
 
-    addBot(user_id: string, bot_id: string, bot: any) {
-        if(!this.bots[user_id]) this.bots[user_id] = {}
-        this.bots[user_id][bot_id] = new Bot(bot_id);
-        this.bots[user_id][bot_id].startBot()
+    addBot(user_id: string, bot_id: string, { status, symbol, interval, strategy }, botOptions: any) {
+        try {
+            if(!this.bots[user_id]) this.bots[user_id] = {}
+            this.bots[user_id][bot_id] = new Bot(bot_id, symbol, interval, strategy, botOptions);
+            this.bots[user_id][bot_id].startBot()
+        } catch (error) {
+            console.log(`Error creating bot ${bot_id} for user ${user_id}`)
+            return false
+        }
     }
 
     deleteBot(user_id: string, bot_id: string) {
+        this.bots[user_id][bot_id].deleteBot();
         delete this.bots[user_id][bot_id];
         if(Object.keys(this.bots[user_id].length == 0)) delete this.bots[user_id];
     }
