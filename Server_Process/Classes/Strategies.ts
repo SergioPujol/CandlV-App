@@ -9,6 +9,8 @@ class DoubleEMA {
 
     private lastCallPrice: string = '0'; // not the same as cross
 
+    private botId: string = ''
+
     private state: 'None' | 'InLong' | 'InShort' = 'None';
     private signal: 'hold' | 'buy' | 'sell' | 'abortLong' | 'abortShort' | 'awaitEntry' = 'hold';
 
@@ -82,32 +84,32 @@ class DoubleEMA {
             // Exit Long
             this.state = 'None';
             const percentage = this.getPercentageFromLastCross(actualPrice)
-            utils.logEnterExit(`Exit Long - ${actualPrice}`)
-            percentage.includes('-') ? utils.logFailure(`Exit long with ${percentage}`) : utils.logSuccess(`Exit long with ${percentage}`)
+            utils.logEnterExit(`#${this.botId} // Exit Long - ${actualPrice}`)
+            percentage.includes('-') ? utils.logFailure(`#${this.botId} // Exit long with ${percentage}`) : utils.logSuccess(`#${this.botId} // Exit long with ${percentage}`)
             this.updateSignal(firstEMA, secondEMA, actualPrice)
         } else if(this.state == 'InShort' && this.signal == 'abortShort') {
             // Exit Short
             this.state = 'None';
             const percentage = this.getPercentageFromLastCross(actualPrice)
-            utils.logEnterExit(`Exit Short - ${actualPrice}`)
-            percentage.includes('-') ? utils.logSuccess(`Exit short with ${percentage}`) : utils.logFailure(`Exit short with ${percentage}`)
+            utils.logEnterExit(`#${this.botId} // Exit Short - ${actualPrice}`)
+            percentage.includes('-') ? utils.logSuccess(`#${this.botId} // Exit short with ${percentage}`) : utils.logFailure(`#${this.botId} // Exit short with ${percentage}`)
             this.updateSignal(firstEMA, secondEMA, actualPrice)
         } else if(this.state == 'None' && this.signal == 'buy') {
             // Go Long
             this.state = 'InLong';
             this.lastCallPrice = actualPrice
-            utils.logEnterExit(`Go Long - ${actualPrice}`)
+            utils.logEnterExit(`#${this.botId} // Go Long - ${actualPrice}`)
         } else if(this.state == 'None' && this.signal == 'sell') {
             // Go Short
             this.state = 'InShort';
             this.lastCallPrice = actualPrice
-            utils.logEnterExit(`Go Short - ${actualPrice}`)
+            utils.logEnterExit(`#${this.botId} // Go Short - ${actualPrice}`)
         } else if((this.state == 'InLong' || this.state == 'InShort') && this.signal == 'hold') {
-            utils.logInfo(`Hold state - ${actualPrice}`)
+            utils.logInfo(`#${this.botId} // Hold state - ${actualPrice}`)
         } else if(this.state == 'None' && (this.signal == 'hold' || this.signal == 'awaitEntry')) {
-            utils.logInfo(`Await entry - ${actualPrice}`)
+            utils.logInfo(`#${this.botId} // Await entry - ${actualPrice}`)
         } else {
-            utils.logFailure('Something went wrong on deciding the action')
+            utils.logFailure(`#${this.botId} // Something went wrong on deciding the action`)
         }
         
     }
@@ -132,8 +134,10 @@ class DoubleEMA {
         this.decideAct(firstEMA, secondEMA, actualPrice)
     }
 
-    async flow(symbol: string, interval: string, limit: string, botOptions: any) {
-        const periods: Array<number> = botOptions.period
+    async flow(id: string, symbol: string, interval: string, limit: string, botOptions: any) {
+        this.botId = id
+        console.log(`${id} - Flow DEMA`)
+        const periods: Array<number> = [parseInt(botOptions.ema_short_period), parseInt(botOptions.ema_long_period)]//botOptions.period
         const candles = await binanceAPI.getCandlelist(symbol, interval, limit);
         var EMAs: Array<EMA> = [];
 
@@ -142,7 +146,7 @@ class DoubleEMA {
             let multiplicator = this.calculateMultiplicator(period);
             let listEMAs: Array<{ EMA: number, date: number }> = [];
             for (let ind = 0; ind < (parseInt(limit) - period); ind++) {
-                let actualCandel = candles[ind + period];
+                let actualCandel: Candle = candles[ind + period];
                 let ema = this.calculateEMA(previousEma, multiplicator, actualCandel.getClose())
                 listEMAs.push({ EMA: ema, date: actualCandel.getOpenTime() })
                 previousEma = ema

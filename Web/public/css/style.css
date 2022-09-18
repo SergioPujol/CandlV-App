@@ -203,7 +203,9 @@ main .charts-information .window .data .bot-settings.collapse.show {
     left: 5px;*/
 }
 
-
+.toast  {
+    z-index: 99999;
+}
 
 .window .chart .chart-menu {
     /*position: absolute;

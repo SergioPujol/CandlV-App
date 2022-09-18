@@ -132,7 +132,7 @@ const getChartParamsByChartId = async (chart_id) => {
 		return false
 	}
 
-	return chart.chartOptions
+	return chart.chart_options
 }
 
 module.exports = {

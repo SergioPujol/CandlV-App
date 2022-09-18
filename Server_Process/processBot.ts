@@ -8,11 +8,13 @@ class processBot {
         this.bots;
     }
 
-    addBot(user_id: string, bot_id: string, { status, symbol, interval, strategy }, botOptions: any) {
+    async addBot(user_id: string, bot_id: string, { status, symbol, interval, strategy }: any, botOptions: any) {
+        console.log('addBot',user_id, bot_id, { status, symbol, interval, strategy }, botOptions )
         try {
             if(!this.bots[user_id]) this.bots[user_id] = {}
             this.bots[user_id][bot_id] = new Bot(bot_id, symbol, interval, strategy, botOptions);
             this.bots[user_id][bot_id].startBot()
+            return true
         } catch (error) {
             console.log(`Error creating bot ${bot_id} for user ${user_id}`)
             return false
@@ -20,9 +22,15 @@ class processBot {
     }
 
     deleteBot(user_id: string, bot_id: string) {
-        this.bots[user_id][bot_id].deleteBot();
-        delete this.bots[user_id][bot_id];
-        if(Object.keys(this.bots[user_id].length == 0)) delete this.bots[user_id];
+        try {
+            this.bots[user_id][bot_id].deleteBot();
+            delete this.bots[user_id][bot_id];
+            if(Object.keys(this.bots[user_id].length == 0)) delete this.bots[user_id];
+            return true
+        } catch (error) {
+            console.log(`Error deleting bot ${bot_id} for user ${user_id}`)
+            return false
+        }
     }
 
     stopBot(user_id: string, bot_id: string) {

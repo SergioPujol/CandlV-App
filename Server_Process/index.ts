@@ -15,7 +15,7 @@ serverDB.start()
 // deleteBot
 
 
-const delay = (ms:any) => new Promise((resolve) => setTimeout(resolve, ms));
+/*const delay = (ms:any) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const tests = [{userId: 'user1', botId: 'bot1'}, {userId: 'user2', botId: 'bot2'}, {userId: 'user3', botId: 'bot3'}];
 
@@ -30,5 +30,5 @@ const tests = [{userId: 'user1', botId: 'bot1'}, {userId: 'user2', botId: 'bot2'
     await delay(1500)
     let botToStop = tests[1]
     bots.stopBot(botToStop.userId,botToStop.botId)
-})();
+})();*/
 
