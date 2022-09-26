@@ -197,6 +197,10 @@ main .charts-information .window .data .bot-settings.collapse.show {
     padding: 5px 10px 5px 5px;
 }
 
+.buy-sell-buttons {
+    margin-top: auto;
+}
+
 .window .chart .chart-options {
     /*position: absolute;
     top: 5px;
@@ -275,15 +279,48 @@ main .charts-information .window .data .bot-settings.collapse.show {
 }
 
 #trades {
-    width: 45%;
-    padding: 10px;
+    width: 90%;
+    padding: 10px 10px 0 10px;
     border-right: 2px solid var(--white-color);
+    overflow-y: auto;
+}
+
+.trades-notificacions #trades div.trade {
+    border-radius: 10px;
+    background-color: var(--tertiary-color);
+    color: var(--white-color);
+    margin-bottom: 5px;
+}
+
+.trades-notificacions #trades div.trade .main-info {
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    padding: 10px;
+    align-items: center;
+}
+
+.trades-notificacions #trades div.trade .collapsed-info > div {
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    border-top: 1px solid white;
+    align-items: center;
+    padding: 10px;
+}
+
+.trades-notificacions #trades div.trade .collapsed-info > div .trade-chart-info {
+    
+}
+
+.trades-notificacions #trades div.trade .collapsed-info > div .trade-bot-info {
+    margin-left: 10px;
 }
 
 #notifications {
-    width: 45%;
+    /*width: 45%;
     padding: 10px;
-    border-right: 2px solid var(--white-color);
+    border-right: 2px solid var(--white-color);*/
 }
 
 #add-chart {

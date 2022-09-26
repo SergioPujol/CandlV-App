@@ -18,9 +18,9 @@
         </a>
 
         <ul class="nav col-12 col-md-auto me-lg-auto mb-2 justify-content-center mb-md-0 mx-auto">
-          <li><a href="home.html" class="px-4 selected">Home</a></li>
+          <li><a href="home.html" class="px-4">Home</a></li>
           <li><a href="trading.html" class="px-4">Trading</a></li>
-          <li><a href="simulation.html" class="px-4">Simulation</a></li>
+          <li><a href="simulation.html" class="px-4 selected">Simulation</a></li>
           <li><a href="#" class="px-4">Dashboard</a></li>
         </ul>
 
@@ -44,7 +44,9 @@
   </header>
 
   <main class="flex-grow-1">
-
+    <input type="datetime-local" id="meeting-time"
+       name="meeting-time" value="2018-06-12T19:30"
+       min="2018-06-07T00:00" max="2018-06-14T00:00">
   </main>
 
   <div id="login-register-modals">
@@ -92,7 +94,7 @@
   </div>
 
   <script src="../js/methods.js"></script>
-  <script src="../js/home.js"></script>
+  <script src="../js/simulation.js"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
 

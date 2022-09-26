@@ -186,6 +186,11 @@ function createHtmlWindow(chartId, options) {
                 <button class="btn btn-1 mt-2 add-bot" data-bs-toggle="modal" data-bs-target="#add-bot-modal-${chartId}">Add bot</button>
             </div>
         </div>
+
+        <div class="buy-sell-buttons d-flex flex-row align-items-center mb-2" id="buy-sell-${chartId}-buttons">
+            <button class="col-md-6 btn btn-2">BUY</button>
+            <button class="col-md-6 btn btn-2">SELL</button>
+        </div>
         
         </div>
 
