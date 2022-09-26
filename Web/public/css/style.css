@@ -329,3 +329,15 @@ main .charts-information .window .data .bot-settings.collapse.show {
     justify-content: center;
     color: var(--white-color);
 }
+
+/** SIMULATION **/
+
+.simulation-info {
+    height: 100px;
+    padding: 20px;
+    color: var(--white-color);
+}
+
+.simulation-content {
+    height: calc(100% - 100px);
+}

@@ -99,7 +99,7 @@ async function loadChartIntoHtml(chartId, values) {
 }
 
 function addTradingViewChart(chartId, valuesChart) {
-    new TradingView.widget(
+    const widget = new TradingView.widget(
         {
             "autosize": true,
             "symbol": `BINANCE:${valuesChart.symbol}`,
@@ -114,6 +114,11 @@ function addTradingViewChart(chartId, valuesChart) {
             "container_id": `tradingview_${chartId}`
         }
     );
+    
+    /*setTimeout(()=>{
+        widget.activeChart().createStudy('Moving Average Exponential', false, false, { length: 3 })
+        widget.activeChart().createStudy('Moving Average Exponential', false, false, { length: 6 })
+    },2000)*/
 }
 
 function createHtmlWindow(chartId, options) {
