@@ -200,39 +200,39 @@ function createHtmlWindow(chartId, options) {
         </div>
 
         <div class="modal fade" id="add-bot-modal-${chartId}" tabindex="-1" aria-labelledby="Modal${chartId}Label" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="botModal${chartId}Label">Create bot</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- MODAL BODY FOR THE CREATION OF THE BOT -->
-                <div class="static-bot-values">
-
-                    <!-- container with the name and strategy to select -->
-                    <div class="d-flex flex-row align-items-center mb-2">
-                        <span class="col-md-6">Name</span>
-                        <input class="col-md-6 form-control" type="text" placeholder="Bot name">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="botModal${chartId}Label">Create bot</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="d-flex flex-row align-items-center mb-2">
-                        <span class="col-md-6">Strategy</span>
-                        <select class="col-md-6 form-select strategies-select">
-                        <!-- <option value="2EMA" selected>2EMA</option>-->
-                        </select>
-                    </div>
+                    <div class="modal-body">
+                        <!-- MODAL BODY FOR THE CREATION OF THE BOT -->
+                        <div class="static-bot-values">
 
+                            <!-- container with the name and strategy to select -->
+                            <div class="d-flex flex-row align-items-center mb-2">
+                                <span class="col-md-6">Name</span>
+                                <input class="col-md-6 form-control" type="text" placeholder="Bot name">
+                            </div>
+                            <div class="d-flex flex-row align-items-center mb-2">
+                                <span class="col-md-6">Strategy</span>
+                                <select class="col-md-6 form-select strategies-select">
+                                <!-- <option value="2EMA" selected>2EMA</option>-->
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="container-strategy-options d-flex flex-column">
+                        <!-- container configurable depending on the strategy -->
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="addBot-button">Add bot</button>
+                    </div>
                 </div>
-                <div class="container-strategy-options d-flex flex-column">
-                <!-- container configurable depending on the strategy -->
-                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="addBot-button">Add bot</button>
-            </div>
-            </div>
-        </div>
         </div>`
 
     const marketSettings = window.querySelector(`#window-${chartId}-data-market`);

@@ -46,46 +46,83 @@
   <main class="flex-grow-1">
     <!-- SIMULATION INFO -->
     <div class="simulation-info d-flex">
-      <div class="d-flex flex-row align-items-center">
-        <span class="col-md-6">From</span>
-      </div>
-      <input type="datetime-local" id="from-time"
-      name="from-time">
-      <div class="d-flex flex-row align-items-center">
-        <span class="col-md-6">To</span>
-      </div>
-      <input type="datetime-local" id="to-time"
-      name="to-time">
-      <div class="d-flex flex-row align-items-center">
-        <span class="col-md-6">Symbol</span>
-        <select class="col-md-6 form-select" id="add-chart-symbol">
-          <option value="btcusdt" selected>BTCUSDT</option>
-          <option value="ethusdt">ETHUSDT</option>
-          <option value="bnbusdt">BNBUSDT</option>
-        </select>
-      </div>
-      <div class="d-flex flex-row align-items-center">
-        <span class="col-md-6">Interval</span>
-        <select class="col-md-6 form-select" id="add-chart-interval">
-          <option value="1">1m</option>
-          <option value="3">3m</option>
-          <option value="5" selected>5m</option>
-          <option value="15">15m</option>
-          <option value="30">30m</option>
-          <option value="60">1h</option>
-          <option value="120">2h</option>
-          <option value="180">3h</option>
-          <option value="240">4h</option>
-          <option value="D">1d</option>
-          <option value="W">1s</option>
-        </select>
+      <div id="simulation-chart-options" class="col-md-8 d-flex flex-row">
+        <div class="d-flex flex-row align-items-center col-md-3">
+          <span>From</span>
+          <input type="datetime-local" id="from-time"
+          name="from-time">
+        </div>
+        <div class="d-flex flex-row align-items-center col-md-3">
+          <span>To</span>
+          <input type="datetime-local" id="to-time"
+          name="to-time">
+        </div>
+        <div class="d-flex flex-row align-items-center col-md-3">
+          <span>Symbol</span>
+          <select id="add-chart-symbol">
+            <option value="btcusdt" selected>BTCUSDT</option>
+            <option value="ethusdt">ETHUSDT</option>
+            <option value="bnbusdt">BNBUSDT</option>
+          </select>
+        </div>
+        <div class="d-flex flex-row align-items-center col-md-3">
+          <span>Interval</span>
+          <select id="add-chart-interval">
+            <option value="1">1m</option>
+            <option value="3">3m</option>
+            <option value="5" selected>5m</option>
+            <option value="15">15m</option>
+            <option value="30">30m</option>
+            <option value="60">1h</option>
+            <option value="120">2h</option>
+            <option value="180">3h</option>
+            <option value="240">4h</option>
+            <option value="D">1d</option>
+            <option value="W">1s</option>
+          </select>
+        </div>
       </div>
 
       <!-- BOT TO ADD TO SIMULATION -->
+      <div id="simulation-bot-options" class="col-md-2 d-flex flex-row">
+          <button class="btn btn-2" id="open-bot-options" data-bs-toggle="modal" data-bs-target="#add-bot-modal-simulation">Open Bot Options</button>
 
+          <div class="modal fade" id="add-bot-modal-simulation" tabindex="-1" aria-labelledby="ModalSimulationLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="botModalSimulationLabel">Configure bot for simulation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- MODAL BODY FOR THE CREATION OF THE BOT -->
+                        <div class="static-bot-values">
+
+                            <div class="d-flex flex-row align-items-center mb-2">
+                                <span class="col-md-6">Strategy</span>
+                                <select class="col-md-6 form-select strategies-select">
+                                <!-- <option value="2EMA" selected>2EMA</option>-->
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="container-strategy-options d-flex flex-column">
+                        <!-- container configurable depending on the strategy -->
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="saveBot-button">Save Bot</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
 
       <!-- ADD BUTTON -->
-      <button id="add-chart-simulation">Start Simulation</button>
+      <div id="simulation-add-button" class="col-md-2">
+        <button id="add-chart-simulation" class="btn btn-1">Start Simulation</button>
+      </div>
     </div>
     
 
@@ -93,9 +130,7 @@
 
       <!-- SIMULATION CHART -->
       <div class="simulation-chart col-md-9">
-        <div id="tv_chart_container">
-          <!-- This div will contain the Charting Library widget. -->
-        </div>
+        <div id="tv_chart_container"></div>
       </div>
 
       <!-- SIMULATED TRADES -->
@@ -156,8 +191,8 @@
     type="text/javascript"
     src="TradingView/charting_library/charting_library/charting_library.js">
   </script>
-  <script src="../js/methods.js"></script>
-  <script type="module" src="../js/simulation.js"></script>
+  <script src="./js/methods.js"></script>
+  <script type="module" src="./js/simulation.js"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
 
