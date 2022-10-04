@@ -119,6 +119,10 @@ app.post('/api/getBots', async (req, res) => {
 	}))
 })
 
+// Post Server Process for the simulation
+app.post('/api/simulation', async (req, res) => {
+	
+})
 
 app.listen(port, () => console.log(`Server_DB listening on port ${port}!, http://localhost:${port}`));
 

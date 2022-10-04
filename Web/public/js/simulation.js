@@ -10,19 +10,23 @@ const strategies = {
     }
 }
 
-var botOptions = {}
+var botOpts = {}
 
 function generateChart() {
 
     // check for values before -> if any is null throwError
+    if(!document.getElementById('to-time').value || !document.getElementById('from-time').value) {
+        showError('Time fields have to be filled')
+        return
+    }
 
-    const timeframe = Math.ceil((new Date(document.getElementById('to-time').value).getTime()/1000 - new Date(document.getElementById('from-time').value).getTime()/1000)/3600)
-    console.log(timeframe)
+    //const timeframe = Math.ceil((new Date(document.getElementById('to-time').value).getTime()/1000 - new Date(document.getElementById('from-time').value).getTime()/1000)/3600)
 
     const widget = window.tvWidget = new TradingView.widget({
-        symbol: 'ETHUSDT', // default symbol
-        interval: '5', // default interval
-        timeframe: `${timeframe}H`,
+        symbol: document.getElementById('add-chart-symbol').value.toUpperCase(), // default symbol
+        interval: document.getElementById('add-chart-interval').value, // default interval
+        //timeframe: `${timeframe}H`,
+        timezone: 'Europe/Madrid',
         fullscreen: false, // displays the chart in the fullscreen mode
         container: 'tv_chart_container',
         datafeed: Datafeed,
@@ -31,11 +35,33 @@ function generateChart() {
         library_path: '../TradingView/charting_library/charting_library/',
     });
 
+
     setTimeout(()=>{
-        widget.activeChart().createStudy('Moving Average Exponential', false, false, { length: 3 })
-        widget.activeChart().createStudy('Moving Average Exponential', false, false, { length: 6 })
+        widget.activeChart().setVisibleRange({
+            from: new Date(document.getElementById('from-time').value).getTime()/1000,
+            to: new Date(document.getElementById('to-time').value).getTime()/1000
+        });
+        addStudies(widget)
     },2000)
 
+}
+
+function addStudies(widget) {
+    /**Add studies depending the strategy selected and options for the strategy */
+    const {botStrategy, botOptions} = botOpts
+
+    switch(botStrategy) {
+        case '2EMA':
+    
+            Object.keys(botOptions).forEach((opt) => {
+                console.log()
+                widget.activeChart().createStudy('Moving Average Exponential', false, false, { length: parseInt(botOptions[opt]) })
+            })
+
+        break;
+
+        // case '':
+    }
 }
 
 function loadBotStrategyModal() {
@@ -67,10 +93,10 @@ function saveBotOptionsModal() {
         status: true
     }
 
-    botOptions = {
+    botOpts = {
         botId: 'simulation-bot', botStrategy: values.strategy, botOptions: customOptions
     }
-    console.log('botOptions',botOptions)
+    console.log('botOpts',botOpts)
 
     showSuccess('Saved bot options')
     
@@ -100,6 +126,28 @@ function updateModalWithStrategy(strategy) {
             <input class="col-md-6 form-control" type="text" placeholder="Bot name" value="${strategyOptions[option]}"/>`;
         strategyContainer.appendChild(div)
     })
+}
+
+async function startSimulation() {
+    /**
+     * Call Server_Process
+     * receive list of trades
+     * with the list of trades:
+     * 1. add points to the chart
+     * 2. populate trades containers
+     */
+}
+
+function loadInvestingPoints(trades) {
+    /**
+     * load investing points into the TradingView Chart
+     */
+}
+
+function loadTradeContainers(trades) {
+    /**
+     * trades is all the trades 
+     */
 }
 
 (async function () {

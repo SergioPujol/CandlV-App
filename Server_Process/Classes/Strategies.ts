@@ -14,8 +14,6 @@ class DoubleEMA {
     private state: 'None' | 'InLong' | 'InShort' = 'None';
     private signal: 'hold' | 'buy' | 'sell' | 'abortLong' | 'abortShort' | 'awaitEntry' = 'hold';
 
-    //private previousCross: number = 0;
-
     calculateEMA(previousEmaValue: number, multiplicator: number, actualClosePrice: string) {
         return (parseFloat(actualClosePrice) - previousEmaValue) * multiplicator + previousEmaValue
     }
