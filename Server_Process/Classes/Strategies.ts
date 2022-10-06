@@ -2,8 +2,12 @@ import { EMA } from "./EMA"
 import { Candle } from "./Candle"
 import { Utils } from "./Utils";
 import { BinanceAPI } from "../Requests/BinanceAPI";
+import { Decision, DecisionType } from "../Models/decision";
+import { Notification } from "./Notification";
+
 const utils = new Utils();
 const binanceAPI = new BinanceAPI();
+const notification = new Notification()
 
 class DoubleEMA {
 
@@ -76,7 +80,7 @@ class DoubleEMA {
         return (((parseFloat(actualPrice) - lastPrice) / lastPrice) * 100).toFixed(3) + '%'
     }
 
-    decideAct(firstEMA: EMA, secondEMA: EMA, actualPrice: string) {
+    decideAct(firstEMA: EMA, secondEMA: EMA, actualPrice: string): Decision | undefined {
 
         if(this.state == 'InLong' && this.signal == 'abortLong') {
             // Exit Long
@@ -85,6 +89,11 @@ class DoubleEMA {
             utils.logEnterExit(`#${this.botId} // Exit Long - ${actualPrice}`)
             percentage.includes('-') ? utils.logFailure(`#${this.botId} // Exit long with ${percentage}`) : utils.logSuccess(`#${this.botId} // Exit long with ${percentage}`)
             this.updateSignal(firstEMA, secondEMA, actualPrice)
+            return {
+                decision: DecisionType.ExitLong,
+                percentage: percentage,
+                actualPrice
+            }
         } else if(this.state == 'InShort' && this.signal == 'abortShort') {
             // Exit Short
             this.state = 'None';
@@ -92,16 +101,29 @@ class DoubleEMA {
             utils.logEnterExit(`#${this.botId} // Exit Short - ${actualPrice}`)
             percentage.includes('-') ? utils.logSuccess(`#${this.botId} // Exit short with ${percentage}`) : utils.logFailure(`#${this.botId} // Exit short with ${percentage}`)
             this.updateSignal(firstEMA, secondEMA, actualPrice)
+            return {
+                decision: DecisionType.ExitShort,
+                percentage: percentage,
+                actualPrice
+            }
         } else if(this.state == 'None' && this.signal == 'buy') {
             // Go Long
             this.state = 'InLong';
             this.lastCallPrice = actualPrice
             utils.logEnterExit(`#${this.botId} // Go Long - ${actualPrice}`)
+            return {
+                decision: DecisionType.StartLong,
+                actualPrice
+            }
         } else if(this.state == 'None' && this.signal == 'sell') {
             // Go Short
             this.state = 'InShort';
             this.lastCallPrice = actualPrice
             utils.logEnterExit(`#${this.botId} // Go Short - ${actualPrice}`)
+            return {
+                decision: DecisionType.StartShort,
+                actualPrice
+            }
         } else if((this.state == 'InLong' || this.state == 'InShort') && this.signal == 'hold') {
             utils.logInfo(`#${this.botId} // Hold state - ${actualPrice}`)
         } else if(this.state == 'None' && (this.signal == 'hold' || this.signal == 'awaitEntry')) {
@@ -129,21 +151,48 @@ class DoubleEMA {
         else if(this.state == 'InShort' && basePrice > slowEma) this.signal = 'abortShort' // Abort Short
         else this.signal = 'hold'
 
-        this.decideAct(firstEMA, secondEMA, actualPrice)
+        return this.decideAct(firstEMA, secondEMA, actualPrice)
     }
 
-    async flow(id: string, symbol: string, interval: string, limit: string, botOptions: any) {
+    async flowTrading(id: string, symbol: string, interval: string, limit: string, botOptions: any) {
         this.botId = id
         console.log(`${id} - Flow DEMA`)
         const periods: Array<number> = [parseInt(botOptions.ema_short_period), parseInt(botOptions.ema_long_period)]//botOptions.period
         const candles = await binanceAPI.getCandlelist(symbol, interval, limit);
+
+        const decision = this.flow(candles, periods)
+        if(decision) notification.sendNotification(decision)
+    }
+
+    async flowSimulation(id: string, symbol: string, interval: string, period: { from: string, to: string }, botOptions: any) {
+        const { from, to } = { from: parseInt(period.from)/1000, to: parseInt(period.to)/1000 }
+        this.botId = id
+        var candles: Candle[] = []
+        var periods = utils.getPeriods(from, to, parseInt(interval)) + 400;
+        var Tperiods = periods
+        var cont = 0
+        while(periods > 1000) {
+
+            candles = [...candles, ...(await binanceAPI.getPeriodCandleList(symbol, interval, { from: ((to - (Tperiods - periods + 1000)*60*parseInt(interval)) * 1000).toString(), to: ((to - (Tperiods - periods)*60*parseInt(interval)) * 1000).toString() }))]
+            periods -= 1001
+            cont += 1
+
+        }
+        candles = [...candles, ...(await binanceAPI.getPeriodCandleList(symbol, interval, { from: ((to - (Tperiods)*60*parseInt(interval)) * 1000).toString(), to: ((to - (Tperiods - periods)*60*parseInt(interval)) * 1000).toString() }))]
+        console.log(candles.length)
+
+    }
+
+    flow(candles: Candle[], periods: Array<number>) {
+        //const periods: Array<number> = [parseInt(botOptions.ema_short_period), parseInt(botOptions.ema_long_period)]//botOptions.period
+        //const candles = await binanceAPI.getCandlelist(symbol, interval, limit);
         var EMAs: Array<EMA> = [];
 
         periods.forEach(period => {
             let previousEma = this.calculateSMA(candles, period)
             let multiplicator = this.calculateMultiplicator(period);
             let listEMAs: Array<{ EMA: number, date: number }> = [];
-            for (let ind = 0; ind < (parseInt(limit) - period); ind++) {
+            for (let ind = 0; ind < (candles.length - period); ind++) {
                 let actualCandel: Candle = candles[ind + period];
                 let ema = this.calculateEMA(previousEma, multiplicator, actualCandel.getClose())
                 listEMAs.push({ EMA: ema, date: actualCandel.getOpenTime() })
@@ -154,7 +203,7 @@ class DoubleEMA {
         });
 
         const actualPrice = candles[candles.length-1].getClose()
-        this.updateSignal(EMAs[0], EMAs[1], actualPrice)
+        return this.updateSignal(EMAs[0], EMAs[1], actualPrice)
     }
 
 }

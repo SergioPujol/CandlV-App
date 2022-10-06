@@ -6,6 +6,12 @@ const bots = new processBot()
 const serverDB = new ServerDB(bots)
 serverDB.start()
 
+/**tests */
+import { DoubleEMA } from './Classes/Strategies';
+const dE = new DoubleEMA();
+(async () => {
+    await dE.flowSimulation('test', 'BTCUSDT', '5', { from: '1662057685000', to: '1665081685000' }, null)
+})();
 // TODO
 
 // Create simple method to test:

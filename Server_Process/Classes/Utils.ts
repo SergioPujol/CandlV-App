@@ -44,6 +44,11 @@ class Utils {
         console.log(`\x1b[34m${date.toLocaleString()}\x1b[0m - \x1b[31m${text}\x1b[0m`);
     }
 
+    getPeriods(from: number, to: number, intervalMins: number) {
+        let secsDifference = to - from;
+        return (secsDifference/60)/intervalMins;
+    }
+
 }
 
 export { Utils }

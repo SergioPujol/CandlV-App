@@ -34,9 +34,9 @@ class Bot {
         let tWaitMilisecs = await this.getWaitStart(interval);
         await setTimeout(async () => {
             this.resumeBot();
-            if(this.getStatus()) this.selectStrategy(this.strategy)!.flow(this.getId(), this.symbol, this.interval, this.limit, this.botOptions)
+            if(this.getStatus()) this.selectStrategy(this.strategy)!.flowTrading(this.getId(), this.symbol, this.interval, this.limit, this.botOptions)
             this.botInterval = setInterval(()=>{
-                if(this.getStatus()) this.selectStrategy(this.strategy)!.flow(this.getId(), this.symbol, this.interval, this.limit, this.botOptions)
+                if(this.getStatus()) this.selectStrategy(this.strategy)!.flowTrading(this.getId(), this.symbol, this.interval, this.limit, this.botOptions)
             }, interval*1000*60) // change this time 
         }, tWaitMilisecs);
     }

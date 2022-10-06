@@ -16,13 +16,25 @@ class BinanceAPI {
         else return false
     }
 
+    async getKlinesFromTo(symbol: string, interval: string, period: { from: string, to: string }) {
+        console.log(`https://api.binance.com/api/v3/klines?symbol=${symbol.toUpperCase()}&interval=${this.getIntervalString(interval)}&startTime=${period.from}&endTime=${period.to}&limit=1000`)
+        const { statusCode, body } = await got.get(`https://api.binance.com/api/v3/klines?symbol=${symbol.toUpperCase()}&interval=${this.getIntervalString(interval)}&startTime=${period.from}&endTime=${period.to}&limit=1000`); // symbol=BTCUSDT&interval=5m&limit=50
+        if(statusCode == 200) return JSON.parse(body);
+        else return false
+    }
+
     async getCandlelist(symbol: string, interval: string, limit: string) {
         const klinesData = await this.getKlines(symbol, interval, limit);
         return klinesData.map((list: []) => new Candle(list))
     }
 
-    getIntervalString(secsValue: string): string {
-        return this.intervals[secsValue]
+    getIntervalString(minValue: string): string {
+        return this.intervals[minValue]
+    }
+
+    async getPeriodCandleList(symbol: string, interval: string, period: { from: string, to: string }) {
+        const klinesData = await this.getKlinesFromTo(symbol, interval, period);
+        return klinesData.map((list: []) => new Candle(list))
     }
     
 
