@@ -10,7 +10,7 @@ serverDB.start()
 import { DoubleEMA } from './Classes/Strategies';
 const dE = new DoubleEMA();
 (async () => {
-    await dE.flowSimulation('test', 'BTCUSDT', '5', { from: '1662057685000', to: '1665081685000' }, null)
+    await dE.flowSimulation('test', 'BTCUSDT', '5', { from: '1662057685000', to: '1665081685000' }, {ema_short_period: 3, ema_long_period: 6})
 })();
 // TODO
 
