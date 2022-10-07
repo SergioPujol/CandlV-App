@@ -190,6 +190,7 @@ function loadInvestingPoints(trades) {
 const sleep = async (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+const padL = (nr, len = 2, chr = `0`) => `${nr}`.padStart(2, chr);
 
 async function loadTradeContainers(trades) {
     /**
@@ -199,6 +200,9 @@ async function loadTradeContainers(trades) {
     const tradesContainer = document.querySelector('.trade-container')
     for await(let trade of trades) {
         let tradeCont = document.createElement('div')
+        var dt = new Date(trade.date)
+        var dateFormat = `${padL(dt.getDate())}/${padL(dt.getMonth()+1)}/${dt.getFullYear()} ${padL(dt.getHours())}:${padL(dt.getMinutes())}:${padL(dt.getSeconds())}`
+
         if(trade.type == 'enter') {
             tradeCont.classList.add('trade', 'trade-decision')
             tradeCont.innerHTML = `
@@ -206,7 +210,7 @@ async function loadTradeContainers(trades) {
                 <div class="trade-">hmmmm</div>
                 <div class="trade-decision">${trade.decision}</div>
                 <div class="trade-price">${parseFloat(trade.price).toFixed(2)}</div>
-                <div class="trade-time">${new Date(trade.date)}</div>
+                <div class="trade-time">${dateFormat}</div>
             `
         } else {
             tradeCont.classList.add('trade', 'trade-close')
@@ -215,7 +219,7 @@ async function loadTradeContainers(trades) {
                 <div class="trade-decision">${trade.decision}</div>
                 <div class="trade-price">${parseFloat(trade.price).toFixed(2)}</div>
                 <div class="trade-percentage">${trade.percentage}</div>
-                <div class="trade-time">${new Date(trade.date)}</div>
+                <div class="trade-time">${dateFormat}</div>
             `
         }
         tradesContainer.append(tradeCont)
