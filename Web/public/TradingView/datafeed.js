@@ -31,7 +31,6 @@ async function getAllSymbols() {
 			}
 		)
 	}
-	console.log(allSymbols)
 	return allSymbols
 }
 
@@ -111,7 +110,6 @@ export default {
 			currency_code: symbolItem.quoteAsset
 		};
 
-		console.log(symbolInfo)
 		console.log('[resolveSymbol]: Symbol resolved', symbolName);
 		onSymbolResolvedCallback(symbolInfo);
 	},

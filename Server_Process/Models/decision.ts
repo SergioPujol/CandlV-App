@@ -5,8 +5,10 @@ export enum DecisionType {
     StartShort = 'Start Short'
 }
 
-export interface Decision { 
+export interface Decision {
+    type: 'enter' | 'exit',
     decision: string, 
     percentage?: string, 
-    actualPrice: string 
+    price: string,
+    date: number
 }

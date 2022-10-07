@@ -1,6 +1,6 @@
 import Datafeed from '../TradingView/datafeed.js';
 
-document.getElementById('add-chart-simulation').onclick = generateChart
+document.getElementById('add-chart-simulation').onclick = await generateChart
 
 const strategies = {
     '2EMA': {
@@ -11,13 +11,28 @@ const strategies = {
 }
 
 var botOpts = {}
+var simulationOpts = {}
 
-function generateChart() {
+async function generateChart() {
 
     // check for values before -> if any is null throwError
     if(!document.getElementById('to-time').value || !document.getElementById('from-time').value) {
         showError('Time fields have to be filled')
         return
+    }
+
+    if(Object.keys(botOpts).length === 0) {
+        showError('Bot options have to be selected')
+        return
+    }
+
+    simulationOpts = {
+        symbol: document.getElementById('add-chart-symbol').value.toUpperCase(), // default symbol
+        interval: document.getElementById('add-chart-interval').value, // default interval
+        period: {
+            to: new Date(document.getElementById('to-time').value).getTime(),
+            from: new Date(document.getElementById('from-time').value).getTime()
+        }
     }
 
     //const timeframe = Math.ceil((new Date(document.getElementById('to-time').value).getTime()/1000 - new Date(document.getElementById('from-time').value).getTime()/1000)/3600)
@@ -43,6 +58,8 @@ function generateChart() {
         });
         addStudies(widget)
     },2000)
+
+    await startSimulation()
 
 }
 
@@ -128,6 +145,11 @@ function updateModalWithStrategy(strategy) {
     })
 }
 
+function loadingSpinner() {
+    if(document.querySelector('.simulation-trades #loading-spinner').classList.contains('visually-hidden')) document.querySelector('.simulation-trades #loading-spinner').classList.remove('visually-hidden')
+    else document.querySelector('.simulation-trades #loading-spinner').classList.add('visually-hidden')
+}
+
 async function startSimulation() {
     /**
      * Call Server_Process
@@ -136,6 +158,27 @@ async function startSimulation() {
      * 1. add points to the chart
      * 2. populate trades containers
      */
+
+    loadingSpinner();
+    const { symbol, interval, period } = simulationOpts;
+    const { botId, botStrategy, botOptions } = botOpts;
+
+     const result = await fetch('/api/simulation', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ bot_id: botId, symbol, interval, period, strategy: botStrategy, botOptions })
+    }).then((res) => res.json())
+
+    if(result.status) {
+        console.log(result.data)
+        await loadTradeContainers(result.data)
+    } else {
+        loadingSpinner();
+        showError(result.error)
+        return false
+    }
 }
 
 function loadInvestingPoints(trades) {
@@ -144,10 +187,42 @@ function loadInvestingPoints(trades) {
      */
 }
 
-function loadTradeContainers(trades) {
+const sleep = async (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function loadTradeContainers(trades) {
     /**
      * trades is all the trades 
      */
+
+    const tradesContainer = document.querySelector('.trade-container')
+    for await(let trade of trades) {
+        let tradeCont = document.createElement('div')
+        if(trade.type == 'enter') {
+            tradeCont.classList.add('trade', 'trade-decision')
+            tradeCont.innerHTML = `
+                <div class="trade-icon"><i class="bi bi-graph-${trade.decision == 'Start Long' ? 'up' : 'down' }"></i></div>
+                <div class="trade-">hmmmm</div>
+                <div class="trade-decision">${trade.decision}</div>
+                <div class="trade-price">${parseFloat(trade.price).toFixed(2)}</div>
+                <div class="trade-time">${new Date(trade.date)}</div>
+            `
+        } else {
+            tradeCont.classList.add('trade', 'trade-close')
+            tradeCont.innerHTML = `
+                <div class="trade-icon"><i class="bi bi-chevron-${trade.decision == 'Exit Long' ? (trade.percentage.includes('-') ? 'down' : 'up' ) : (trade.percentage.includes('-') ? 'up' : 'down' ) }"></i></div>
+                <div class="trade-decision">${trade.decision}</div>
+                <div class="trade-price">${parseFloat(trade.price).toFixed(2)}</div>
+                <div class="trade-percentage">${trade.percentage}</div>
+                <div class="trade-time">${new Date(trade.date)}</div>
+            `
+        }
+        tradesContainer.append(tradeCont)
+        await sleep(200)
+    }
+
+    loadingSpinner();
 }
 
 (async function () {

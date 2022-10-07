@@ -80,7 +80,7 @@ class DoubleEMA {
         return (((parseFloat(actualPrice) - lastPrice) / lastPrice) * 100).toFixed(3) + '%'
     }
 
-    decideAct(firstEMA: EMA, secondEMA: EMA, actualPrice: string): Decision | undefined {
+    decideAct(firstEMA: EMA, secondEMA: EMA, actualPrice: string, actualDate: number): Decision | undefined {
 
         if(this.state == 'InLong' && this.signal == 'abortLong') {
             // Exit Long
@@ -88,11 +88,13 @@ class DoubleEMA {
             const percentage = this.getPercentageFromLastCross(actualPrice)
             utils.logEnterExit(`#${this.botId} // Exit Long - ${actualPrice}`)
             percentage.includes('-') ? utils.logFailure(`#${this.botId} // Exit long with ${percentage}`) : utils.logSuccess(`#${this.botId} // Exit long with ${percentage}`)
-            this.updateSignal(firstEMA, secondEMA, actualPrice)
+            this.updateSignal(firstEMA, secondEMA, actualPrice, actualDate)
             return {
+                type: 'exit',
                 decision: DecisionType.ExitLong,
                 percentage: percentage,
-                actualPrice
+                price: actualPrice,
+                date: actualDate
             }
         } else if(this.state == 'InShort' && this.signal == 'abortShort') {
             // Exit Short
@@ -100,11 +102,13 @@ class DoubleEMA {
             const percentage = this.getPercentageFromLastCross(actualPrice)
             utils.logEnterExit(`#${this.botId} // Exit Short - ${actualPrice}`)
             percentage.includes('-') ? utils.logSuccess(`#${this.botId} // Exit short with ${percentage}`) : utils.logFailure(`#${this.botId} // Exit short with ${percentage}`)
-            this.updateSignal(firstEMA, secondEMA, actualPrice)
+            this.updateSignal(firstEMA, secondEMA, actualPrice, actualDate)
             return {
+                type: 'exit',
                 decision: DecisionType.ExitShort,
                 percentage: percentage,
-                actualPrice
+                price: actualPrice,
+                date: actualDate
             }
         } else if(this.state == 'None' && this.signal == 'buy') {
             // Go Long
@@ -112,8 +116,10 @@ class DoubleEMA {
             this.lastCallPrice = actualPrice
             utils.logEnterExit(`#${this.botId} // Go Long - ${actualPrice}`)
             return {
+                type: 'enter',
                 decision: DecisionType.StartLong,
-                actualPrice
+                price: actualPrice,
+                date: actualDate
             }
         } else if(this.state == 'None' && this.signal == 'sell') {
             // Go Short
@@ -121,8 +127,10 @@ class DoubleEMA {
             this.lastCallPrice = actualPrice
             utils.logEnterExit(`#${this.botId} // Go Short - ${actualPrice}`)
             return {
+                type: 'enter',
                 decision: DecisionType.StartShort,
-                actualPrice
+                price: actualPrice,
+                date: actualDate
             }
         } else if((this.state == 'InLong' || this.state == 'InShort') && this.signal == 'hold') {
             utils.logInfo(`#${this.botId} // Hold state - ${actualPrice}`)
@@ -134,7 +142,7 @@ class DoubleEMA {
         
     }
 
-    updateSignal(firstEMA: EMA, secondEMA: EMA, actualPrice: string) {
+    updateSignal(firstEMA: EMA, secondEMA: EMA, actualPrice: string, actualDate: number) {
         const fastEma = firstEMA.getLastPoint().EMA // Small period - fast ema
         const slowEma = secondEMA.getLastPoint().EMA // Big period - slow ema
         const basePrice = parseFloat(actualPrice)
@@ -151,7 +159,7 @@ class DoubleEMA {
         else if(this.state == 'InShort' && basePrice > slowEma) this.signal = 'abortShort' // Abort Short
         else this.signal = 'hold'
 
-        return this.decideAct(firstEMA, secondEMA, actualPrice)
+        return this.decideAct(firstEMA, secondEMA, actualPrice, actualDate)
     }
 
     async flowTrading(id: string, symbol: string, interval: string, limit: string, botOptions: any) {
@@ -182,8 +190,8 @@ class DoubleEMA {
             let decision = this.flow(candles.slice(i, 402 + i), periods)
             if(decision) decisionList.push(decision)
         }
-        console.log(decisionList)
-        notification.sendSimulationDecisionList(decisionList)
+
+        return decisionList
 
     }
 
@@ -205,7 +213,8 @@ class DoubleEMA {
         });
 
         const actualPrice = candles[candles.length-1].getClose()
-        return this.updateSignal(EMAs[0], EMAs[1], actualPrice)
+        const actualDate = candles[candles.length-1].getOpenTime()
+        return this.updateSignal(EMAs[0], EMAs[1], actualPrice, actualDate)
     }
 
 }

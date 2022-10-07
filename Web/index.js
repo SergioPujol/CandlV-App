@@ -121,13 +121,21 @@ app.post('/api/getBots', async (req, res) => {
 
 // Post Server Process for the simulation
 app.post('/api/simulation', async (req, res) => {
-	
+	return await res.json(await serverProcessReq('simulation', {
+		data: req.body
+	}))
 })
 
 app.listen(port, () => console.log(`Server_DB listening on port ${port}!, http://localhost:${port}`));
 
 const serverDBReq = async (req, data) => {
 	const res = await got.post(`http://localhost:3100/${req}/`, { json: data });
+	if(res.statusCode == 200) return JSON.parse(res.body)
+	return { status: 'error', error: 'Server not available' }
+}
+
+const serverProcessReq = async (req, data) => {
+	const res = await got.post(`http://localhost:3330/${req}/`, { json: data });
 	if(res.statusCode == 200) return JSON.parse(res.body)
 	return { status: 'error', error: 'Server not available' }
 }

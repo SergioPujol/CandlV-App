@@ -1,17 +1,17 @@
 
 import { processBot } from './processBot'
-import { ServerDB } from './Servers/serverDB'
+import { Server } from './Servers/server'
 
 const bots = new processBot()
-const serverDB = new ServerDB(bots)
-serverDB.start()
+const server = new Server(bots)
+server.start()
 
-/**tests */
+/**tests 
 import { DoubleEMA } from './Classes/Strategies';
 const dE = new DoubleEMA();
 (async () => {
     await dE.flowSimulation('test', 'BTCUSDT', '5', { from: '1662057685000', to: '1665081685000' }, {ema_short_period: 3, ema_long_period: 6})
-})();
+})();*/
 // TODO
 
 // Create simple method to test:
