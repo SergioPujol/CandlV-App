@@ -175,15 +175,15 @@ class DoubleEMA {
     async flowSimulation(id: string, symbol: string, interval: string, period: { from: string, to: string }, botOptions: any) {
         const { from, to } = { from: parseInt(period.from)/1000, to: parseInt(period.to)/1000 }
         const periods: Array<number> = [parseInt(botOptions.ema_short_period), parseInt(botOptions.ema_long_period)]
-        this.botId = id
+        this.botId = id;
         var candles: Candle[] = []
         var nPeriods = utils.getPeriods(from, to, parseInt(interval)) + 400;
         var Tperiods = nPeriods;
         while(nPeriods > 1000) {
-            candles = [...candles, ...(await binanceAPI.getPeriodCandleList(symbol, interval, { from: ((to - (Tperiods - nPeriods + 1000)*60*parseInt(interval)) * 1000).toString(), to: ((to - (Tperiods - nPeriods)*60*parseInt(interval)) * 1000).toString() }))]
+            candles = [...(await binanceAPI.getPeriodCandleList(symbol, interval, { from: ((to - (Tperiods - nPeriods + 1000)*60*parseInt(interval)) * 1000).toString(), to: ((to - (Tperiods - nPeriods)*60*parseInt(interval)) * 1000).toString() })), ...candles]
             nPeriods -= 1001
         }
-        candles = [...candles, ...(await binanceAPI.getPeriodCandleList(symbol, interval, { from: ((to - (Tperiods)*60*parseInt(interval)) * 1000).toString(), to: ((to - (Tperiods - nPeriods)*60*parseInt(interval)) * 1000).toString() }))]
+        candles = [...(await binanceAPI.getPeriodCandleList(symbol, interval, { from: ((to - (Tperiods)*60*parseInt(interval)) * 1000).toString(), to: ((to - (Tperiods - nPeriods)*60*parseInt(interval)) * 1000).toString() })), ...candles]
         
         var decisionList: Decision[] = []
         for(let i=0; i < (Tperiods - 400); i++) {

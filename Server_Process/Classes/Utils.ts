@@ -49,6 +49,10 @@ class Utils {
         return (secsDifference/60)/intervalMins;
     }
 
+    sleep = async (ms:number) => {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
 }
 
 export { Utils }

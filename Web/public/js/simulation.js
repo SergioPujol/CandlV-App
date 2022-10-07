@@ -51,15 +51,15 @@ async function generateChart() {
     });
 
 
-    setTimeout(()=>{
-        widget.activeChart().setVisibleRange({
-            from: new Date(document.getElementById('from-time').value).getTime()/1000,
-            to: new Date(document.getElementById('to-time').value).getTime()/1000
-        });
+    widget.onChartReady(async () => {
+        const from = new Date(document.getElementById('from-time').value).getTime()/1000
+        const to = new Date(document.getElementById('to-time').value).getTime()/1000
+        widget.activeChart().setVisibleRange({ from, to });
+        widget.activeChart().createShape({ time: from }, { shape: 'vertical_line', lock: true });
         addStudies(widget)
-    },2000)
 
-    await startSimulation()
+        await startSimulation()
+    })
 
 }
 
@@ -173,6 +173,7 @@ async function startSimulation() {
 
     if(result.status) {
         console.log(result.data)
+        loadInvestingPoints(result.data)
         await loadTradeContainers(result.data)
     } else {
         loadingSpinner();
@@ -181,10 +182,46 @@ async function startSimulation() {
     }
 }
 
+const createStartLongShape = (obj) => {
+    window.tvWidget.activeChart().createShape(
+        obj,
+        {
+            shape: "arrow_up",
+            lock: true,
+            overrides: {
+                color: '#FFF200',
+                fontsize: 13
+            }, 
+        }
+    );
+}
+
+const createStartShortShape = (obj) => {
+    window.tvWidget.activeChart().createShape(
+        obj,
+        {
+            shape: "arrow_down",
+            lock: true,
+            overrides: {
+                color: '#710193',
+                fontsize: 13
+            }, 
+        }
+    );
+}
+
 function loadInvestingPoints(trades) {
     /**
      * load investing points into the TradingView Chart
      */
+    trades.forEach(trade => {
+        if(trade.type == 'enter') {
+            if(trade.decision == 'Start Long') createStartLongShape({time: trade.date/1000})
+            else if(trade.decision == 'Start Short') createStartShortShape({time: trade.date/1000})
+        }
+
+        if(trade.date/1000 < new Date(document.getElementById('from-time').value).getTime()/1000) console.log('weird trade data', trade)
+    })
 }
 
 const sleep = async (ms) => {
@@ -198,6 +235,7 @@ async function loadTradeContainers(trades) {
      */
 
     const tradesContainer = document.querySelector('.trade-container')
+    tradesContainer.innerHTML = ""
     for await(let trade of trades) {
         let tradeCont = document.createElement('div')
         var dt = new Date(trade.date)
