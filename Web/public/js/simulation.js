@@ -269,7 +269,8 @@ async function loadTradeContainers(trades) {
 
 (async function () {
     console.log('check login status')
-    checkLoginStatus();
+    const status = await checkLoginStatus()
+    if(!status) location.href = 'home.html'
     loadBotModal();
     document.getElementById('open-bot-options').onclick = () => loadBotStrategyModal()
 })();

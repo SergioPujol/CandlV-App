@@ -219,6 +219,16 @@ main .charts-information .window .data .bot-settings.collapse.show {
     margin-left: auto;
 }
 
+/* login-register-modals */
+
+#login-register-modals .modal-body form .login-register-buttons button {
+    margin-right: 5px;
+}
+
+#login-register-modals .modal-body form .login-register-buttons input {
+    margin-left: 5px;
+}
+
 /** Elementos definidos **/
 
 .btn-1 {
@@ -271,6 +281,37 @@ main .charts-information .window .data .bot-settings.collapse.show {
     padding-bottom: 0.5rem !important;
     border-bottom: 1px solid var(--white-color);
 }
+
+/* Landing page */
+main.landing-page {
+
+}
+
+main.landing-page .lema {
+    display: flex;
+    flex-direction: column;
+    color: var(--white-color);
+}
+
+main.landing-page .lema > div {
+    width: 75%;
+    align-self: center;
+    text-align: center;
+    padding: 35px;
+}
+
+main.landing-page .top-crypto {
+    display: flex;
+    background-color: var(--white-color);
+    height: 400px;
+}
+
+
+main.landing-page .start-trading {
+    display: flex;
+    height: 400px;
+}
+
 
 /** Trades - Notifications **/
 

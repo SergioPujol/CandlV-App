@@ -43,7 +43,30 @@
       </div>
   </header>
 
-  <main class="flex-grow-1">
+  <main class="flex-grow-1 landing-page">
+
+    <div class="lema">
+      <div class="title">
+        <h1>Analyze and Trade</h1><h1>with Cryptos</h1>
+      </div>
+      <div class="subtitle">
+        <h3>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Odit delectus beatae excepturi, at quam doloremque</h3>
+      </div>
+      <div class="get-started">
+        <button class="btn btn-1">Get Started</button>
+      </div>
+      <div class="image">
+
+      </div>
+    </div>
+
+    <div class="top-crypto">
+
+    </div>
+
+    <div class="start-trading">
+      <!-- if user logged, button redirect to trading, if not, open register modal -->
+    </div>
 
   </main>
 
@@ -58,11 +81,13 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form id="form_login">
-              <input type="text" autocomplete="off" id="username_log" placeholder="Username" />
-              <input type="password" autocomplete="off" id="password_log" placeholder="Password" />
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <input type="submit" value="Submit Form" />
+            <form class="d-flex flex-column m-0" id="form_login">
+              <input type="text" autocomplete="off" id="username_log" placeholder="Username" class="mb-2 p-2 rounded border border-secondary" />
+              <input type="password" autocomplete="off" id="password_log" placeholder="Password" class="mb-2 p-2 rounded border border-secondary" />
+              <div class="login-register-buttons d-flex flex-row pt-2 pb-2">
+                <button type="button" class="btn btn-secondary w-50" data-bs-dismiss="modal">Close</button>
+                <input type="submit" class="btn btn-1 w-50" value="Login" />
+              </div>
             </form>
           </div>
         </div>
@@ -78,11 +103,13 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form id="form_reg">
-              <input type="text" autocomplete="off" id="username_reg" placeholder="Username" />
-              <input type="password" autocomplete="off" id="password_reg" placeholder="Password" />
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <input type="submit" value="Submit Form" />
+            <form class="d-flex flex-column m-0" id="form_reg">
+              <input type="text" autocomplete="off" id="username_reg" placeholder="Username" class="mb-2 p-2 rounded border border-secondary" />
+              <input type="password" autocomplete="off" id="password_reg" placeholder="Password" class="mb-2 p-2 rounded border border-secondary" />
+              <div class="login-register-buttons d-flex flex-row pt-2 pb-2">
+                <button type="button" class="btn btn-secondary w-50" data-bs-dismiss="modal">Close</button>
+                <input type="submit" class="btn btn-1 w-50" value="Register" />
+              </div>
             </form>
           </div>
         </div>

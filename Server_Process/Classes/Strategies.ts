@@ -7,13 +7,15 @@ import { Notification } from "./Notification";
 
 const utils = new Utils();
 const binanceAPI = new BinanceAPI();
-const notification = new Notification()
+const notification = new Notification();
+
+
 
 class DoubleEMA {
 
     private lastCallPrice: string = '0'; // not the same as cross
 
-    private botId: string = ''
+    private botId: string = '';
 
     private state: 'None' | 'InLong' | 'InShort' = 'None';
     private signal: 'hold' | 'buy' | 'sell' | 'abortLong' | 'abortShort' | 'awaitEntry' = 'hold';

@@ -6,7 +6,7 @@ const BotSchema = new mongoose.Schema(
         bot_name: { type: String, required: true },
         bot_strategy: { type: String, required: true },
 		bot_strategy_options: { type: Object, required: true },
-        /** bot_options example
+        /** bot_strategy_options example
          * {
          *  ema_short_period: 3, // default value
          *  ema_long_period: 6 // default value
