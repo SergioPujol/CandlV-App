@@ -83,7 +83,7 @@ class Bot {
 
     async startSimulation(period: {from:string, to:string}) {
 
-        const simulationData = this.selectStrategy(this.strategy)!.flowSimulation(this.getId(), this.symbol, this.interval, period, this.botOptions);
+        const simulationData = await this.selectStrategy(this.strategy)!.flowSimulation(this.getId(), this.symbol, this.interval, period, this.botOptions);
         return simulationData
 
     }

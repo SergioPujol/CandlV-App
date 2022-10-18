@@ -321,20 +321,20 @@ main.landing-page .start-trading {
 }
 
 #trades {
-    width: 90%;
+    width: 60%;
     padding: 10px 10px 0 10px;
     border-right: 2px solid var(--white-color);
     overflow-y: auto;
 }
 
-.trades-notificacions #trades div.trade {
+.trades-notificacions #trades div.trade-trading {
     border-radius: 10px;
     background-color: var(--tertiary-color);
     color: var(--white-color);
     margin-bottom: 5px;
 }
 
-.trades-notificacions #trades div.trade .main-info {
+.trades-notificacions #trades div.trade-trading .main-info {
     display: flex;
     flex-direction: row;
     height: 50px;
@@ -342,7 +342,7 @@ main.landing-page .start-trading {
     align-items: center;
 }
 
-.trades-notificacions #trades div.trade .collapsed-info > div {
+.trades-notificacions #trades div.trade-trading .collapsed-info > div {
     height: 50px;
     display: flex;
     flex-direction: row;
@@ -351,18 +351,12 @@ main.landing-page .start-trading {
     padding: 10px;
 }
 
-.trades-notificacions #trades div.trade .collapsed-info > div .trade-chart-info {
+.trades-notificacions #trades div.trade-trading .collapsed-info > div .trade-chart-info {
     
 }
 
-.trades-notificacions #trades div.trade .collapsed-info > div .trade-bot-info {
+.trades-notificacions #trades div.trade-trading .collapsed-info > div .trade-bot-info {
     margin-left: 10px;
-}
-
-#notifications {
-    /*width: 45%;
-    padding: 10px;
-    border-right: 2px solid var(--white-color);*/
 }
 
 #add-chart {
@@ -370,6 +364,55 @@ main.landing-page .start-trading {
     padding: 10px;
     justify-content: center;
     color: var(--white-color);
+}
+
+.trade-title {
+    color: var(--white-color);
+    width: 100%;
+    text-align: center;
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+/** Operations on Trading **/
+
+#actual-operations {
+    width: 30%;
+    padding: 10px;
+    border-right: 2px solid var(--white-color);
+    overflow-y: auto;
+}
+
+#actual-operations .operation-container {
+    border-radius: 10px;
+    background-color: var(--tertiary-color);
+    color: var(--white-color);
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    padding: 10px;
+    align-items: center;
+}
+
+#actual-operations .operation-container > div {
+    
+}
+
+#actual-operations .operation-container > div.bot-name {
+    width: 20%;
+}
+
+#actual-operations .operation-container > div.operation-entry-price {
+    width: 30%;
+}
+
+#actual-operations .operation-container > div.operation {
+    width: 20%;
+}
+
+#actual-operations .operation-container > button {
+    width: 30%;
 }
 
 /** SIMULATION **/

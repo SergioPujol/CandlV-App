@@ -17,7 +17,6 @@ class BinanceAPI {
     }
 
     async getKlinesFromTo(symbol: string, interval: string, period: { from: string, to: string }) {
-        console.log(`https://api.binance.com/api/v3/klines?symbol=${symbol.toUpperCase()}&interval=${this.getIntervalString(interval)}&startTime=${period.from}&endTime=${period.to}&limit=1000`)
         const { statusCode, body } = await got.get(`https://api.binance.com/api/v3/klines?symbol=${symbol.toUpperCase()}&interval=${this.getIntervalString(interval)}&startTime=${period.from}&endTime=${period.to}&limit=1000`); // symbol=BTCUSDT&interval=5m&limit=50
         if(statusCode == 200) return JSON.parse(body);
         else return false

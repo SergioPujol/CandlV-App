@@ -2,11 +2,13 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const got = require('got');
+const WebSocket = require('ws');
 
 const app = express();
 const router = express.Router();
 
 const port = 3000;
+const wssPort = 3001;
 
 app.use('/', express.static(path.join(__dirname, 'public')));
 app.use('/', router);
@@ -138,4 +140,26 @@ const serverProcessReq = async (req, data) => {
 	const res = await got.post(`http://localhost:3330/${req}/`, { json: data });
 	if(res.statusCode == 200) return JSON.parse(res.body)
 	return { status: 'error', error: 'Server not available' }
+}
+
+// Websocket configuration
+
+const wss = new WebSocket.Server({ port: wssPort });
+var wsWebClient = null
+
+wss.on("connection", ws => {
+	console.log("Web client connected");
+
+	wsWebClient = ws
+
+	ws.on("close", () => {
+		console.log("Web client disconnected");
+	});
+
+});
+
+function sendWebClientMessage(data) {
+	console.log('sendWebClientMessage')
+	if(sendWebClientMessage) wsWebClient.send(data);
+	else console.log('Not WebClient Connected');
 }

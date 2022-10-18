@@ -472,6 +472,15 @@ function getInputBotOptions(container) {
     return {strategy: container.querySelector(`select`).value, strategyOptions: customOptions}
 }
 
+
+function changeProcess(chartId, botId) {
+    /**Change html of the operation with the chartId and BotId, has to be changed:
+     * - price
+     * - process
+     * - button (??)
+     */
+}
+
 (async function () {
     console.log('check login status')
     const status = await checkLoginStatus()

@@ -2,7 +2,7 @@ const User = require('../model/user');
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 require('dotenv').config({ path: './config.env' });
-const JWT_SECRET = process.env.JWT_SECRET
+const JWT_SECRET = 'OvFAxbc72wv&@mWjthMwCbf@maTQuIhsCh6deN*(aKJhYqL!^fEjGV7wTVWMZ4mv'
 
 const register = async (userData) => {
     console.log('register')

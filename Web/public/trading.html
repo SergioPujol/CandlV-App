@@ -62,7 +62,8 @@
     <div class="trades-notificacions d-flex flex-row"> <!-- Contenedor de todos los trades e info, posibilidad de minimizar cada uno -->
       
       <div id="trades">
-        <div class="trade">
+        <div class="trade-title">Trades</div>
+        <div class="trade-trading">
           <div class="main-info">
             <div class="trade-icon col"><i class="bi bi-graph-up"></i></div>
             <div class="trade-title col">BUY</div>
@@ -81,7 +82,7 @@
             </div>
           </div>
         </div>
-        <div class="trade">
+        <div class="trade-trading">
           <div class="main-info">
             <div class="trade-icon col"><i class="bi bi-graph-up"></i></div>
             <div class="trade-title col">BUY</div>
@@ -100,7 +101,7 @@
             </div>
           </div>
         </div>
-        <div class="trade">
+        <div class="trade-trading">
           <div class="main-info">
             <div class="trade-icon col"><i class="bi bi-graph-up"></i></div>
             <div class="trade-title col">BUY</div>
@@ -119,7 +120,7 @@
             </div>
           </div>
         </div>
-        <div class="trade">
+        <div class="trade-trading">
           <div class="main-info">
             <div class="trade-icon col"><i class="bi bi-graph-up"></i></div>
             <div class="trade-title col">BUY</div>
@@ -138,7 +139,7 @@
             </div>
           </div>
         </div>
-        <div class="trade">
+        <div class="trade-trading">
           <div class="main-info">
             <div class="trade-icon col"><i class="bi bi-graph-up"></i></div>
             <div class="trade-title col">BUY</div>
@@ -157,7 +158,7 @@
             </div>
           </div>
         </div>
-        <div class="trade">
+        <div class="trade-trading">
           <div class="main-info">
             <div class="trade-icon col"><i class="bi bi-graph-up"></i></div>
             <div class="trade-title col">BUY</div>
@@ -176,7 +177,7 @@
             </div>
           </div>
         </div>
-        <div class="trade">
+        <div class="trade-trading">
           <div class="main-info">
             <div class="trade-icon col"><i class="bi bi-graph-up"></i></div>
             <div class="trade-title col">BUY</div>
@@ -196,7 +197,35 @@
           </div>
         </div>
       </div>
-      <!--<div id="notifications"></div>-->
+
+      <div id="actual-operations">
+        <div class="trade-title">Operations</div>
+        <div id="bot-chartId-botId" class="d-flex flex-row operation-container">
+          <div class="bot-name">Bot Testsda</div>
+          <div class="operation-entry-price">1500.45 USDT</div>
+          <div class="operation">In Long</div>
+          <button class="stop-operation btn btn-1">Stop Operation</button>
+        </div>
+        <div id="bot-chartId2-botId2" class="d-flex flex-row operation-container">
+          <div class="bot-name">Bot Test</div>
+          <div class="operation-entry-price">1500.45 USDT</div>
+          <div class="operation">In Long</div>
+          <button class="stop-operation btn btn-1">Stop Operation</button>
+        </div>
+        <div id="bot-chartId3-botId3" class="d-flex flex-row operation-container">
+          <div class="bot-name">Bot Test</div>
+          <div class="operation-entry-price">1500.45 USDT</div>
+          <div class="operation">In Long</div>
+          <button class="stop-operation btn btn-1">Stop Operation</button>
+        </div>
+        <div id="bot-chartId4-botId4" class="d-flex flex-row operation-container">
+          <div class="bot-name">Bot Test</div>
+          <div class="operation-entry-price">1500.45 USDT</div>
+          <div class="operation">In Long</div>
+          <button class="stop-operation btn btn-1">Stop Operation</button>
+        </div>
+      </div>
+
       <div id="add-chart" class="d-flex flex-column">
         <div class="d-flex flex-row align-items-center mb-2">
           <span class="col-md-6">Symbol</span>
@@ -281,6 +310,7 @@
   <script src="../js/methods.js"></script>
   <script src="../js/trading_requests.js"></script>
   <script src="../js/trading.js"></script>
+  <script src="../js/ws.js"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
 

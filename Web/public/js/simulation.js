@@ -245,9 +245,9 @@ async function loadTradeContainers(trades) {
             tradeCont.classList.add('trade', 'trade-decision')
             tradeCont.innerHTML = `
                 <div class="trade-icon"><i class="bi bi-graph-${trade.decision == 'Start Long' ? 'up' : 'down' }"></i></div>
-                <div class="trade-">hmmmm</div>
                 <div class="trade-decision">${trade.decision}</div>
                 <div class="trade-price">${parseFloat(trade.price).toFixed(2)}</div>
+                <div class="trade-">-----</div>
                 <div class="trade-time">${dateFormat}</div>
             `
         } else {

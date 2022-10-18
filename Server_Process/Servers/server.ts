@@ -64,7 +64,6 @@ class Server {
             console.log('simulation', data)
             const bot = new Bot(data.bot_id, data.symbol, data.interval, data.strategy, data.botOptions)
             const simulationData = await bot.startSimulation(data.period)
-            console.log(simulationData.length)
             if(simulationData) res.send({status: true, data: simulationData})
             else res.send({status: false, error:'Error with Simulation'})
         });

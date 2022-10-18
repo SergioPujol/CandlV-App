@@ -9,8 +9,6 @@ const utils = new Utils();
 const binanceAPI = new BinanceAPI();
 const notification = new Notification();
 
-
-
 class DoubleEMA {
 
     private lastCallPrice: string = '0'; // not the same as cross
@@ -19,6 +17,9 @@ class DoubleEMA {
 
     private state: 'None' | 'InLong' | 'InShort' = 'None';
     private signal: 'hold' | 'buy' | 'sell' | 'abortLong' | 'abortShort' | 'awaitEntry' = 'hold';
+
+    private simulationBool = false;
+    private simulationDecisionList: Decision[] = [];
 
     calculateEMA(previousEmaValue: number, multiplicator: number, actualClosePrice: string) {
         return (parseFloat(actualClosePrice) - previousEmaValue) * multiplicator + previousEmaValue
@@ -71,7 +72,6 @@ class DoubleEMA {
     trade(firstEMA: EMA, secondEMA: EMA, actualPrice: string) {
         const firstEMAPoint = firstEMA.getLastPoint() // Small period
         const secondEMAPoint = secondEMA.getLastPoint() // Big period
-        console.log(this.getPercentageFromLastCross(actualPrice))
         this.lastCallPrice = actualPrice
         if(firstEMAPoint.EMA > secondEMAPoint.EMA) return 'Long'
         return 'Short'
@@ -82,7 +82,7 @@ class DoubleEMA {
         return (((parseFloat(actualPrice) - lastPrice) / lastPrice) * 100).toFixed(3) + '%'
     }
 
-    decideAct(firstEMA: EMA, secondEMA: EMA, actualPrice: string, actualDate: number): Decision | undefined {
+    decideAct(firstEMA: EMA, secondEMA: EMA, actualPrice: string, actualDate: number) {
 
         if(this.state == 'InLong' && this.signal == 'abortLong') {
             // Exit Long
@@ -90,50 +90,58 @@ class DoubleEMA {
             const percentage = this.getPercentageFromLastCross(actualPrice)
             utils.logEnterExit(`#${this.botId} // Exit Long - ${actualPrice}`)
             percentage.includes('-') ? utils.logFailure(`#${this.botId} // Exit long with ${percentage}`) : utils.logSuccess(`#${this.botId} // Exit long with ${percentage}`)
-            this.updateSignal(firstEMA, secondEMA, actualPrice, actualDate)
-            return {
+            let decision: Decision = {
                 type: 'exit',
                 decision: DecisionType.ExitLong,
                 percentage: percentage,
                 price: actualPrice,
                 date: actualDate
             }
+            if(this.simulationBool) this.simulationDecisionList.push(decision)
+            else notification.sendNotification(decision)
+            this.updateSignal(firstEMA, secondEMA, actualPrice, actualDate);
         } else if(this.state == 'InShort' && this.signal == 'abortShort') {
             // Exit Short
             this.state = 'None';
             const percentage = this.getPercentageFromLastCross(actualPrice)
             utils.logEnterExit(`#${this.botId} // Exit Short - ${actualPrice}`)
             percentage.includes('-') ? utils.logSuccess(`#${this.botId} // Exit short with ${percentage}`) : utils.logFailure(`#${this.botId} // Exit short with ${percentage}`)
-            this.updateSignal(firstEMA, secondEMA, actualPrice, actualDate)
-            return {
+            let decision: Decision = {
                 type: 'exit',
                 decision: DecisionType.ExitShort,
                 percentage: percentage,
                 price: actualPrice,
                 date: actualDate
             }
+            if(this.simulationBool) this.simulationDecisionList.push(decision)
+            else notification.sendNotification(decision)
+            this.updateSignal(firstEMA, secondEMA, actualPrice, actualDate);
         } else if(this.state == 'None' && this.signal == 'buy') {
             // Go Long
             this.state = 'InLong';
             this.lastCallPrice = actualPrice
             utils.logEnterExit(`#${this.botId} // Go Long - ${actualPrice}`)
-            return {
+            let decision: Decision = {
                 type: 'enter',
                 decision: DecisionType.StartLong,
                 price: actualPrice,
                 date: actualDate
             }
+            if(this.simulationBool) this.simulationDecisionList.push(decision)
+            else notification.sendNotification(decision)
         } else if(this.state == 'None' && this.signal == 'sell') {
             // Go Short
             this.state = 'InShort';
             this.lastCallPrice = actualPrice
             utils.logEnterExit(`#${this.botId} // Go Short - ${actualPrice}`)
-            return {
+            let decision: Decision = {
                 type: 'enter',
                 decision: DecisionType.StartShort,
                 price: actualPrice,
                 date: actualDate
             }
+            if(this.simulationBool) this.simulationDecisionList.push(decision)
+            else notification.sendNotification(decision)
         } else if((this.state == 'InLong' || this.state == 'InShort') && this.signal == 'hold') {
             utils.logInfo(`#${this.botId} // Hold state - ${actualPrice}`)
         } else if(this.state == 'None' && (this.signal == 'hold' || this.signal == 'awaitEntry')) {
@@ -170,11 +178,11 @@ class DoubleEMA {
         const periods: Array<number> = [parseInt(botOptions.ema_short_period), parseInt(botOptions.ema_long_period)]//botOptions.period
         const candles = await binanceAPI.getCandlelist(symbol, interval, limit);
 
-        const decision = this.flow(candles, periods)
-        if(decision) notification.sendNotification(decision)
+        this.flow(candles, periods)
     }
 
     async flowSimulation(id: string, symbol: string, interval: string, period: { from: string, to: string }, botOptions: any) {
+        this.simulationBool = true
         const { from, to } = { from: parseInt(period.from)/1000, to: parseInt(period.to)/1000 }
         const periods: Array<number> = [parseInt(botOptions.ema_short_period), parseInt(botOptions.ema_long_period)]
         this.botId = id;
@@ -187,13 +195,12 @@ class DoubleEMA {
         }
         candles = [...(await binanceAPI.getPeriodCandleList(symbol, interval, { from: ((to - (Tperiods)*60*parseInt(interval)) * 1000).toString(), to: ((to - (Tperiods - nPeriods)*60*parseInt(interval)) * 1000).toString() })), ...candles]
         
-        var decisionList: Decision[] = []
         for(let i=0; i < (Tperiods - 400); i++) {
-            let decision = this.flow(candles.slice(i, 402 + i), periods)
-            if(decision) decisionList.push(decision)
+            this.flow(candles.slice(i, 402 + i), periods)
+            //await utils.sleep(100);
         }
 
-        return decisionList
+        return this.simulationDecisionList
 
     }
 
