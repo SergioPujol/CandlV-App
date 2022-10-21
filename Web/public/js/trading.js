@@ -326,9 +326,9 @@ async function createBot(chartId) { // what do I need? options from modal and Id
         name: staticValuesContainer.querySelector('input').value,
         strategy: staticValuesContainer.querySelector('select.strategies-select').value,
         custom: customOptions,
-        status: true
+        status: true,
+        operation: {state: '', price: 'Awaiting entry', percentage: ''}
     }
-    console.log(customOptions)
 
     const status = await createBotDB({
         botId, botName: values.name, botStrategy: values.strategy, botOptions: customOptions, botStatus: true
@@ -341,6 +341,7 @@ async function createBot(chartId) { // what do I need? options from modal and Id
 
 function loadBotIntoHtml(chartId, botId, values) {
     document.querySelector(`#botAccordion-${chartId}`).appendChild(createHtmlBot(chartId,botId,values))
+    createHtmlOperation(chartId, botId, values)
 }
 
 function createHtmlBot(chartId, botId, options) { 
@@ -428,6 +429,39 @@ function createHtmlBot(chartId, botId, options) {
     })
 
     return botHtml
+}
+
+function createHtmlOperation(chartId, botId, values) {
+
+    const { name, operation } = values;
+
+    const operationFatherContainer = document.getElementById('actual-operations');
+    const operationContainer = document.createElement('div');
+    operationContainer.id = `operation-${chartId}-${botId}`;
+    operationContainer.classList.add('d-flex', 'flex-row', 'operation-container');
+    operationContainer.innerHTML = `
+        <div class="bot-name">${name}</div>
+        <div class="operation-entry-price">${operation.price == 'Awaiting entry' ? operation.price : parseFloat(operation.price).toFixed(2)}</div>
+        <div class="operation-state">${operation.state.replace(/([A-Z])/g, ' $1').trim()}</div>
+        <div class="operation-percentage">${operation.percentage}</div>
+        <button id="stop-operation-${chartId}-${botId}" class="stop-operation btn btn-1">Stop operation</button>
+    `
+
+    operationContainer.onclick = () => {
+        console.log('Stop operation', chartId, botId)
+    }
+
+    operationFatherContainer.appendChild(operationContainer)
+
+}
+
+function updateHtmlOperation(operationData) {
+    const { botId, chartId, operation } = operationData;
+
+    const operationContainer = document.getElementById(`operation-${chartId}-${botId}`);
+    operationContainer.querySelector('div.operation-entry-price').textContent = parseFloat(operation.price).toFixed(2);
+    operationContainer.querySelector('div.operation-state').textContent = operation.state.replace(/([A-Z])/g, ' $1').trim();
+    operationContainer.querySelector('div.operation-percentage').textContent = operation.percentage;
 }
 
 function createSelectSymbol() {

@@ -7,13 +7,24 @@ import { Notification } from "./Notification";
 
 const utils = new Utils();
 const binanceAPI = new BinanceAPI();
-const notification = new Notification();
 
 class DoubleEMA {
 
+    private botId: string;
+    private chartId: string;
+    private notification: Notification;
+
+    constructor(_botId: string, _chartId: string) {
+        console.log('DoubleEMA', _botId, _chartId)
+        this.botId = _botId;
+        this.chartId = _chartId;
+
+        this.notification = new Notification(_botId, _chartId);
+    }
+
     private lastCallPrice: string = '0'; // not the same as cross
 
-    private botId: string = '';
+    private percentage = 0;
 
     private state: 'None' | 'InLong' | 'InShort' = 'None';
     private signal: 'hold' | 'buy' | 'sell' | 'abortLong' | 'abortShort' | 'awaitEntry' = 'hold';
@@ -95,10 +106,11 @@ class DoubleEMA {
                 decision: DecisionType.ExitLong,
                 percentage: percentage,
                 price: actualPrice,
-                date: actualDate
+                date: actualDate,
+                state: this.state
             }
             if(this.simulationBool) this.simulationDecisionList.push(decision)
-            else notification.sendNotification(decision)
+            else this.notification.sendNotification(decision)
             this.updateSignal(firstEMA, secondEMA, actualPrice, actualDate);
         } else if(this.state == 'InShort' && this.signal == 'abortShort') {
             // Exit Short
@@ -109,41 +121,55 @@ class DoubleEMA {
             let decision: Decision = {
                 type: 'exit',
                 decision: DecisionType.ExitShort,
-                percentage: percentage,
+                percentage: '0%',
                 price: actualPrice,
-                date: actualDate
+                date: actualDate,
+                state: this.state
             }
             if(this.simulationBool) this.simulationDecisionList.push(decision)
-            else notification.sendNotification(decision)
+            else this.notification.sendNotification(decision)
             this.updateSignal(firstEMA, secondEMA, actualPrice, actualDate);
         } else if(this.state == 'None' && this.signal == 'buy') {
             // Go Long
             this.state = 'InLong';
-            this.lastCallPrice = actualPrice
             utils.logEnterExit(`#${this.botId} // Go Long - ${actualPrice}`)
             let decision: Decision = {
                 type: 'enter',
                 decision: DecisionType.StartLong,
+                percentage: '0%',
                 price: actualPrice,
-                date: actualDate
+                date: actualDate,
+                state: this.state
             }
+            this.lastCallPrice = actualPrice
             if(this.simulationBool) this.simulationDecisionList.push(decision)
-            else notification.sendNotification(decision)
+            else this.notification.sendNotification(decision)
         } else if(this.state == 'None' && this.signal == 'sell') {
             // Go Short
             this.state = 'InShort';
-            this.lastCallPrice = actualPrice
             utils.logEnterExit(`#${this.botId} // Go Short - ${actualPrice}`)
             let decision: Decision = {
                 type: 'enter',
                 decision: DecisionType.StartShort,
+                percentage: '0%',
                 price: actualPrice,
-                date: actualDate
+                date: actualDate,
+                state: this.state
             }
+            this.lastCallPrice = actualPrice
             if(this.simulationBool) this.simulationDecisionList.push(decision)
-            else notification.sendNotification(decision)
+            else this.notification.sendNotification(decision)
         } else if((this.state == 'InLong' || this.state == 'InShort') && this.signal == 'hold') {
             utils.logInfo(`#${this.botId} // Hold state - ${actualPrice}`)
+             let decision: Decision = {
+                type: 'hold',
+                decision: DecisionType.Hold,
+                percentage: this.getPercentageFromLastCross(actualPrice),
+                price: actualPrice,
+                date: actualDate,
+                state: this.state
+            }
+            if(!this.simulationBool) this.notification.sendNotification(decision)
         } else if(this.state == 'None' && (this.signal == 'hold' || this.signal == 'awaitEntry')) {
             utils.logInfo(`#${this.botId} // Await entry - ${actualPrice}`)
         } else {
@@ -173,7 +199,6 @@ class DoubleEMA {
     }
 
     async flowTrading(id: string, symbol: string, interval: string, limit: string, botOptions: any) {
-        this.botId = id
         console.log(`${id} - Flow DEMA`)
         const periods: Array<number> = [parseInt(botOptions.ema_short_period), parseInt(botOptions.ema_long_period)]//botOptions.period
         const candles = await binanceAPI.getCandlelist(symbol, interval, limit);
@@ -185,7 +210,6 @@ class DoubleEMA {
         this.simulationBool = true
         const { from, to } = { from: parseInt(period.from)/1000, to: parseInt(period.to)/1000 }
         const periods: Array<number> = [parseInt(botOptions.ema_short_period), parseInt(botOptions.ema_long_period)]
-        this.botId = id;
         var candles: Candle[] = []
         var nPeriods = utils.getPeriods(from, to, parseInt(interval)) + 400;
         var Tperiods = nPeriods;

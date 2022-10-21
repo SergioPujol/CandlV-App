@@ -119,7 +119,7 @@ function showSuccess(message) {
 
 function buildToast(text, type, color) {
     const div = document.createElement('div');
-    div.classList.add('temp-div-container', 'position-fixed', 'top-0', 'end-0', 'p-3');
+    div.classList.add('temp-div-container', 'position-fixed', 'bottom-0', 'end-0', 'p-3');
     div.style.zIndex = 11;
     div.innerHTML = `
         <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">

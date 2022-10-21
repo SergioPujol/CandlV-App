@@ -39,12 +39,6 @@ mongoose.connect('mongodb://localhost:27017/candlv', {
 	useCreateIndex: true
 });
 
-(async () => {
-
-
-
-})();
-
 const callUserMethod = (method, data) => {
   if(method == 'register') return User.register(data)
   else if(method == 'login') return User.login(data)
@@ -65,4 +59,6 @@ const callBotMethod = (method, data) => {
   else if(method == 'updateStatusBot') return Bot.updateStatusBot(data)
   else if(method == 'updateStrategyOptionsBot') return Bot.updateOptionsBot(data)
   else if(method == 'getBots') return Bot.getChartsBots(data)
+  else if(method == 'updateOperationFromWeb') return Bot.updateBotOperationFromWeb(data) // from Web
+  else if(method == 'updateOperationFromSP') return Bot.updateBotOperationFromServerProcess(data) // from Server Process
 }

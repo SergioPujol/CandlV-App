@@ -1,6 +1,7 @@
 const Bot = require('../model/bot');
 const Chart = require('./chart');
 const ServerProcess = require('../connections/serverProcess');
+const Web = require('../connections/web');
 const _ = require('lodash');
 
 /**
@@ -30,6 +31,7 @@ const _ = require('lodash');
 			status: botStatus,
 			chart_id: chartId,
 			chart_id_relation,
+			operation: { status: '', price: '', percentage: '' }
 		})
 		console.log('Bot created successfully: ', response)
 	} catch (error) {
@@ -43,7 +45,7 @@ const _ = require('lodash');
 	// create bot in server process
 	// if status true from serverProcess, return status 'ok'
 	const chartParams = await Chart.getChartParamsByChartId(chartId) // { symbol, interval }
-	const serverProcessRes = await ServerProcess.sendCreateBot({user_id, bot_id: botId, bot_params: { status: botStatus, ...chartParams, strategy: botStrategy }, bot_options: botOptions})
+	const serverProcessRes = await ServerProcess.sendCreateBot({user_id, bot_id: botId, chart_id: chartId, bot_params: { status: botStatus, ...chartParams, strategy: botStrategy }, bot_options: botOptions})
 
 	if(serverProcessRes) return { status: 'ok' }
 	return { status: 'error', error: 'Bot could not be created' }
@@ -96,7 +98,8 @@ const getChartsBots = async (data) => {
 			name: bot.bot_name,
 			strategy: bot.bot_strategy,
             botOptions: bot.bot_strategy_options,
-            status: bot.status
+            status: bot.status,
+			operation: bot.operation
         }
     })
 
@@ -208,10 +211,61 @@ const updateStrategyAndOptionsBot = async (data) => {
     return { status: 'ok' }
 }
 
+const updateBotOperationFromWeb = async (data) => {
+	const resUpdate = await updateBotOperation(data);
+
+	// send request to Server Process
+
+}
+
+const updateBotOperationFromServerProcess = async (data) => {
+	const resUpdate = await updateBotOperation(data);
+
+	// send request to Web
+	if(resUpdate.status === 'ok') {
+		const webRes = await Web.sendUpdateOperationOnWeb(data)
+
+		if(webRes) return { status: 'ok' }
+		return { status: 'error', error: 'Operation could not be updated on Web' }
+	}
+
+}
+
+const updateBotOperation = async (data) => {
+	console.log('updateBotOperation')
+	console.log(data)
+
+	const { botId, operation } = data;
+	const bot_id = botId;
+
+	const bot = await Bot.findOne({ bot_id });
+
+	if(bot) {
+		try {
+			const response = await Bot.updateOne({ bot_id }, { operation })
+			console.log('Bot updated: ', response)
+			if(response.nModified == 0) {
+				return { status: 'error', error: 'Bot trying to update does not exist' }
+			}
+		} catch (error) {
+			if (error.code === 11000) {
+				// duplicate key
+				return { status: 'error', error: 'Bot operation could not be updated' }
+			}
+			throw error
+		}
+	}
+	else return { status: 'error', error: 'Bot does not exist' }
+
+    return { status: 'ok' }
+}
+
 module.exports = {
 	createBot,
 	getChartsBots,
 	deleteBot,
 	updateStatusBot,
-	updateOptionsBot
+	updateOptionsBot,
+	updateBotOperationFromWeb,
+	updateBotOperationFromServerProcess
 }

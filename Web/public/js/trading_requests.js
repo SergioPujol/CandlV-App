@@ -129,7 +129,7 @@ async function loadBotsFromDB(chartId) {
         console.log(result)
         result.data.forEach(bot => {
             //chartId, botId, values
-            loadBotIntoHtml(bot.chartId, bot.botId, { name: bot.name, strategy: bot.strategy, custom: bot.botOptions, status: bot.status })
+            loadBotIntoHtml(bot.chartId, bot.botId, { name: bot.name, strategy: bot.strategy, custom: bot.botOptions, status: bot.status, operation: bot.operation })
         })
         return true
         

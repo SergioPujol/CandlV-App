@@ -15,7 +15,7 @@ class Bot {
 
     botInterval: NodeJS.Timer | undefined;
 
-    constructor(_id: string, _symbol: string, _interval: string, _strategy: string, /*_status,*/ _botOptions: any) {
+    constructor(_id: string, chartId: string, _symbol: string, _interval: string, _strategy: string, /*_status,*/ _botOptions: any) {
         this.id = _id;
         this.status = false;
         this.strategy = _strategy;
@@ -25,7 +25,7 @@ class Bot {
 
         this.botInterval;
 
-        this.doubleEMA = new DoubleEMA();
+        this.doubleEMA = new DoubleEMA(_id, chartId);
     }
 
     async startBot() {

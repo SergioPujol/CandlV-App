@@ -395,20 +395,20 @@ main.landing-page .start-trading {
     align-items: center;
 }
 
-#actual-operations .operation-container > div {
-    
-}
-
 #actual-operations .operation-container > div.bot-name {
-    width: 20%;
+    width: 15%;
 }
 
 #actual-operations .operation-container > div.operation-entry-price {
-    width: 30%;
+    width: 20%;
 }
 
-#actual-operations .operation-container > div.operation {
-    width: 20%;
+#actual-operations .operation-container > div.operation-state {
+    width: 17.5%;
+}
+
+#actual-operations .operation-container > div.operation-percentage {
+    width: 17.5%;
 }
 
 #actual-operations .operation-container > button {

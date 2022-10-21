@@ -183,44 +183,67 @@ async function startSimulation() {
 }
 
 const createStartLongShape = (obj) => {
+    let color = '#5e078a'
     window.tvWidget.activeChart().createShape(
         obj,
         {
             shape: "arrow_up",
             lock: true,
             overrides: {
-                color: '#FFF200',
-                fontsize: 13
-            }, 
+                color: color,
+                fontsize: 12
+            },
         }
     );
 }
 
 const createStartShortShape = (obj) => {
+    let color = '#5e078a'
     window.tvWidget.activeChart().createShape(
         obj,
         {
             shape: "arrow_down",
             lock: true,
             overrides: {
-                color: '#710193',
-                fontsize: 13
-            }, 
+                color: color,
+                fontsize: 12
+            },
         }
     );
+}
+
+const createRectangle = (obj, color) => {
+    window.tvWidget.activeChart().createMultipointShape(
+        obj,
+            {
+                shape: "rectangle",
+                lock: true,
+                overrides: {
+                    backgroundColor: color,
+                    color: color,
+                    fillBackground: false
+                }, 
+            }
+        );
 }
 
 function loadInvestingPoints(trades) {
     /**
      * load investing points into the TradingView Chart
      */
+    let tempTrade;
     trades.forEach(trade => {
+        let tempObject = {time: trade.date/1000, price: parseFloat(trade.price)}
         if(trade.type == 'enter') {
-            if(trade.decision == 'Start Long') createStartLongShape({time: trade.date/1000})
-            else if(trade.decision == 'Start Short') createStartShortShape({time: trade.date/1000})
+            if(trade.decision == 'Start Long') createStartLongShape(tempObject)
+            else if(trade.decision == 'Start Short') createStartShortShape(tempObject)
+        } else {
+            if(trade.decision == 'Exit Long' && trade.percentage.includes('-') || trade.decision == 'Exit Short' && !trade.percentage.includes('-')) createRectangle([tempTrade, tempObject], '#bf1515')
+            else if(trade.decision == 'Exit Short' && trade.percentage.includes('-') || trade.decision == 'Exit Long' && !trade.percentage.includes('-')) createRectangle([tempTrade, tempObject], '#2b9915')
         }
 
         if(trade.date/1000 < new Date(document.getElementById('from-time').value).getTime()/1000) console.log('weird trade data', trade)
+        else tempTrade = tempObject
     })
 }
 
@@ -247,7 +270,7 @@ async function loadTradeContainers(trades) {
                 <div class="trade-icon"><i class="bi bi-graph-${trade.decision == 'Start Long' ? 'up' : 'down' }"></i></div>
                 <div class="trade-decision">${trade.decision}</div>
                 <div class="trade-price">${parseFloat(trade.price).toFixed(2)}</div>
-                <div class="trade-">-----</div>
+                <div class="trade-percentage">actualPerc%</div>
                 <div class="trade-time">${dateFormat}</div>
             `
         } else {
@@ -261,7 +284,7 @@ async function loadTradeContainers(trades) {
             `
         }
         tradesContainer.append(tradeCont)
-        await sleep(200)
+        await sleep(50)
     }
 
     loadingSpinner();

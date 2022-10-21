@@ -163,3 +163,9 @@ function sendWebClientMessage(data) {
 	if(sendWebClientMessage) wsWebClient.send(data);
 	else console.log('Not WebClient Connected');
 }
+
+// api operations
+
+app.post('/updateOperation', async (req, res) => {
+	if(req.body) sendWebClientMessage(JSON.stringify({ type: 'operation', data: req.body }))
+})

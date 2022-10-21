@@ -2,13 +2,15 @@ export enum DecisionType {
     ExitLong = 'Exit Long',
     ExitShort = 'Exit Short',
     StartLong = 'Start Long',
-    StartShort = 'Start Short'
+    StartShort = 'Start Short',
+    Hold = 'Hold'
 }
 
 export interface Decision {
-    type: 'enter' | 'exit',
+    type: 'enter' | 'exit' | 'hold',
     decision: string, 
     percentage?: string, 
     price: string,
-    date: number
+    date: number,
+    state: 'None' | 'InLong' | 'InShort'
 }

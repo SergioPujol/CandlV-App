@@ -8,11 +8,11 @@ class processBot {
         this.bots;
     }
 
-    async addBot(user_id: string, bot_id: string, { status, symbol, interval, strategy }: any, botOptions: any) {
+    async addBot(user_id: string, chart_id: string, bot_id: string, { status, symbol, interval, strategy }: any, botOptions: any) {
         console.log('addBot',user_id, bot_id, { status, symbol, interval, strategy }, botOptions )
         try {
             if(!this.bots[user_id]) this.bots[user_id] = {}
-            this.bots[user_id][bot_id] = new Bot(bot_id, symbol, interval, strategy, botOptions);
+            this.bots[user_id][bot_id] = new Bot(bot_id, chart_id, symbol, interval, strategy, botOptions);
             this.bots[user_id][bot_id].startBot()
             return true
         } catch (error) {
