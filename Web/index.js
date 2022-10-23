@@ -15,19 +15,20 @@ app.use('/', router);
 app.use(bodyParser.json());
 
 router.get('/',function(req,res){
-    res.sendFile(path.join(__dirname+'/public/home.html'));
+    res.sendFile(path.join(__dirname+'/public/launcher.html'));
     //__dirname : It will resolve to your project folder.
 });
 
-app.post('/api/login', async (req, res) => {
-	return await res.json(await serverDBReq('user', {
-		method: 'login',
+app.post('/api/verify', async (req, res) => {
+	console.log('verify body', req.body)
+	return await res.json(await serverUserDBReq('user', {
+		method: 'verify',
 		data: req.body
 	}))
 })
 
 
-app.post('/api/register', async (req, res) => {
+/*app.post('/api/register', async (req, res) => {
 	const { username, password: plainTextPassword } = req.body
 
 	if (!username || typeof username !== 'string') {
@@ -56,7 +57,7 @@ app.post('/api/checktoken', async (req, res) => {
 		method: 'checkToken',
 		data: req.body
 	}))
-})
+})*/
 
 app.post('/api/createChart', async (req, res) => {
 	return await res.json(await serverDBReq('chart', {
@@ -128,7 +129,13 @@ app.post('/api/simulation', async (req, res) => {
 	}))
 })
 
-app.listen(port, () => console.log(`Server_DB listening on port ${port}!, http://localhost:${port}`));
+app.listen(port, () => console.log(`Web listening on port ${port}!, http://localhost:${port}`));
+
+const serverUserDBReq = async (req, data) => {
+	const res = await got.post(`http://localhost:3101/${req}/`, { json: data });
+	if(res.statusCode == 200) return JSON.parse(res.body)
+	return { status: 'error', error: 'Server not available' }
+}
 
 const serverDBReq = async (req, data) => {
 	const res = await got.post(`http://localhost:3100/${req}/`, { json: data });
@@ -168,4 +175,11 @@ function sendWebClientMessage(data) {
 
 app.post('/updateOperation', async (req, res) => {
 	if(req.body) sendWebClientMessage(JSON.stringify({ type: 'operation', data: req.body }))
+})
+
+// instance ID
+
+app.post('/instanceID', async (req, res) => {
+	console.log('instanceID', req.body)
+	if(req.body) sendWebClientMessage(JSON.stringify({ type: 'instanceID', data: req.body }))
 })

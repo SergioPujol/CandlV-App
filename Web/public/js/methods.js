@@ -49,10 +49,35 @@ function logout() {
     location.href = 'home.html'
 }
 
+const form_settings = document.getElementById('form_settings')
+form_settings.addEventListener('submit', registerKeys)
+async function registerKeys() {
+    event.preventDefault()
+    const pb_bkey = document.getElementById('pb_bkey').value
+    const pv_bkey = document.getElementById('pv_bkey').value
+
+    const result = await fetch('/api/registerKeys', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            pb_bkey,
+            pv_bkey
+        })
+    }).then((res) => res.json())
+
+    if (result.status === 'ok') {
+        // everythign went fine
+        showSuccess('Saved');
+    } else {
+        showError(result.error)
+    }
+}
 
 /** REGISTER FORM */
-const form_reg = document.getElementById('form_reg')
-form_reg.addEventListener('submit', registerUser)
+//const form_reg = document.getElementById('form_reg')
+//form_reg.addEventListener('submit', registerUser)
 
 async function registerUser(event) {
     event.preventDefault()
@@ -79,8 +104,8 @@ async function registerUser(event) {
 }
 
 /** LOGIN FORM */
-const form_log = document.getElementById('form_login')
-form_log.addEventListener('submit', login)
+//const form_log = document.getElementById('form_login')
+//form_log.addEventListener('submit', login)
 
 async function login(event) {
     event.preventDefault()

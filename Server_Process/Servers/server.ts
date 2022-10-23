@@ -35,7 +35,7 @@ class Server {
         this.app.post('/createBot', async (req: any, res: any) => { // Start bot
             const data = req.body; // ex {  }
             console.log('createBot', data)
-            if(await this.processBot.addBot(data.user_id, data.chart_id, data.bot_id, data.bot_params, data.bot_options)) res.send({status:true})
+            if(await this.processBot.addBot(data.chart_id, data.bot_id, data.bot_params, data.bot_options)) res.send({status:true})
             else res.send({status:false})
         });
 
@@ -54,7 +54,7 @@ class Server {
         this.app.post('/deleteBot', async (req: any, res: any) => {
             const data = req.body; // ex {  }
             console.log('deleteBot', data)
-            if(await this.processBot.deleteBot(data.user_id, data.bot_id)) res.send({status:true})
+            if(await this.processBot.deleteBot(data.bot_id)) res.send({status:true})
             else res.send({status:false})
         });
 

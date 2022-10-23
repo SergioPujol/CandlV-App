@@ -12,7 +12,7 @@ function createId() {
     return (Math.random()+1).toString(36).substring(2);
 }
 
-async function createChartDB(options, username) {
+async function createChartDB(options) {
     /** options
      * chart_id
      * chart_options: { symbol, interval }
@@ -24,7 +24,7 @@ async function createChartDB(options, username) {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ ...options, username })
+        body: JSON.stringify({ ...options })
     }).then((res) => res.json())
 
     if (result.status === 'ok') {
@@ -37,7 +37,7 @@ async function createChartDB(options, username) {
     }
 }
 
-async function loadChartsFromDB(username) {
+async function loadChartsFromDB() {
     /**process
      * 1. Obtener nombre de usuario
      * --- en bbdd server ----
@@ -52,7 +52,7 @@ async function loadChartsFromDB(username) {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ username })
+        body: JSON.stringify({ })
     }).then((res) => res.json())
 
     if (result.status === 'ok') {
@@ -74,13 +74,12 @@ async function loadChartsFromDB(username) {
 
 async function deleteChartFromDB(chartId) {
 
-    const username = username_gbl;
     const result = await fetch('/api/deleteChart', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ chartId, username })
+        body: JSON.stringify({ chartId })
     }).then((res) => res.json())
 
     if (result.status === 'ok') {
@@ -166,7 +165,10 @@ async function deleteBot(chartId, botId) {
     const response = await deleteBotFromDB(chartId, botId)
     if(response) {
         const window = document.getElementById(chartId)
+
         window.querySelector(`#botAccordion-${chartId} #accordion-bot-${botId}`).remove()
+        document.getElementById(`operation-${chartId}-${botId}`).remove()
+
     }
 
 }
@@ -204,6 +206,7 @@ async function updateBotStatus(chartId, botId, status) {
 
     if (result.status === 'ok') {
         // everythign went fine
+        status ? updateHtmlOperation({ chartId, botId, operation: { state: 'Awaiting entry', price: '', percentage: ''} }) : updateHtmlOperation({ chartId, botId, operation: { state: 'Bot Stopped', price: '', percentage: ''} }) 
         return true
         
     } else {

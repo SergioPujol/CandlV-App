@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const User = require('./routes/user')
 const Chart = require('./routes/chart')
 const Bot = require('./routes/bot')
 
@@ -16,18 +15,13 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.post('/user', async (req, res) => {
-  const { method, data } = req.body; // ex { method: register, data: {username: 'admin' , plainTextPassword: 'psswd'} }
-  res.send(await callUserMethod(method, data))
-});
-
 app.post('/chart', async (req, res) => {
-  const { method, data } = req.body; // ex { method: register, data: {username: 'admin' , plainTextPassword: 'psswd'} }
+  const { method, data } = req.body;
   res.send(await callChartMethod(method, data))
 });
 
 app.post('/bot', async (req, res) => {
-  const { method, data } = req.body; // ex { method: register, data: {username: 'admin' , plainTextPassword: 'psswd'} }
+  const { method, data } = req.body;
   res.send(await callBotMethod(method, data))
 });
 
@@ -38,13 +32,6 @@ mongoose.connect('mongodb://localhost:27017/candlv', {
 	useUnifiedTopology: true,
 	useCreateIndex: true
 });
-
-const callUserMethod = (method, data) => {
-  if(method == 'register') return User.register(data)
-  else if(method == 'login') return User.login(data)
-  else if(method == 'checkToken') return User.checkToken(data)
-  else if(method == 'getIdByName') return User.getIdByName(data)
-}
 
 const callChartMethod = (method, data) => {
   if(method == 'createChart') return Chart.createChart(data)
@@ -61,4 +48,5 @@ const callBotMethod = (method, data) => {
   else if(method == 'getBots') return Bot.getChartsBots(data)
   else if(method == 'updateOperationFromWeb') return Bot.updateBotOperationFromWeb(data) // from Web
   else if(method == 'updateOperationFromSP') return Bot.updateBotOperationFromServerProcess(data) // from Server Process
+  else if(method == 'stopAllBots') return Bot.stopAllBots()
 }

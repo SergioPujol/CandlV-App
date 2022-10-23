@@ -1,6 +1,7 @@
 const got = require('got');
 
 const sendUpdateOperationOnWeb = async (data) => {
+	console.log('updateOperation', data)
     return await webReq('updateOperation', data)
 }
 

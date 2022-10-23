@@ -1,28 +1,21 @@
 const Chart = require('../model/chart');
-const User = require('./user')
 
 const createChart = async (data) => {
     console.log('createChart')
 
-    const { chartId, chartOptions, minimized, username } = data
+    const { chartId, chartOptions, minimized } = data
     /**Pasos a realizar
      * 1. Obtener usuario en el que se va a crear la chart con el String username
      * 2. Comprobar el usuario
      * 3. Obtener id del usuario en cuestion
      * 4. Crear chart en bbdd con los datos correspondientes
      */
-    
-    const user_id = await User.getIdByName(username)
-    if(!user_id) {
-        return { status: 'error', error: 'User not found' }
-    }
 
     try {
 		const response = await Chart.create({
 			chart_id: chartId,
             chart_options: chartOptions,
             minimized,
-			user_id
 		})
 		console.log('Chart created successfully: ', response)
 	} catch (error) {
@@ -40,13 +33,7 @@ const createChart = async (data) => {
 const getUserCharts = async (data) => {
     console.log('getUserCharts')
 
-    const { username } = data
-    const user_id = await User.getIdByName(username)
-    if(!user_id) {
-        return { status: 'error', error: 'User not found' }
-    }
-
-    const charts = await Chart.find({ user_id })
+    const charts = await Chart.find({ })
 
     const data_charts = charts.map((chart) => {
         return {
@@ -62,14 +49,11 @@ const getUserCharts = async (data) => {
 const deleteChart = async (data) => {
     console.log('deleteChart')
 
-    const { username, chartId } = data;
+    const { chartId } = data;
     const chart_id = chartId;
-    const user_id = await User.getIdByName(username)
-    if(!user_id) {
-        return { status: 'error', error: 'User not found' }
-    }
+    
     try {
-		const response = await Chart.deleteOne({ user_id, chart_id })
+		const response = await Chart.deleteOne({ chart_id })
         console.log('Chart deleted: ', response)
         if(response.deletedCount == 0) {
             return { status: 'error', error: 'Chart trying to delete does not exist' }
@@ -115,18 +99,8 @@ const getIdByChartId = async (chart_id) => {
 	return chart._id
 }
 
-const getUserIdByChartId = async (chart_id) => {
-    console.log('getUserIdByChartId')
-	const chart = await Chart.findOne({ chart_id }).lean();
-	if (!chart) {
-		return false
-	}
-
-	return chart.user_id
-}
-
 const getChartParamsByChartId = async (chart_id) => {
-    console.log('getUserIdByChartId')
+    console.log('getChartParamsByChartId')
 	const chart = await Chart.findOne({ chart_id }).lean();
 	if (!chart) {
 		return false
@@ -141,6 +115,5 @@ module.exports = {
     deleteChart,
     getIdByChartId,
     updateChart,
-    getUserIdByChartId,
     getChartParamsByChartId
 }

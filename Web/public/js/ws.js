@@ -19,5 +19,12 @@ ws.addEventListener("message", ({ data }) => {
             console.log("operation data", operation)
             updateHtmlOperation(operation)
         break;
+
+        case "instanceID":
+            // instanceID
+            const instanceID = data.data.instanceID;
+            console.log("istanceID data", instanceID)
+            setInstanceID(instanceID)
+        break;
     }
 })

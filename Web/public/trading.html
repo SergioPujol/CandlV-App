@@ -18,25 +18,33 @@
         </a>
 
         <ul class="nav col-12 col-md-auto me-lg-auto mb-2 justify-content-center mb-md-0 mx-auto">
-          <li><a href="home.html" class="px-4">Home</a></li>
           <li><a href="trading.html" class="px-4 selected">Trading</a></li>
           <li><a href="simulation.html" class="px-4">Simulation</a></li>
           <li><a href="#" class="px-4">Dashboard</a></li>
         </ul>
 
         <div class="col-md-3 text-end">
-          <div id="non-logged-user">
-            <button type="button" id="login" class="btn btn-2 me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
-            <button type="button" id="register" class="btn btn-1" data-bs-toggle="modal" data-bs-target="#registerModal">Sign-up</button>
-          </div>
-          <div id="logged-user" class="login-container-hide">
-            <div class="dropdown">
-              <button class="btn btn-secondary dropdown-toggle" type="button" id="usernameButton" data-bs-toggle="dropdown" aria-expanded="false">
-                username
-              </button>
-              <ul class="dropdown-menu" aria-labelledby="usernameButton">
-                <li><a class="dropdown-item" id="logout">Logout</a></li>
-              </ul>
+          
+          <button type="button" id="login" class="btn btn-2 me-2" data-bs-toggle="modal" data-bs-target="#settingsModal"><i class="bi bi-sliders"></i></button>
+          
+          <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="settingsModalLabel">Settings</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form class="d-flex flex-column m-0" id="form_settings">
+                    <input type="text" autocomplete="off" id="pb_bkey" placeholder="Public Binance Key" class="mb-2 p-2 rounded border border-secondary" />
+                    <input type="password" autocomplete="off" id="pv_bkey" placeholder="Private Binance Key" class="mb-2 p-2 rounded border border-secondary" />
+                    <div class="login-register-buttons d-flex flex-row pt-2 pb-2">
+                      <button type="button" class="btn btn-secondary w-50" data-bs-dismiss="modal">Close</button>
+                      <input type="submit" class="btn btn-1 w-50" value="Login" />
+                    </div>
+                  </form>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -261,54 +269,6 @@
     </div>
 
   </main>
-
-  <div id="login-register-modals">
-
-    <!-- LOGIN MODAL -->
-    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="loginModalLabel">Login</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form class="d-flex flex-column m-0" id="form_login">
-              <input type="text" autocomplete="off" id="username_log" placeholder="Username" class="mb-2 p-2 rounded border border-secondary" />
-              <input type="password" autocomplete="off" id="password_log" placeholder="Password" class="mb-2 p-2 rounded border border-secondary" />
-              <div class="login-register-buttons d-flex flex-row pt-2 pb-2">
-                <button type="button" class="btn btn-secondary w-50" data-bs-dismiss="modal">Close</button>
-                <input type="submit" class="btn btn-1 w-50" value="Login" />
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- REGISTER MODAL -->
-    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="registerModalLabel">Register</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form class="d-flex flex-column m-0" id="form_reg">
-              <input type="text" autocomplete="off" id="username_reg" placeholder="Username" class="mb-2 p-2 rounded border border-secondary" />
-              <input type="password" autocomplete="off" id="password_reg" placeholder="Password" class="mb-2 p-2 rounded border border-secondary" />
-              <div class="login-register-buttons d-flex flex-row pt-2 pb-2">
-                <button type="button" class="btn btn-secondary w-50" data-bs-dismiss="modal">Close</button>
-                <input type="submit" class="btn btn-1 w-50" value="Register" />
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-  </div>
 
   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
   <script src="../js/methods.js"></script>

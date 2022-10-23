@@ -18,9 +18,7 @@ const _ = require('lodash');
     const { botId, botName, botStrategy, botOptions, botStatus, chartId } = data;
     
     const chart_id_relation = await Chart.getIdByChartId(chartId)
-    const user_id = await Chart.getUserIdByChartId(chartId)
     if(!chart_id_relation) return { status: 'error', error: 'Chart not found' }
-    else if(!user_id) return { status: 'error', error: 'User not found' }
 
     try {
 		const response = await Bot.create({
@@ -45,7 +43,7 @@ const _ = require('lodash');
 	// create bot in server process
 	// if status true from serverProcess, return status 'ok'
 	const chartParams = await Chart.getChartParamsByChartId(chartId) // { symbol, interval }
-	const serverProcessRes = await ServerProcess.sendCreateBot({user_id, bot_id: botId, chart_id: chartId, bot_params: { status: botStatus, ...chartParams, strategy: botStrategy }, bot_options: botOptions})
+	const serverProcessRes = await ServerProcess.sendCreateBot({bot_id: botId, chart_id: chartId, bot_params: { status: botStatus, ...chartParams, strategy: botStrategy }, bot_options: botOptions})
 
 	if(serverProcessRes) return { status: 'ok' }
 	return { status: 'error', error: 'Bot could not be created' }
@@ -59,9 +57,7 @@ const deleteBot = async (data) => {
     const chart_id = chartId, bot_id = botId;
 	
     const chart_id_relation = await Chart.getIdByChartId(chartId)
-    const user_id = await Chart.getUserIdByChartId(chartId)
     if(!chart_id_relation) return { status: 'error', error: 'Chart not found' }
-    else if(!user_id) return { status: 'error', error: 'User not found' }
 
     try {
 		const response = await Bot.deleteOne({ bot_id, chart_id })
@@ -77,7 +73,7 @@ const deleteBot = async (data) => {
 		throw error
 	}
 
-	const serverProcessRes = await ServerProcess.sendDeleteBot({user_id, bot_id: botId})
+	const serverProcessRes = await ServerProcess.sendDeleteBot({bot_id: botId})
 
 	if(serverProcessRes) return { status: 'ok' }
 	return { status: 'error', error: 'Bot could not be deleted' }
@@ -113,12 +109,10 @@ const updateStatusBot = async (data) => {
     const chart_id = chartId, bot_id = botId;
 
 	const chart_id_relation = await Chart.getIdByChartId(chartId)
-    const user_id = await Chart.getUserIdByChartId(chartId)
     if(!chart_id_relation) return { status: 'error', error: 'Chart not found' }
-    else if(!user_id) return { status: 'error', error: 'User not found' }
 
     try {
-		const response = await Bot.updateOne({ bot_id, chart_id }, { status })
+		const response = await Bot.updateOne({ bot_id, chart_id }, { status, ...(!status && { operation: { state: 'Bot Stopped', price: '', percentage: ''}}) })
         console.log('Bot updated: ', response)
         if(response.nModified == 0) {
             return { status: 'error', error: 'Bot trying to update does not exist' }
@@ -134,12 +128,12 @@ const updateStatusBot = async (data) => {
 	if(status) {
 		const chartParams = await Chart.getChartParamsByChartId(chartId) // { symbol, interval }
 		const bot = await Bot.findOne({ chart_id, bot_id });
-		let serverProcessRes = await ServerProcess.sendCreateBot({user_id, bot_id: botId, bot_params: { status: status, ...chartParams, strategy: bot.bot_strategy }, bot_options: bot.bot_strategy_options})
+		let serverProcessRes = await ServerProcess.sendCreateBot({bot_id: botId, chart_id: chartId, bot_params: { status: status, ...chartParams, strategy: bot.bot_strategy }, bot_options: bot.bot_strategy_options})
 
 		if(serverProcessRes) return { status: 'ok' }
 		return { status: 'error', error: 'Bot could not be created' }
 	} else {
-		let serverProcessRes = await ServerProcess.sendDeleteBot({user_id, bot_id: botId})
+		let serverProcessRes = await ServerProcess.sendDeleteBot({bot_id: botId})
 
 		if(serverProcessRes) return { status: 'ok' }
 		return { status: 'error', error: 'Bot could not be deleted' }
@@ -232,8 +226,6 @@ const updateBotOperationFromServerProcess = async (data) => {
 }
 
 const updateBotOperation = async (data) => {
-	console.log('updateBotOperation')
-	console.log(data)
 
 	const { botId, operation } = data;
 	const bot_id = botId;
@@ -260,6 +252,26 @@ const updateBotOperation = async (data) => {
     return { status: 'ok' }
 }
 
+const stopAllBots = async () => {
+    console.log('stopAllBots')
+
+    try {
+		const response = await Bot.updateMany({}, { status: false, operation: { state: 'Bot Stopped', price: '', percentage: ''} });
+        console.log('Bots updated: ', response)
+        if(response.nModified == 0) {
+            return { status: 'error', error: 'Bot trying to update does not exist' }
+        }
+	} catch (error) {
+		if (error.code === 11000) {
+			// duplicate key
+			return { status: 'error', error: 'Bot could not be updated' }
+		}
+		throw error
+	}
+
+	return { status: 'ok' }
+} 
+
 module.exports = {
 	createBot,
 	getChartsBots,
@@ -267,5 +279,6 @@ module.exports = {
 	updateStatusBot,
 	updateOptionsBot,
 	updateBotOperationFromWeb,
-	updateBotOperationFromServerProcess
+	updateBotOperationFromServerProcess,
+	stopAllBots
 }

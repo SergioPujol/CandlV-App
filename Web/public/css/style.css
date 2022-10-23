@@ -25,6 +25,57 @@ body {
     background-color: var(--tertiary-color);
 }
 
+/** Launcher **/
+
+body.launcher {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+body.launcher .auth {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+body.launcher .auth .img-container {
+    height: 200px;
+    width: 200px;
+    border-radius: 50%;
+    border: 1px solid var(--white-color);
+}
+
+body.launcher .auth .auth-form {
+    height: 200px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    color: var(--white-color);
+    justify-content: center;
+}
+
+body.launcher .auth .auth-form span {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+body.launcher .auth .auth-form input {
+    margin-top: 15px;
+}
+
+body.launcher .auth .auth-form button {
+    margin-top: 15px;
+}
+
+body.launcher .auth .separator {
+    height: 300px;
+    width: 1px;
+    border: 1px solid var(--white-color);
+    margin: 0 50px;
+}
+
 /** Header **/
 
 header ul li a {

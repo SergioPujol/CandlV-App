@@ -78,7 +78,7 @@ async function createWindow() {
 
     const status = await createChartDB({
         chartId, chartOptions: { symbol: values.symbol, interval: values.interval }, minimized: false
-    }, username_gbl)
+    })
     console.log('createChartDB', status)
     if(!status) return
 
@@ -327,7 +327,7 @@ async function createBot(chartId) { // what do I need? options from modal and Id
         strategy: staticValuesContainer.querySelector('select.strategies-select').value,
         custom: customOptions,
         status: true,
-        operation: {state: '', price: 'Awaiting entry', percentage: ''}
+        operation: {state: 'Awaiting entry', price: '', percentage: ''}
     }
 
     const status = await createBotDB({
@@ -441,8 +441,8 @@ function createHtmlOperation(chartId, botId, values) {
     operationContainer.classList.add('d-flex', 'flex-row', 'operation-container');
     operationContainer.innerHTML = `
         <div class="bot-name">${name}</div>
-        <div class="operation-entry-price">${operation.price == 'Awaiting entry' ? operation.price : parseFloat(operation.price).toFixed(2)}</div>
         <div class="operation-state">${operation.state.replace(/([A-Z])/g, ' $1').trim()}</div>
+        <div class="operation-entry-price">${operation.price == '' ? '' : parseFloat(operation.price).toFixed(2)}</div>
         <div class="operation-percentage">${operation.percentage}</div>
         <button id="stop-operation-${chartId}-${botId}" class="stop-operation btn btn-1">Stop operation</button>
     `
@@ -459,7 +459,7 @@ function updateHtmlOperation(operationData) {
     const { botId, chartId, operation } = operationData;
 
     const operationContainer = document.getElementById(`operation-${chartId}-${botId}`);
-    operationContainer.querySelector('div.operation-entry-price').textContent = parseFloat(operation.price).toFixed(2);
+    operationContainer.querySelector('div.operation-entry-price').textContent = operation.price == '' ? '' : parseFloat(operation.price).toFixed(2);
     operationContainer.querySelector('div.operation-state').textContent = operation.state.replace(/([A-Z])/g, ' $1').trim();
     operationContainer.querySelector('div.operation-percentage').textContent = operation.percentage;
 }
@@ -517,7 +517,7 @@ function changeProcess(chartId, botId) {
 
 (async function () {
     console.log('check login status')
-    const status = await checkLoginStatus()
-    if(!status) location.href = 'home.html'
-    await loadChartsFromDB(username_gbl)
+    /*const status = await checkLoginStatus()
+    if(!status) location.href = 'home.html'*/
+    await loadChartsFromDB()
 })();
