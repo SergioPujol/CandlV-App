@@ -226,6 +226,23 @@ function createHtmlWindow(chartId, options) {
                         <div class="container-strategy-options d-flex flex-column">
                         <!-- container configurable depending on the strategy -->
                         </div>
+                        <div class="container-money-investment d-flex flex-column">
+                            <span>Investment</span>
+                            <div class="investment-options">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="investmentRadioButtons" id="investmentRadio1" checked>
+                                    <label class="form-check-label" for="investmentRadio1">
+                                        Static investment
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="investmentRadioButtons" id="investmentRadio2">
+                                    <label class="form-check-label" for="investmentRadio2">
+                                        Percentage investment
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

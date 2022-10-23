@@ -1,6 +1,5 @@
 const User = require('../model/user');
 
-
 const verify = async (data) => {
     console.log('login')
     const { key, instanceID } = data

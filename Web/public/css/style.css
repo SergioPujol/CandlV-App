@@ -272,11 +272,11 @@ main .charts-information .window .data .bot-settings.collapse.show {
 
 /* login-register-modals */
 
-#login-register-modals .modal-body form .login-register-buttons button {
+form .settings-buttons button {
     margin-right: 5px;
 }
 
-#login-register-modals .modal-body form .login-register-buttons input {
+form .settings-buttons input {
     margin-left: 5px;
 }
 

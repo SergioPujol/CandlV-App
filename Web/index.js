@@ -50,14 +50,14 @@ app.post('/api/verify', async (req, res) => {
 		method: 'register',
 		data: { username, plainTextPassword }
 	}))
-})
+})*/
 
-app.post('/api/checktoken', async (req, res) => {
-	return await res.json(await serverDBReq('user', {
-		method: 'checkToken',
+app.post('/api/registerKeys', async (req, res) => {
+	return await res.json(await serverDBReq('settings', {
+		method: 'saveKeys',
 		data: req.body
 	}))
-})*/
+})
 
 app.post('/api/createChart', async (req, res) => {
 	return await res.json(await serverDBReq('chart', {

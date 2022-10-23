@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const Chart = require('./routes/chart')
 const Bot = require('./routes/bot')
+const Settings = require('./routes/settings')
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -23,6 +24,11 @@ app.post('/chart', async (req, res) => {
 app.post('/bot', async (req, res) => {
   const { method, data } = req.body;
   res.send(await callBotMethod(method, data))
+});
+
+app.post('/settings', async (req, res) => {
+  const { method, data } = req.body;
+  res.send(await callSettingsMethod(method, data))
 });
 
 app.listen(port, () => console.log(`Server_DB listening on port ${port}!`));
@@ -49,4 +55,9 @@ const callBotMethod = (method, data) => {
   else if(method == 'updateOperationFromWeb') return Bot.updateBotOperationFromWeb(data) // from Web
   else if(method == 'updateOperationFromSP') return Bot.updateBotOperationFromServerProcess(data) // from Server Process
   else if(method == 'stopAllBots') return Bot.stopAllBots()
+}
+
+const callSettingsMethod = (method, data) => {
+  if(method == 'saveKeys') return Settings.saveKeys(data)
+  else if(method == 'getKeys') return Settings.getKeys()
 }
