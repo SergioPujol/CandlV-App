@@ -1,4 +1,6 @@
 import { BinanceAPI } from "../Requests/BinanceAPI";
+import CryptoJS from "crypto-js";
+const k: string = 'lkgna8723nlkfmas23#11]sad';
 
 class BinanceActions {
 
@@ -6,8 +8,8 @@ class BinanceActions {
     secretKey: string;
 
     constructor(_publicKey: string, _secretKey: string) {
-        this.publicKey = _publicKey;
-        this.secretKey = _secretKey
+        this.publicKey = CryptoJS.AES.decrypt(_publicKey, k);
+        this.secretKey = CryptoJS.AES.decrypt(_secretKey, k);
     }
 
     buy() {
