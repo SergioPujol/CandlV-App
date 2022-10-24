@@ -1,7 +1,8 @@
-
-function getSymbols() {
-    // get posible symbols with fetch
-    return ['BTCUSDT','ETHUSDT','BNBUSDT']
+async function getSymbols() {
+    const result = await fetch('https://testnet.binance.vision/api/v3/exchangeInfo', {
+        method: 'GET'
+    }).then((res) => res.json())
+    return result.symbols.map((symbol) => symbol.symbol);
 }
 
 function getIntervals() {

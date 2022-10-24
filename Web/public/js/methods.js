@@ -69,7 +69,7 @@ async function registerKeys() {
 
     if (result.status === 'ok') {
         // everythign went fine
-        showSuccess('Saved');
+        showSuccess('Saved, restart App to complete the change');
     } else {
         showError(result.error)
     }

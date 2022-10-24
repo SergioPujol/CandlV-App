@@ -1,4 +1,5 @@
 import { Bot } from './Classes/Bot';
+import { Client } from './Classes/Client';
 
 class processBot {
 

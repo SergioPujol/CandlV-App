@@ -15,9 +15,15 @@ class ServerDBRequest {
         })
     }
 
+    getApiKeys = async () => {
+        return await this.DBrequest('settings', { 
+            method: 'getKeys', data: {} 
+        })
+    }
+
     DBrequest = async (req: any, data: any) => {
         const res = await got.post(`http://localhost:${this.port}/${req}/`, { json: data });
-        if(res.statusCode == 200 && JSON.parse(res.body).status) return true 
+        if(res.statusCode == 200 && JSON.parse(res.body).status) return JSON.parse(res.body)
         return false
     }
 }

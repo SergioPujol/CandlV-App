@@ -1,10 +1,28 @@
 
+import { Client } from './Classes/Client'
 import { processBot } from './processBot'
 import { Server } from './Servers/server'
+import { ServerDBRequest } from "./Requests/serverDB";
 
-const bots = new processBot()
-const server = new Server(bots)
-server.start()
+const serverDBRequests = new ServerDBRequest();
+
+(async () => {
+    /*const keys = await serverDBRequests.getApiKeys().then((res: any) => {
+        if(res) {
+            return res;
+        } else {
+            return {pb_bkey: '', pv_bkey: ''}
+        }
+    });*/
+    const client = new Client('','')//(keys.pb_bkey, keys.pv_bkey);
+    const balanceRequestTest = await client.getUsdtBalance();
+    if(!balanceRequestTest?.error) console.log(balanceRequestTest)
+    const bots = new processBot();
+    const server = new Server(bots);
+    server.start()
+})();
+
+
 
 /**tests 
 import { DoubleEMA } from './Classes/Strategies';

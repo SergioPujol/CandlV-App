@@ -87,7 +87,7 @@ async function createWindow() {
 }
 
 async function loadChartIntoHtml(chartId, values) {
-    const { window, minimizedChart, modal } = createHtmlWindow(chartId, values);
+    const { window, minimizedChart, modal } = await createHtmlWindow(chartId, values);
     document.querySelector('.charts-information').appendChild(window);
     document.querySelector('.charts-information > .minimized-charts').appendChild(minimizedChart);
     document.querySelector('.charts-information > .modals').appendChild(modal);
@@ -121,7 +121,7 @@ function addTradingViewChart(chartId, valuesChart) {
     },2000)*/
 }
 
-function createHtmlWindow(chartId, options) {
+async function createHtmlWindow(chartId, options) {
     const window = document.createElement('div')
     window.id = `${chartId}`
     window.classList.add('window')
@@ -227,19 +227,25 @@ function createHtmlWindow(chartId, options) {
                         <!-- container configurable depending on the strategy -->
                         </div>
                         <div class="container-money-investment d-flex flex-column">
-                            <span>Investment</span>
+                            <span class="mb-2">Investment</span>
                             <div class="investment-options">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="investmentRadioButtons" id="investmentRadio1" checked>
-                                    <label class="form-check-label" for="investmentRadio1">
-                                        Static investment
-                                    </label>
+                                <div class="fixed-investment-container d-flex flex-row align-items-center mb-2">
+                                    <div class="form-check col-md-6">
+                                        <input class="form-check-input" type="radio" name="investmentRadioButtons" id="investmentRadio1" checked>
+                                        <label class="form-check-label" for="investmentRadio1">
+                                            Fixed investment
+                                        </label>
+                                    </div>
+                                    <input class="col-md-6 form-control" type="text" placeholder="% Investment">
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="investmentRadioButtons" id="investmentRadio2">
-                                    <label class="form-check-label" for="investmentRadio2">
-                                        Percentage investment
-                                    </label>
+                                <div class="fixed-investment-container d-flex flex-row align-items-center mb-2">
+                                    <div class="form-check col-md-6">
+                                        <input class="form-check-input" type="radio" name="investmentRadioButtons" id="investmentRadio2">
+                                        <label class="form-check-label" for="investmentRadio2">
+                                            Percentage investment
+                                        </label>
+                                    </div>
+                                    <input class="col-md-6 form-control" type="text" placeholder="USDT Investment">
                                 </div>
                             </div>
                         </div>
@@ -254,7 +260,7 @@ function createHtmlWindow(chartId, options) {
 
     const marketSettings = window.querySelector(`#window-${chartId}-data-market`);
 
-    const symbolSelect = createSelectSymbol()
+    const symbolSelect = await createSelectSymbol()
     const intervalSelect = createSelectInterval()
 
     marketSettings.querySelector('.symbol-select').appendChild(symbolSelect)
@@ -481,11 +487,11 @@ function updateHtmlOperation(operationData) {
     operationContainer.querySelector('div.operation-percentage').textContent = operation.percentage;
 }
 
-function createSelectSymbol() {
+async function createSelectSymbol() {
     const select = document.createElement('select')
     select.classList.add('col-md-6','form-select')
 
-    const symbols = getSymbols();
+    const symbols = await getSymbols();
     symbols.forEach(symbol => {
         let opt = document.createElement('option');
         opt.value = symbol.toLowerCase();
