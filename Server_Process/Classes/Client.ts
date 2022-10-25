@@ -45,18 +45,6 @@ class Client {
         })
     }
 
-    startLongOrder() {
-
-    }
-
-    startShortOrder() {
-
-    }
-
-    exitOrder() {
-        
-    }
-
     buy() {
 
     }
