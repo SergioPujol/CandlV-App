@@ -1,8 +1,10 @@
 export enum DecisionType {
-    ExitLong = 'Exit Long',
+    /*ExitLong = 'Exit Long',
     ExitShort = 'Exit Short',
     StartLong = 'Start Long',
-    StartShort = 'Start Short',
+    StartShort = 'Start Short',*/
+    Buy = 'Buy',
+    Sell = 'Sell',
     Hold = 'Hold'
 }
 

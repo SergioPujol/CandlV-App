@@ -103,7 +103,7 @@ class DoubleEMA {
             percentage.includes('-') ? utils.logFailure(`#${this.botId} // Exit long with ${percentage}`) : utils.logSuccess(`#${this.botId} // Exit long with ${percentage}`)
             let decision: Decision = {
                 type: 'exit',
-                decision: DecisionType.ExitLong,
+                decision: DecisionType.Sell,
                 percentage: percentage,
                 price: actualPrice,
                 date: actualDate,
@@ -115,7 +115,7 @@ class DoubleEMA {
         } else if(this.state == 'InShort' && this.signal == 'abortShort') {
             // Exit Short
             this.state = 'None';
-            const percentage = this.getPercentageFromLastCross(actualPrice)
+            /*const percentage = this.getPercentageFromLastCross(actualPrice)
             utils.logEnterExit(`#${this.botId} // Exit Short - ${actualPrice}`)
             percentage.includes('-') ? utils.logSuccess(`#${this.botId} // Exit short with ${percentage}`) : utils.logFailure(`#${this.botId} // Exit short with ${percentage}`)
             let decision: Decision = {
@@ -127,7 +127,7 @@ class DoubleEMA {
                 state: this.state
             }
             if(this.simulationBool) this.simulationDecisionList.push(decision)
-            else this.notification.sendNotification(decision)
+            else this.notification.sendNotification(decision)*/
             this.updateSignal(firstEMA, secondEMA, actualPrice, actualDate);
         } else if(this.state == 'None' && this.signal == 'buy') {
             // Go Long
@@ -135,7 +135,7 @@ class DoubleEMA {
             utils.logEnterExit(`#${this.botId} // Go Long - ${actualPrice}`)
             let decision: Decision = {
                 type: 'enter',
-                decision: DecisionType.StartLong,
+                decision: DecisionType.Buy,
                 percentage: '0%',
                 price: actualPrice,
                 date: actualDate,
@@ -147,7 +147,7 @@ class DoubleEMA {
         } else if(this.state == 'None' && this.signal == 'sell') {
             // Go Short
             this.state = 'InShort';
-            utils.logEnterExit(`#${this.botId} // Go Short - ${actualPrice}`)
+            /*utils.logEnterExit(`#${this.botId} // Go Short - ${actualPrice}`)
             let decision: Decision = {
                 type: 'enter',
                 decision: DecisionType.StartShort,
@@ -158,7 +158,7 @@ class DoubleEMA {
             }
             this.lastCallPrice = actualPrice
             if(this.simulationBool) this.simulationDecisionList.push(decision)
-            else this.notification.sendNotification(decision)
+            else this.notification.sendNotification(decision)*/
         } else if((this.state == 'InLong' || this.state == 'InShort') && this.signal == 'hold') {
             utils.logInfo(`#${this.botId} // Hold state - ${actualPrice}`)
              let decision: Decision = {

@@ -235,11 +235,11 @@ function loadInvestingPoints(trades) {
     trades.forEach(trade => {
         let tempObject = {time: trade.date/1000, price: parseFloat(trade.price)}
         if(trade.type == 'enter') {
-            if(trade.decision == 'Start Long') createStartLongShape(tempObject)
-            else if(trade.decision == 'Start Short') createStartShortShape(tempObject)
+            if(trade.decision == 'Buy') createStartLongShape(tempObject)
+            //else if(trade.decision == 'Start Short') createStartShortShape(tempObject)
         } else {
-            if(trade.decision == 'Exit Long' && trade.percentage.includes('-') || trade.decision == 'Exit Short' && !trade.percentage.includes('-')) createRectangle([tempTrade, tempObject], '#bf1515')
-            else if(trade.decision == 'Exit Short' && trade.percentage.includes('-') || trade.decision == 'Exit Long' && !trade.percentage.includes('-')) createRectangle([tempTrade, tempObject], '#2b9915')
+            if(trade.decision == 'Sell' && trade.percentage.includes('-')/* || trade.decision == 'Exit Short' && !trade.percentage.includes('-')*/) createRectangle([tempTrade, tempObject], '#bf1515')
+            else if(/*trade.decision == 'Exit Short' && trade.percentage.includes('-') || */trade.decision == 'Sell' && !trade.percentage.includes('-')) createRectangle([tempTrade, tempObject], '#2b9915')
         }
 
         if(trade.date/1000 < new Date(document.getElementById('from-time').value).getTime()/1000) console.log('weird trade data', trade)
@@ -267,7 +267,7 @@ async function loadTradeContainers(trades) {
         if(trade.type == 'enter') {
             tradeCont.classList.add('trade', 'trade-decision')
             tradeCont.innerHTML = `
-                <div class="trade-icon"><i class="bi bi-graph-${trade.decision == 'Start Long' ? 'up' : 'down' }"></i></div>
+                <div class="trade-icon"><i class="bi bi-graph-${trade.decision == 'Buy' ? 'up' : 'down' }"></i></div>
                 <div class="trade-decision">${trade.decision}</div>
                 <div class="trade-price">${parseFloat(trade.price).toFixed(2)}</div>
                 <div class="trade-percentage">actualPerc%</div>
@@ -276,7 +276,7 @@ async function loadTradeContainers(trades) {
         } else {
             tradeCont.classList.add('trade', 'trade-close')
             tradeCont.innerHTML = `
-                <div class="trade-icon"><i class="bi bi-chevron-${trade.decision == 'Exit Long' ? (trade.percentage.includes('-') ? 'down' : 'up' ) : (trade.percentage.includes('-') ? 'up' : 'down' ) }"></i></div>
+                <div class="trade-icon"><i class="bi bi-chevron-${trade.percentage.includes('-') ? 'down' : 'up'}"></i></div>
                 <div class="trade-decision">${trade.decision}</div>
                 <div class="trade-price">${parseFloat(trade.price).toFixed(2)}</div>
                 <div class="trade-percentage">${trade.percentage}</div>
