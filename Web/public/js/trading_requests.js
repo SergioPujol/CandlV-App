@@ -129,7 +129,7 @@ async function loadBotsFromDB(chartId) {
         console.log(result)
         result.data.forEach(bot => {
             //chartId, botId, values
-            loadBotIntoHtml(bot.chartId, bot.botId, { name: bot.name, strategy: bot.strategy, custom: bot.botOptions, status: bot.status, operation: bot.operation })
+            loadBotIntoHtml(bot.chartId, bot.botId, { name: bot.name, strategy: bot.strategy, custom: bot.botOptions, status: bot.status, operation: bot.operation, investment: bot.investment })
         })
         return true
         
@@ -218,14 +218,14 @@ async function updateBotStatus(chartId, botId, status) {
 
 async function updateBotStrategyOptions(chartId, botId, options) {
 
-    const {strategy, strategyOptions} = options
+    const {strategy, strategyOptions, investment} = options
 
     const result = await fetch('/api/updateStrategyOptionsBot', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ chartId, botId, strategy, strategyOptions })
+        body: JSON.stringify({ chartId, botId, strategy, strategyOptions, investment })
     }).then((res) => res.json())
 
     if (result.status === 'ok') {

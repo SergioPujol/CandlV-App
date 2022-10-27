@@ -1,4 +1,7 @@
-import { DoubleEMA } from './Strategies'
+import { BotModel } from '../Models/bot';
+import { Client } from './Client';
+import { DoubleEMA } from './Strategies_'
+import { Strategy } from './Strategy';
 
 class Bot {
 
@@ -15,9 +18,16 @@ class Bot {
 
     botInterval: NodeJS.Timer | undefined;
 
-    constructor(_id: string, chartId: string, _symbol: string, _interval: string, _strategy: string, /*_status,*/ _botOptions: any) {
+    client: Client;
+
+    private bot: BotModel;
+
+    constructor(_client: Client, _id: string, chartId: string, _symbol: string, _interval: string, _strategy: string, /*_status,*/ _botOptions: any) {
+
+        this.client = _client
+
         this.id = _id;
-        this.status = false;
+        this.status = true;
         this.strategy = _strategy;
         this.botOptions = _botOptions;
         this.symbol = _symbol;
@@ -26,18 +36,33 @@ class Bot {
         this.botInterval;
 
         this.doubleEMA = new DoubleEMA(_id, chartId);
+
+        this.bot = {
+            client: _client,
+            botId: _id,
+            chartId: chartId,
+            symbol: _symbol,
+            interval: _interval,
+            strategy: _strategy,
+            botOptions: _botOptions
+            
+        }
     }
 
     async startBot() {
         console.log(`${this.getId()} - bot started`)
         let interval: number = parseInt(this.interval);
         let tWaitMilisecs = await this.getWaitStart(interval);
+        const strategy = new Strategy(this.bot)
         await setTimeout(async () => {
-            this.resumeBot();
-            if(this.getStatus()) this.selectStrategy(this.strategy)!.flowTrading(this.getId(), this.symbol, this.interval, this.limit, this.botOptions)
+            strategy.trading();
             this.botInterval = setInterval(()=>{
-                if(this.getStatus()) this.selectStrategy(this.strategy)!.flowTrading(this.getId(), this.symbol, this.interval, this.limit, this.botOptions)
-            }, interval*1000*60) // change this time 
+                strategy.trading();
+            }, interval*1000*60)
+            /*this.selectStrategy(this.strategy)!.flowTrading(this.getId(), this.symbol, this.interval, this.limit, this.botOptions)
+            this.botInterval = setInterval(()=>{
+                this.selectStrategy(this.strategy)!.flowTrading(this.getId(), this.symbol, this.interval, this.limit, this.botOptions)
+            }, interval*1000*60)*/
         }, tWaitMilisecs);
     }
 
@@ -47,25 +72,8 @@ class Bot {
         return timeRemaining;
     }
 
-    // TODO: necessary??? 
-    resumeBot() {
-        if(!this.status) {
-            console.log(`${this.getId()} - bot resumed`)
-            this.status = true
-        }
-    }
-
-    /*stopBot() {
-        console.log(`${this.getId()} - bot stopped`)
-        this.status = false
-    }*/
-
     deleteBot() {
         clearInterval(this.botInterval)
-    }
-
-    getStatus() {
-        return this.status
     }
 
     getId() {

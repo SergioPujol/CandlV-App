@@ -15,7 +15,7 @@ const _ = require('lodash');
  const createBot = async (data) => {
     console.log('createBot')
     console.log(data)
-    const { botId, botName, botStrategy, botOptions, botStatus, chartId } = data;
+    const { botId, botName, botStrategy, botOptions, botStatus, chartId, investment } = data;
     
     const chart_id_relation = await Chart.getIdByChartId(chartId)
     if(!chart_id_relation) return { status: 'error', error: 'Chart not found' }
@@ -29,7 +29,8 @@ const _ = require('lodash');
 			status: botStatus,
 			chart_id: chartId,
 			chart_id_relation,
-			operation: { status: '', price: '', percentage: '' }
+			operation: { state: '', price: '', percentage: '' },
+			investment
 		})
 		console.log('Bot created successfully: ', response)
 	} catch (error) {
@@ -43,7 +44,7 @@ const _ = require('lodash');
 	// create bot in server process
 	// if status true from serverProcess, return status 'ok'
 	const chartParams = await Chart.getChartParamsByChartId(chartId) // { symbol, interval }
-	const serverProcessRes = await ServerProcess.sendCreateBot({bot_id: botId, chart_id: chartId, bot_params: { status: botStatus, ...chartParams, strategy: botStrategy }, bot_options: botOptions})
+	const serverProcessRes = await ServerProcess.sendCreateBot({bot_id: botId, chart_id: chartId, bot_params: { status: botStatus, ...chartParams, strategy: botStrategy }, bot_options: botOptions, investment})
 
 	if(serverProcessRes) return { status: 'ok' }
 	return { status: 'error', error: 'Bot could not be created' }
@@ -95,7 +96,8 @@ const getChartsBots = async (data) => {
 			strategy: bot.bot_strategy,
             botOptions: bot.bot_strategy_options,
             status: bot.status,
-			operation: bot.operation
+			operation: bot.operation,
+			investment: bot.investment
         }
     })
 
@@ -128,7 +130,7 @@ const updateStatusBot = async (data) => {
 	if(status) {
 		const chartParams = await Chart.getChartParamsByChartId(chartId) // { symbol, interval }
 		const bot = await Bot.findOne({ chart_id, bot_id });
-		let serverProcessRes = await ServerProcess.sendCreateBot({bot_id: botId, chart_id: chartId, bot_params: { status: status, ...chartParams, strategy: bot.bot_strategy }, bot_options: bot.bot_strategy_options})
+		let serverProcessRes = await ServerProcess.sendCreateBot({bot_id: botId, chart_id: chartId, bot_params: { status: status, ...chartParams, strategy: bot.bot_strategy }, bot_options: bot.bot_strategy_options, investment: bot.investment})
 
 		if(serverProcessRes) return { status: 'ok' }
 		return { status: 'error', error: 'Bot could not be created' }
@@ -151,18 +153,18 @@ const updateOptionsBot = async (data) => {
 	 * 5. IF request from server Process is OK, change on db
 	*/
 
-	const { botId, chartId, strategy, strategyOptions } = data;
+	const { botId, chartId, strategy, strategyOptions, investment } = data;
 	const chart_id = chartId, bot_id = botId;
 
 	const bot = await Bot.findOne({ chart_id, bot_id, bot_strategy: strategy });
 
 	if(bot) {
-		if(_.isEqual(bot.bot_strategy_options, strategyOptions)) return { status: 'ok' }
+		if(_.isEqual(bot.bot_strategy_options, strategyOptions) && _.isEqual(bot.invesment, investment)) return { status: 'ok' }
 		else {
 			// Update values and send request to server process
 			console.log('bot', bot)
 			try {
-				const response = await Bot.updateOne({ bot_id, chart_id, bot_strategy: strategy }, { bot_strategy_options: strategyOptions })
+				const response = await Bot.updateOne({ bot_id, chart_id, bot_strategy: strategy }, { bot_strategy_options: strategyOptions, investment })
 				console.log('Bot updated: ', response)
 				if(response.nModified == 0) {
 					return { status: 'error', error: 'Bot trying to update does not exist' }

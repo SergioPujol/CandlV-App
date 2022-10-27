@@ -4,15 +4,17 @@ import { Client } from './Classes/Client';
 class processBot {
 
     bots: any = {}; // { bot_id: new Bot(params to create bot) }
+    client: Client;
 
-    constructor() {
+    constructor(_client: Client) {
         this.bots;
+        this.client = _client;
     }
 
     async addBot(chart_id: string, bot_id: string, { status, symbol, interval, strategy }: any, botOptions: any) {
         console.log('addBot', bot_id, { status, symbol, interval, strategy }, botOptions )
         try {
-            this.bots[bot_id] = new Bot(bot_id, chart_id, symbol, interval, strategy, botOptions);
+            this.bots[bot_id] = new Bot(this.client, bot_id, chart_id, symbol, interval, strategy, botOptions);
             this.bots[bot_id].startBot()
             return true
         } catch (error) {

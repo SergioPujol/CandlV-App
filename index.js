@@ -54,12 +54,10 @@ const serverDBReq = async (req, data) => {
 // Web
 
 const sendInstanceIDToWeb = async (data) => {
-	console.log('sendInstanceIDToWeb', data)
     return await serverWebReq('instanceID', data)
 }
 
 const serverWebReq = async (req, data) => {
-    console.log('serverWebReq',data)
 	const res = await got.post(`http://localhost:3000/${req}/`, { json: data });
 	if(res.statusCode == 200 && JSON.parse(res.body).status) return true 
 	return false

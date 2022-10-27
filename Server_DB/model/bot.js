@@ -15,7 +15,8 @@ const BotSchema = new mongoose.Schema(
 		status: { type: Boolean, required: true },
 		chart_id: { type: String, required: true },
         chart_id_relation: { type: mongoose.Schema.ObjectId, ref: 'ChartSchema', required: true },
-        operation: { type: { state: String, price: String}, required: true }
+        operation: { type: { state: String, price: String}, required: true },
+        investment: { type: { investmentType: String, quantity: String }, required: true}
     },
 	{ collection: 'bots' }
 )

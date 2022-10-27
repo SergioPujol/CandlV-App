@@ -62,10 +62,10 @@ class Server {
         this.app.post('/simulation', async (req: any, res: any) => {
             const { data } = req.body; // ex {  }
             console.log('simulation', data)
-            const bot = new Bot(data.bot_id, 'simulation-chart', data.symbol, data.interval, data.strategy, data.botOptions)
-            const simulationData = await bot.startSimulation(data.period)
-            if(simulationData) res.send({status: true, data: simulationData})
-            else res.send({status: false, error:'Error with Simulation'})
+            //const bot = new Bot(data.bot_id, 'simulation-chart', data.symbol, data.interval, data.strategy, data.botOptions)
+            //const simulationData = await bot.startSimulation(data.period)
+            //if(simulationData) res.send({status: true, data: simulationData})
+            /*else*/ res.send({status: false, error:'Error with Simulation'})
         });
     }
 

@@ -23,7 +23,6 @@ ws.addEventListener("message", ({ data }) => {
         case "instanceID":
             // instanceID
             const instanceID = data.data.instanceID;
-            console.log("istanceID data", instanceID)
             setInstanceID(instanceID)
         break;
     }

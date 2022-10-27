@@ -37,6 +37,7 @@ const createSettings = async (keys) => {
 	try {
 		await Settings.create(keys)
 	} catch (error) {
+		console.log(error)
 		return { status: 'error', error: 'Error saving Binance Keys' }
 	}
 	return { status: 'ok' }
@@ -58,8 +59,10 @@ const getKeys = async () => {
 			pb_bkey: settings[0].pb_bkey,
 			pv_bkey: settings[0].pv_bkey
 		}
+		return { status: 'ok' , keys }
+	} else {
+		return { status: 'error', error: 'No keys stored' }
 	}
-	return keys
 }
 
 module.exports = {

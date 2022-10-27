@@ -228,24 +228,25 @@ async function createHtmlWindow(chartId, options) {
                         </div>
                         <div class="container-money-investment d-flex flex-column">
                             <span class="mb-2">Investment</span>
+                            <!-- actual usdt -->
                             <div class="investment-options">
                                 <div class="fixed-investment-container d-flex flex-row align-items-center mb-2">
                                     <div class="form-check col-md-6">
-                                        <input class="form-check-input" type="radio" name="investmentRadioButtons" id="investmentRadio1" checked>
-                                        <label class="form-check-label" for="investmentRadio1">
+                                        <input class="form-check-input" type="radio" name="investmentRadioButtons" id="fixedInvestment" checked>
+                                        <label class="form-check-label" for="fixedInvestment">
                                             Fixed investment
                                         </label>
                                     </div>
-                                    <input class="col-md-6 form-control" type="text" placeholder="% Investment">
+                                    <input class="col-md-6 form-control" type="text" id="fixedInvestment-value" placeholder="USDT Investment">
                                 </div>
                                 <div class="fixed-investment-container d-flex flex-row align-items-center mb-2">
                                     <div class="form-check col-md-6">
-                                        <input class="form-check-input" type="radio" name="investmentRadioButtons" id="investmentRadio2">
-                                        <label class="form-check-label" for="investmentRadio2">
+                                        <input class="form-check-input" type="radio" name="investmentRadioButtons" id="percentageInvestment">
+                                        <label class="form-check-label" for="percentageInvestment">
                                             Percentage investment
                                         </label>
                                     </div>
-                                    <input class="col-md-6 form-control" type="text" placeholder="USDT Investment">
+                                    <input class="col-md-6 form-control" type="text" id="percentageInvestment-value" placeholder="% Investment">
                                 </div>
                             </div>
                         </div>
@@ -338,7 +339,14 @@ async function createBot(chartId) { // what do I need? options from modal and Id
 
     const addBotModalContainer = document.getElementById(`add-bot-modal-${chartId}`);
     const staticValuesContainer = addBotModalContainer.querySelector('.static-bot-values');
-    const optionsContainer = addBotModalContainer.querySelectorAll('.container-strategy-options > div')
+    const optionsContainer = addBotModalContainer.querySelectorAll('.container-strategy-options > div');
+    const investment = addBotModalContainer.querySelector('#fixedInvestment').checked ? {
+        investmentType: 'fixedInvestment',
+        quantity: addBotModalContainer.querySelector('#fixedInvestment-value').value
+    } : {
+        investmentType: 'percentageInvestment',
+        quantity: addBotModalContainer.querySelector('#percentageInvestment-value').value
+    }
     
     let customOptions = {};
     optionsContainer.forEach(optionContainer => {
@@ -350,11 +358,12 @@ async function createBot(chartId) { // what do I need? options from modal and Id
         strategy: staticValuesContainer.querySelector('select.strategies-select').value,
         custom: customOptions,
         status: true,
-        operation: {state: 'Awaiting entry', price: '', percentage: ''}
+        operation: {state: 'Awaiting entry', price: '', percentage: ''},
+        investment
     }
 
     const status = await createBotDB({
-        botId, botName: values.name, botStrategy: values.strategy, botOptions: customOptions, botStatus: true
+        botId, botName: values.name, botStrategy: values.strategy, botOptions: customOptions, botStatus: true, investment
     }, chartId)
     console.log('CreateBotDB', status)
     if(!status) return
@@ -407,6 +416,31 @@ function createHtmlBot(chartId, botId, options) {
           <select class="col-md-6 form-select" id="strategy-select-bot-${botId}">
           </select>
         </div>
+        <div class="d-flex flex-column strategies-modal mb-2"></div>
+        <div class="container-money-investment d-flex flex-column">
+            <span class="mb-2">Investment</span>
+            <!-- actual usdt -->
+            <div class="investment-options">
+                <div class="fixed-investment-container d-flex flex-row align-items-center mb-2">
+                    <div class="form-check col-md-6">
+                        <input class="form-check-input" type="radio" name="investmentRadioButtons" id="fixedInvestment" checked>
+                        <label class="form-check-label" for="fixedInvestment">
+                            Fixed investment
+                        </label>
+                    </div>
+                    <input class="col-md-6 form-control" type="text" id="fixedInvestment-value" placeholder="USDT Investment">
+                </div>
+                <div class="fixed-investment-container d-flex flex-row align-items-center mb-2">
+                    <div class="form-check col-md-6">
+                        <input class="form-check-input" type="radio" name="investmentRadioButtons" id="percentageInvestment">
+                        <label class="form-check-label" for="percentageInvestment">
+                            Percentage investment
+                        </label>
+                    </div>
+                    <input class="col-md-6 form-control" type="text" id="percentageInvestment-value" placeholder="% Investment">
+                </div>
+            </div>
+        </div>
       </div>
       <div class="d-flex flex-column">
         <button class="btn btn-1 mt-2" id="save-bot-options-${botId}">Save bot options</button>
@@ -437,8 +471,10 @@ function createHtmlBot(chartId, botId, options) {
     botHtml.querySelector(`#status-bot-${botId}`).addEventListener('change', (e) => updateBotStatus(chartId, botId, e.target.checked))
 
     // STRATEGY OPTIONS BOT
-    botHtml.querySelector(`#save-bot-options-${botId}`).addEventListener('click', (e) => updateBotStrategyOptions(chartId, botId, getInputBotOptions(botHtml.querySelector(`#collapse-bot-${botId} > div`))))
+    botHtml.querySelector(`#save-bot-options-${botId}`).addEventListener('click', (e) => updateBotStrategyOptions(chartId, botId, { ...getInputBotOptions(botHtml.querySelector(`#collapse-bot-${botId} > div`)), investment: getInvestment(botHtml.querySelector(`#collapse-bot-${botId} .investment-options`)) } ))
     
+    collapseContainer.querySelector(`#${options.investment.investmentType}`).checked = true;
+    collapseContainer.querySelector(`#${options.investment.investmentType}-value`).value = options.investment.quantity;
 
     Object.keys(options.custom).forEach(objectKey => {
         let div = document.createElement('div');
@@ -448,13 +484,25 @@ function createHtmlBot(chartId, botId, options) {
         <span class="col-md-6">${objectKey}</span>
         <input class="col-md-6 form-control" type="text" value="${options.custom[objectKey]}">
         `;
-        collapseContainer.appendChild(div);
+        collapseContainer.querySelector('.strategies-modal').appendChild(div);
     })
 
     return botHtml
 }
 
+function getInvestment(container) {
+    return container.querySelector('#fixedInvestment').checked ? {
+        investmentType: 'fixedInvestment',
+        quantity: container.querySelector('#fixedInvestment-value').value
+    } : {
+        investmentType: 'percentageInvestment',
+        quantity: container.querySelector('#percentageInvestment-value').value
+    }
+}
+
 function createHtmlOperation(chartId, botId, values) {
+
+    console.log(values)
 
     const { name, operation } = values;
 
