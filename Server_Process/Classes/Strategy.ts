@@ -1,5 +1,5 @@
 import { BotModel } from "../Models/bot";
-import { Decision } from "../Models/decision";
+import { Decision, DecisionType } from "../Models/decision";
 import { Notification } from './Notification';
 import { DEMA } from "./Strategies";
 import { BinanceAPI } from "../Requests/BinanceAPI";
@@ -17,6 +17,7 @@ class Strategy {
      */
 
     private bot: BotModel;
+    private symbolBoughtQuantity: number = 0;
 
     // Simulation
     private simulationList: Array<Decision> = []
@@ -51,9 +52,22 @@ class Strategy {
             // if buy, call buy - if sell, call sell
             // then, if respond its fine, sendNotification
             // if decision is hold or await, just sendNotification
-
-            // Notification
-            this.notification!.sendNotification(decision)
+            if(!this.bot.client || decision.decision === DecisionType.Hold) this.notification!.sendNotification(decision)
+            else if(decision.decision === DecisionType.Buy) {
+                await this.bot.client.buy('', 0).then((res: any) => {
+                    // get values to send to Trade DB
+                    this.notification!.sendNotification(decision)
+                })
+            } else if(decision.decision === DecisionType.Sell) {
+                if(this.symbolBoughtQuantity === 0) {
+                    // not sell, because there is no previous bought
+                } else {
+                    await this.bot.client.sell('', 0).then((res: any) => {
+                        // get values to send to Trade DB
+                        this.notification!.sendNotification(decision)
+                    })
+                }
+            }
         }
     }
 

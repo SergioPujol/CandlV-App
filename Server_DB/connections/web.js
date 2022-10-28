@@ -5,6 +5,11 @@ const sendUpdateOperationOnWeb = async (data) => {
     return await webReq('updateOperation', data)
 }
 
+const sendAddTradeOnWeb = async (data) => {
+	console.log('addTrade', data)
+    return await webReq('addTrade', data)
+}
+
 const webReq = async (req, data) => {
 	const res = await got.post(`http://localhost:3000/${req}/`, { json: data });
 	if(res.statusCode == 200 && JSON.parse(res.body).status) return true 
@@ -12,5 +17,6 @@ const webReq = async (req, data) => {
 }
 
 module.exports = {
-	sendUpdateOperationOnWeb
+	sendUpdateOperationOnWeb,
+	sendAddTradeOnWeb
 }

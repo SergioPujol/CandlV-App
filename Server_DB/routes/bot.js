@@ -14,7 +14,6 @@ const _ = require('lodash');
 
  const createBot = async (data) => {
     console.log('createBot')
-    console.log(data)
     const { botId, botName, botStrategy, botOptions, botStatus, chartId, investment } = data;
     
     const chart_id_relation = await Chart.getIdByChartId(chartId)

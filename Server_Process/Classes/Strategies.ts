@@ -87,19 +87,6 @@ class DEMA {
         } else if(this.state == 'InShort' && this.signal == 'abortShort') {
             // Exit Short
             this.state = 'None';
-            /*const percentage = this.getPercentageFromLastCross(actualPrice)
-            utils.logEnterExit(`#${this.botId} // Exit Short - ${actualPrice}`)
-            percentage.includes('-') ? utils.logSuccess(`#${this.botId} // Exit short with ${percentage}`) : utils.logFailure(`#${this.botId} // Exit short with ${percentage}`)
-            let decision: Decision = {
-                type: 'exit',
-                decision: DecisionType.ExitShort,
-                percentage: '0%',
-                price: actualPrice,
-                date: actualDate,
-                state: this.state
-            }
-            if(this.simulationBool) this.simulationDecisionList.push(decision)
-            else this.notification.sendNotification(decision)*/
             this.updateSignal(firstEMA, secondEMA, actualPrice, actualDate);
         } else if(this.state == 'None' && this.signal == 'buy') {
             // Go Long
@@ -117,18 +104,6 @@ class DEMA {
         } else if(this.state == 'None' && this.signal == 'sell') {
             // Go Short
             this.state = 'InShort';
-            /*utils.logEnterExit(`#${this.botId} // Go Short - ${actualPrice}`)
-            let decision: Decision = {
-                type: 'enter',
-                decision: DecisionType.StartShort,
-                percentage: '0%',
-                price: actualPrice,
-                date: actualDate,
-                state: this.state
-            }
-            this.lastCallPrice = actualPrice
-            if(this.simulationBool) this.simulationDecisionList.push(decision)
-            else this.notification.sendNotification(decision)*/
         } else if((this.state == 'InLong') && this.signal == 'hold') {
              let decision: Decision = {
                 type: 'hold',

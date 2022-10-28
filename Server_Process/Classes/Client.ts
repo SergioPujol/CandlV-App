@@ -55,7 +55,7 @@ class Client {
         })
     }
 
-    buy(symbol: string, usdtQuantity: number) {
+    async buy(symbol: string, usdtQuantity: number) {
         let order: Order = {
             symbol: symbol,
             side: Side.BUY,
@@ -73,7 +73,7 @@ class Client {
         })
     }
 
-    sell(symbol: string, symbolQuantity: number) {
+    async sell(symbol: string, symbolQuantity: number) {
         let order: Order = {
             symbol: symbol,
             side: Side.SELL,

@@ -11,6 +11,7 @@ ws.addEventListener("message", ({ data }) => {
         case "trade":
             // post trade notification
             console.log("trade data", data)
+            // format { type, symbol, entry_price, symbol_quantity, usdt_quantity, time, bot_strategy, bot_options, chart_id, bot_id }
         break;
 
         case "operation":

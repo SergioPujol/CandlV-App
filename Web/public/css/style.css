@@ -432,16 +432,14 @@ main.landing-page .start-trading {
     padding: 10px;
 }
 
-.trades-notificacions #trades div.trade-trading .collapsed-info > div .trade-chart-info {
-    
-}
-
-.trades-notificacions #trades div.trade-trading .collapsed-info > div .trade-bot-info {
-    margin-left: 10px;
-}
-
 .trades-notificacions #trades div.trade-trading .collapsed-info > div .trade-bot-strategy-options {
-    margin-left: 10px;
+    flex-grow: 1;
+    align-items: center;
+}
+
+.trades-notificacions #trades div.trade-trading .collapsed-info > div .trade-chart-bot-names {
+    width: 20%;
+    align-items: center;
 }
 
 #add-chart {

@@ -10,7 +10,7 @@ export enum DecisionType {
 
 export interface Decision {
     type: 'enter' | 'exit' | 'hold',
-    decision: string, 
+    decision: DecisionType, 
     percentage?: string, 
     price: string,
     date: number,

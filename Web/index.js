@@ -177,6 +177,12 @@ app.post('/updateOperation', async (req, res) => {
 	if(req.body) sendWebClientMessage(JSON.stringify({ type: 'operation', data: req.body }))
 })
 
+// api trades
+
+app.post('/addTrade', async (req, res) => {
+	if(req.body) sendWebClientMessage(JSON.stringify({ type: 'trade', data: req.body }))
+})
+
 // instance ID
 
 app.post('/instanceID', async (req, res) => {
