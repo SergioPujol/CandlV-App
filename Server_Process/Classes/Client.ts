@@ -29,13 +29,26 @@ class Client {
         this.secretKey = _secretKey ? cryptojs.AES.decrypt(_secretKey, k).toString(cryptojs.enc.Utf8) : '';
     }
 
-    getUsdtBalance() {
+    async getUsdtBalance() {
         return this.signRequest(
             'GET',
             '/api/v3/account'
         ).then((res: any) => {
             if(res.status == 200) {
                 return res.data.balances.find((asset: any) => asset.asset === 'USDT').free
+            } else {
+                return { error: 'Invalid Api Keys' } 
+            }
+        })
+    }
+
+    async getSymbolBalance(symbol: string) {
+        return this.signRequest(
+            'GET',
+            '/api/v3/account'
+        ).then((res: any) => {
+            if(res.status == 200) {
+                return res.data.balances.find((asset: any) => asset.asset === symbol).free
             } else {
                 return { error: 'Invalid Api Keys' } 
             }

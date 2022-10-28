@@ -114,7 +114,7 @@ const updateStatusBot = async (data) => {
     if(!chart_id_relation) return { status: 'error', error: 'Chart not found' }
 
     try {
-		const response = await Bot.updateOne({ bot_id, chart_id }, { status, ...(!status && { operation: { state: 'Bot Stopped', price: '', percentage: ''}}) })
+		const response = await Bot.updateOne({ bot_id, chart_id }, { status, ...(!status && { operation: { state: 'Stopped', price: '', percentage: ''}}) })
         console.log('Bot updated: ', response)
         if(response.nModified == 0) {
             return { status: 'error', error: 'Bot trying to update does not exist' }
@@ -258,7 +258,7 @@ const stopAllBots = async () => {
     console.log('stopAllBots')
 
     try {
-		const response = await Bot.updateMany({}, { status: false, operation: { state: 'Bot Stopped', price: '', percentage: ''} });
+		const response = await Bot.updateMany({}, { status: false, operation: { state: 'Stopped', price: '', percentage: ''} });
         console.log('Bots updated: ', response)
         if(response.nModified == 0) {
             return { status: 'error', error: 'Bot trying to update does not exist' }

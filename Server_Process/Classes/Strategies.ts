@@ -129,7 +129,7 @@ class DEMA {
             this.lastCallPrice = actualPrice
             if(this.simulationBool) this.simulationDecisionList.push(decision)
             else this.notification.sendNotification(decision)*/
-        } else if((this.state == 'InLong' || this.state == 'InShort') && this.signal == 'hold') {
+        } else if((this.state == 'InLong') && this.signal == 'hold') {
              let decision: Decision = {
                 type: 'hold',
                 decision: DecisionType.Hold,
@@ -139,7 +139,7 @@ class DEMA {
                 state: this.state
             }
             this.strategyClass.decide(decision)
-        } else if(this.state == 'None' && (this.signal == 'hold' || this.signal == 'awaitEntry')) {
+        } else if((this.state == 'None' || this.state == 'InShort') && (this.signal == 'hold' || this.signal == 'awaitEntry')) {
         } else { }
         
     }

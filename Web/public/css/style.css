@@ -394,6 +394,25 @@ main.landing-page .start-trading {
     background-color: var(--tertiary-color);
     color: var(--white-color);
     margin-bottom: 5px;
+    text-align: center;
+}
+
+.trades-notificacions #trades .trade-icon {
+    width: 30px;
+}
+
+.trades-notificacions #trades div.trade-trading-title {
+    color: var(--white-color);
+    display: flex;
+    flex-direction: row;
+    margin-right: 16px;
+    text-align: center;
+    font-weight: bold;
+    padding: 10px;
+}
+
+.trades-notificacions #trades div.trade-trading-title > div {
+    
 }
 
 .trades-notificacions #trades div.trade-trading .main-info {
@@ -418,6 +437,10 @@ main.landing-page .start-trading {
 }
 
 .trades-notificacions #trades div.trade-trading .collapsed-info > div .trade-bot-info {
+    margin-left: 10px;
+}
+
+.trades-notificacions #trades div.trade-trading .collapsed-info > div .trade-bot-strategy-options {
     margin-left: 10px;
 }
 
@@ -457,23 +480,42 @@ main.landing-page .start-trading {
     align-items: center;
 }
 
-#actual-operations .operation-container > div.bot-name {
+#actual-operations .operations-title {
+    color: var(--white-color);
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    padding: 10px;
+    align-items: center;
+    font-weight: bold;
+}
+
+#actual-operations .operations-title > div {
+    text-align: center;
+}
+
+#actual-operations .operation-container > div {
+    text-align: center;
+}
+
+#actual-operations .operation-container > div.bot-name, #actual-operations .operations-title > div.bot-name {
     width: 15%;
 }
 
-#actual-operations .operation-container > div.operation-entry-price {
+#actual-operations .operation-container > div.operation-entry-price, #actual-operations .operations-title > div.operation-entry-price {
     width: 20%;
 }
 
-#actual-operations .operation-container > div.operation-state {
+#actual-operations .operation-container > div.operation-state, #actual-operations .operations-title > div.operation-state {
     width: 17.5%;
 }
 
-#actual-operations .operation-container > div.operation-percentage {
+#actual-operations .operation-container > div.operation-percentage, #actual-operations .operations-title > div.operation-percentage {
     width: 17.5%;
 }
 
-#actual-operations .operation-container > button {
+#actual-operations .operation-container > button, #actual-operations .operations-title > div.operation-button {
     width: 30%;
 }
 

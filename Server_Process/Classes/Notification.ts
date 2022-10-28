@@ -40,10 +40,6 @@ class Notification {
         
     }
 
-    sendSimulationDecisionList(decisionList: Decision[]) {
-        console.log(decisionList)
-    }
-
 }
 
 export { Notification }

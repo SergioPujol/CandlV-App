@@ -18,11 +18,11 @@ class Bot {
 
     botInterval: NodeJS.Timer | undefined;
 
-    client: Client;
+    client: Client | false;
 
     private bot: BotModel;
 
-    constructor(_client: Client, _id: string, chartId: string, _symbol: string, _interval: string, _strategy: string, /*_status,*/ _botOptions: any) {
+    constructor(_client: Client | false, _id: string, chartId: string, _symbol: string, _interval: string, _strategy: string, /*_status,*/ _botOptions: any, _period: {from:string, to:string} | undefined = undefined) {
 
         this.client = _client
 
@@ -44,8 +44,10 @@ class Bot {
             symbol: _symbol,
             interval: _interval,
             strategy: _strategy,
-            botOptions: _botOptions
-            
+            botOptions: _botOptions,
+            ...(_period && ({
+                simulationPeriod: _period
+            }))
         }
     }
 
@@ -58,11 +60,7 @@ class Bot {
             strategy.trading();
             this.botInterval = setInterval(()=>{
                 strategy.trading();
-            }, interval*1000*60)
-            /*this.selectStrategy(this.strategy)!.flowTrading(this.getId(), this.symbol, this.interval, this.limit, this.botOptions)
-            this.botInterval = setInterval(()=>{
-                this.selectStrategy(this.strategy)!.flowTrading(this.getId(), this.symbol, this.interval, this.limit, this.botOptions)
-            }, interval*1000*60)*/
+            }, interval*1000*60);
         }, tWaitMilisecs);
     }
 
@@ -89,9 +87,12 @@ class Bot {
 
     }
 
-    async startSimulation(period: {from:string, to:string}) {
+    async startSimulation() {
 
-        const simulationData = await this.selectStrategy(this.strategy)!.flowSimulation(this.getId(), this.symbol, this.interval, period, this.botOptions);
+        const strategy = new Strategy(this.bot, false, true)
+
+        const simulationData = await strategy.simulation()
+
         return simulationData
 
     }

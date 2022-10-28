@@ -3,6 +3,8 @@ import { Decision } from "../Models/decision";
 import { Notification } from './Notification';
 import { DEMA } from "./Strategies";
 import { BinanceAPI } from "../Requests/BinanceAPI";
+import { Candle } from "./Candle";
+import { getPeriods } from "./Utils";
 
 const binanceAPI = new BinanceAPI();
 
@@ -46,6 +48,10 @@ class Strategy {
             this.simulationList.push(decision)
         } else {
             // Operations
+            // if buy, call buy - if sell, call sell
+            // then, if respond its fine, sendNotification
+            // if decision is hold or await, just sendNotification
+
             // Notification
             this.notification!.sendNotification(decision)
         }
@@ -73,14 +79,27 @@ class Strategy {
     }
 
     async simulation() {
-
+        console.log(this.bot)
+        const period = this.bot.simulationPeriod;
+        if(!period) return []
         // get values for simulation 
         // for each value call flow
+        const { from, to } = { from: parseInt(period.from)/1000, to: parseInt(period.to)/1000 }
+        var candles: Candle[] = []
+        var nPeriods = getPeriods(from, to, parseInt(this.bot.interval)) + 400;
+        var Tperiods = nPeriods;
+        while(nPeriods > 1000) {
+            candles = [...(await binanceAPI.getPeriodCandleList(this.bot.symbol, this.bot.interval, { from: ((to - (Tperiods - nPeriods + 1000)*60*parseInt(this.bot.interval)) * 1000).toString(), to: ((to - (Tperiods - nPeriods)*60*parseInt(this.bot.interval)) * 1000).toString() })), ...candles]
+            nPeriods -= 1001
+        }
+        candles = [...(await binanceAPI.getPeriodCandleList(this.bot.symbol, this.bot.interval, { from: ((to - (Tperiods)*60*parseInt(this.bot.interval)) * 1000).toString(), to: ((to - (Tperiods - nPeriods)*60*parseInt(this.bot.interval)) * 1000).toString() })), ...candles]
+        
+        for(let i=0; i < (Tperiods - 400); i++) {
+            this.selectedStrategy.flow(candles.slice(i, 402 + i))
+        }
 
+        return this.simulationList;
 
-        this.selectedStrategy.flow([]) 
-
-        return this.simulationList
     }
 
     //abstract flow(any): void;

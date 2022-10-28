@@ -270,7 +270,7 @@ async function loadTradeContainers(trades) {
                 <div class="trade-icon"><i class="bi bi-graph-${trade.decision == 'Buy' ? 'up' : 'down' }"></i></div>
                 <div class="trade-decision">${trade.decision}</div>
                 <div class="trade-price">${parseFloat(trade.price).toFixed(2)}</div>
-                <div class="trade-percentage">actualPerc%</div>
+                <div class="trade-percentage">${trade.percentage}</div>
                 <div class="trade-time">${dateFormat}</div>
             `
         } else {

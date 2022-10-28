@@ -1,7 +1,8 @@
 import { Client } from "../Classes/Client";
 
 export interface BotModel {
-    client: Client;
+    client: Client | false; // not necessary of simulation
+
     botId: string;
     chartId: string;
     symbol: string;
@@ -9,5 +10,5 @@ export interface BotModel {
     strategy: string;
     botOptions: any;
 
-    simulationPeriod?: {from:string, to:string};
+    simulationPeriod?: {from:string, to:string}; // only necessary for simulation
 }

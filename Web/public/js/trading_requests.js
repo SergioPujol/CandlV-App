@@ -207,7 +207,7 @@ async function updateBotStatus(chartId, botId, status) {
 
     if (result.status === 'ok') {
         // everythign went fine
-        status ? updateHtmlOperation({ chartId, botId, operation: { state: 'Awaiting entry', price: '', percentage: ''} }) : updateHtmlOperation({ chartId, botId, operation: { state: 'Bot Stopped', price: '', percentage: ''} }) 
+        status ? updateHtmlOperation({ chartId, botId, operation: { state: 'Awaiting entry', price: '', percentage: ''} }) : updateHtmlOperation({ chartId, botId, operation: { state: 'Stopped', price: '', percentage: ''} }) 
         return true
         
     } else {

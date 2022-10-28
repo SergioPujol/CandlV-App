@@ -1,11 +1,10 @@
 import { EMA } from "./EMA"
 import { Candle } from "./Candle"
-import { Utils } from "./Utils";
 import { BinanceAPI } from "../Requests/BinanceAPI";
 import { Decision, DecisionType } from "../Models/decision";
 import { Notification } from "./Notification";
+import { getPeriods, logEnterExit, logFailure, logInfo, logSuccess } from "./Utils";
 
-const utils = new Utils();
 const binanceAPI = new BinanceAPI();
 
 class DoubleEMA {
@@ -99,8 +98,8 @@ class DoubleEMA {
             // Exit Long
             this.state = 'None';
             const percentage = this.getPercentageFromLastCross(actualPrice)
-            utils.logEnterExit(`#${this.botId} // Exit Long - ${actualPrice}`)
-            percentage.includes('-') ? utils.logFailure(`#${this.botId} // Exit long with ${percentage}`) : utils.logSuccess(`#${this.botId} // Exit long with ${percentage}`)
+            logEnterExit(`#${this.botId} // Exit Long - ${actualPrice}`)
+            percentage.includes('-') ? logFailure(`#${this.botId} // Exit long with ${percentage}`) : logSuccess(`#${this.botId} // Exit long with ${percentage}`)
             let decision: Decision = {
                 type: 'exit',
                 decision: DecisionType.Sell,
@@ -132,7 +131,7 @@ class DoubleEMA {
         } else if(this.state == 'None' && this.signal == 'buy') {
             // Go Long
             this.state = 'InLong';
-            utils.logEnterExit(`#${this.botId} // Go Long - ${actualPrice}`)
+            logEnterExit(`#${this.botId} // Go Long - ${actualPrice}`)
             let decision: Decision = {
                 type: 'enter',
                 decision: DecisionType.Buy,
@@ -160,7 +159,7 @@ class DoubleEMA {
             if(this.simulationBool) this.simulationDecisionList.push(decision)
             else this.notification.sendNotification(decision)*/
         } else if((this.state == 'InLong' || this.state == 'InShort') && this.signal == 'hold') {
-            utils.logInfo(`#${this.botId} // Hold state - ${actualPrice}`)
+            logInfo(`#${this.botId} // Hold state - ${actualPrice}`)
              let decision: Decision = {
                 type: 'hold',
                 decision: DecisionType.Hold,
@@ -171,9 +170,9 @@ class DoubleEMA {
             }
             if(!this.simulationBool) this.notification.sendNotification(decision)
         } else if(this.state == 'None' && (this.signal == 'hold' || this.signal == 'awaitEntry')) {
-            utils.logInfo(`#${this.botId} // Await entry - ${actualPrice}`)
+            logInfo(`#${this.botId} // Await entry - ${actualPrice}`)
         } else {
-            utils.logFailure(`#${this.botId} // Something went wrong on deciding the action`)
+            logFailure(`#${this.botId} // Something went wrong on deciding the action`)
         }
         
     }
@@ -211,7 +210,7 @@ class DoubleEMA {
         const { from, to } = { from: parseInt(period.from)/1000, to: parseInt(period.to)/1000 }
         const periods: Array<number> = [parseInt(botOptions.ema_short_period), parseInt(botOptions.ema_long_period)]
         var candles: Candle[] = []
-        var nPeriods = utils.getPeriods(from, to, parseInt(interval)) + 400;
+        var nPeriods = getPeriods(from, to, parseInt(interval)) + 400;
         var Tperiods = nPeriods;
         while(nPeriods > 1000) {
             candles = [...(await binanceAPI.getPeriodCandleList(symbol, interval, { from: ((to - (Tperiods - nPeriods + 1000)*60*parseInt(interval)) * 1000).toString(), to: ((to - (Tperiods - nPeriods)*60*parseInt(interval)) * 1000).toString() })), ...candles]
