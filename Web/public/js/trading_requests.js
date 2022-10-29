@@ -273,3 +273,25 @@ async function getAllTrades() {
     }
 
 }
+
+async function stopBotOperation(botId) {
+    
+    const result = await fetch('/api/stopOperation', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ botId })
+    }).then((res) => res.json())
+
+    if (result.status === 'ok') {
+        // everythign went fine
+        showSuccess('Stopped operation')
+        return true
+        
+    } else {
+        showError(result.error)
+        return false
+    }
+
+}

@@ -11,6 +11,8 @@ class Bot {
 
     client: Client | false;
 
+    private strategy: Strategy;
+
     private bot: BotModel;
 
     constructor(_client: Client | false, _id: string, chartId: string, _symbol: string, _interval: string, _strategy: string, _botOptions: any, _investment: { investmentType: string, quantity: string }, _period: {from:string, to:string} | undefined = undefined) {
@@ -34,17 +36,18 @@ class Bot {
                 simulationPeriod: _period
             }))
         }
+
+        this.strategy = new Strategy(this.bot);
     }
 
     async startBot() {
         console.log(`${this.getId()} - bot started`)
         let interval: number = parseInt(this.bot.interval);
         let tWaitMilisecs = await this.getWaitStart(interval);
-        const strategy = new Strategy(this.bot);
         await setTimeout(async () => {
-            strategy.trading();
+            this.strategy.trading();
             this.botInterval = setInterval(()=>{
-                strategy.trading();
+                this.strategy.trading();
             }, interval*1000*60);
         }, tWaitMilisecs);
     }
@@ -71,6 +74,10 @@ class Bot {
 
         return simulationData
 
+    }
+
+    async stopOperation() {
+        await this.strategy.stopClientOperation();
     }
 
 }

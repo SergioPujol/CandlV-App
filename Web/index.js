@@ -101,6 +101,13 @@ app.post('/api/deleteBot', async (req, res) => {
 	}))
 })
 
+app.post('/api/stopOperation', async (req, res) => {
+	return await res.json(await serverDBReq('bot', {
+		method: 'stopOperationFromWeb',
+		data: req.body
+	}))
+})
+
 app.post('/api/updateStatusBot', async (req, res) => {
 	return await res.json(await serverDBReq('bot', {
 		method: 'updateStatusBot',

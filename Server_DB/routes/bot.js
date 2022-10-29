@@ -206,10 +206,14 @@ const updateStrategyAndOptionsBot = async (data) => {
     return { status: 'ok' }
 }
 
-const updateBotOperationFromWeb = async (data) => {
-	const resUpdate = await updateBotOperation(data);
+const stopOperationFromWeb = async (data) => {
 
+	const { botId } = data;
 	// send request to Server Process
+	let serverProcessRes = await ServerProcess.sendStopOperation({bot_id: botId})
+
+	if(serverProcessRes) return { status: 'ok' }
+	return { status: 'error', error: 'Bot operation could not be stopped' }
 
 }
 
@@ -289,7 +293,7 @@ module.exports = {
 	deleteBot,
 	updateStatusBot,
 	updateOptionsBot,
-	updateBotOperationFromWeb,
+	stopOperationFromWeb,
 	updateBotOperationFromServerProcess,
 	stopAllBots,
 	getBotNameByBotId

@@ -44,6 +44,15 @@ class processBot {
     getNumRunningBots() {
         return Object.keys(this.bots).length
     }
+
+    async stopBotOperation(bot_id: string) {
+        try {
+            await this.bots[bot_id].stopOperation();
+            return true
+        } catch (error) {
+            return false
+        }
+    }
 }
 
 export { processBot }

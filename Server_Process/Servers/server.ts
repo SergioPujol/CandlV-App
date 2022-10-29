@@ -39,22 +39,17 @@ class Server {
             else res.send({status:false})
         });
 
-        this.app.post('/resumeBot', async (req: any, res: any) => {
-            const data = req.body; // ex {  }
-            console.log('resumeBot', data)
-            // 
-        });
-
-        this.app.post('/stopBot', async (req: any, res: any) => {
-            const data = req.body; // ex {  }
-            console.log('stopBot', data)
-            // 
-        });
-
         this.app.post('/deleteBot', async (req: any, res: any) => {
             const data = req.body; // ex {  }
             console.log('deleteBot', data)
             if(await this.processBot.deleteBot(data.bot_id)) res.send({status:true})
+            else res.send({status:false})
+        });
+
+        this.app.post('/stopOperation', async (req: any, res: any) => {
+            const data = req.body; // ex {  }
+            console.log('stopOperation', data)
+            if(await this.processBot.stopBotOperation(data.bot_id)) res.send({status:true})
             else res.send({status:false})
         });
 

@@ -166,6 +166,18 @@ class Strategy {
         }
         return usdt;
     }
+
+    async stopClientOperation() {
+        await this.decide({
+            type: 'exit',
+            decision: DecisionType.Sell,
+            percentage: '',
+            price: '',
+            date: Date.now(),
+            state: 'None'
+        })
+    }
+
 }
 
 export { Strategy }

@@ -520,6 +520,7 @@ function createHtmlOperation(chartId, botId, values) {
 
     operationContainer.onclick = () => {
         console.log('Stop operation', chartId, botId)
+        stopBotOperation(botId)
     }
 
     operationFatherContainer.appendChild(operationContainer)
@@ -540,7 +541,7 @@ const padL = (nr, len = 2, chr = `0`) => `${nr}`.padStart(2, chr);
 function addTradeToHtml(trade) {
     const tradeContainer = document.createElement('div');
     tradeContainer.classList.add('trade-trading');
-    var dt = new Date(trade.time)
+    var dt = new Date(parseInt(trade.time));
     var dateFormat = `${padL(dt.getDate())}/${padL(dt.getMonth()+1)}/${dt.getFullYear()} ${padL(dt.getHours())}:${padL(dt.getMinutes())}:${padL(dt.getSeconds())}`
     tradeContainer.innerHTML = `
         <div class="main-info">
@@ -559,12 +560,15 @@ function addTradeToHtml(trade) {
             <div>
                 <div class="trade-chart-bot-names trade-chart-info"><strong>Chart Id:</strong> <span>${trade.chart_id}</span></div>
                 <div class="trade-chart-bot-names trade-bot-info"><strong>Bot Name:</strong> <span>${trade.bot_name}</span></div>
-                <div class="trade-bot-strategy-options"><strong>Strategy options:</strong> <span>${trade.bot_strategy} - ${getStrategyOptionsParameters(trade.bot_options)}</span></div>
+                <div class="trade-bot-strategy-options"><strong>Strategy options:</strong> <span>${trade.bot_strategy}${getStrategyOptionsParameters(trade.bot_options)}</span></div>
             </div>
         </div>
         `
 
-    document.getElementById('trades').append(tradeContainer)
+    const tradesMainContainer = document.getElementById('trades')
+    tradesMainContainer.append(tradeContainer);
+    if(tradesMainContainer.querySelectorAll('div.trade-trading').length > 20) tradesMainContainer.querySelectorAll('div.trade-trading')[0].remove()
+    tradeContainer.scrollIntoView();
 
 }
 
@@ -572,7 +576,7 @@ function getStrategyOptionsParameters(bot_options) {
     var str = '';
 
     Object.keys(bot_options).forEach(option => {
-        str =+ `${option.replace('_', ' ')}: ${bot_options[option]}`
+        str += ` - ${option.replace('_', ' ')}: ${bot_options[option]}`
     })
 
     return str
