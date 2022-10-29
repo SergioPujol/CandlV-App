@@ -12,6 +12,7 @@ const ChartSchema = new mongoose.Schema(
 		bot_options: { type: Object, required: true },
         chart_id: { type: String, required: true },
         bot_id: { type: String, required: true },
+        bot_name: { type: String, required: true },
 	},
 	{ collection: 'trades' }
 )

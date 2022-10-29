@@ -10,7 +10,7 @@ class ServerDBRequest {
     }
 
     sendDBAddTrade = async (data: any) => {
-        return await this.DBrequest('bot', { 
+        return await this.DBrequest('trade', { 
             method: 'sendDBAddTrade', data 
         })
     }

@@ -1,4 +1,5 @@
 import { BotModel } from "../Models/bot";
+import { Trade } from "../Models/trade";
 import { Decision, DecisionType } from "../Models/decision";
 import { Notification } from './Notification';
 import { DEMA } from "./Strategies";
@@ -45,6 +46,7 @@ class Strategy {
     }
 
     async decide(decision: Decision) {
+        console.log('decide', decision)
         if(this.simulationBool) {
             this.simulationList.push(decision)
         } else {
@@ -54,17 +56,47 @@ class Strategy {
             // if decision is hold or await, just sendNotification
             if(!this.bot.client || decision.decision === DecisionType.Hold) this.notification!.sendNotification(decision)
             else if(decision.decision === DecisionType.Buy) {
-                await this.bot.client.buy('', 0).then((res: any) => {
-                    // get values to send to Trade DB
-                    this.notification!.sendNotification(decision)
+                await this.bot.client.buy(this.bot.symbol, this.calculateInvestment()).then((res: any) => {
+                    if(!res) return
+                    else {
+                        const trade: Trade = {
+                            type: 'BUY',
+                            symbol: this.bot.symbol,
+                            entry_price: res.fills[0].price,
+                            symbol_quantity: res.executedQty,
+                            usdt_quantity: res.cummulativeQuoteQty,
+                            time: res.transactTime,
+                            bot_strategy: this.bot.strategy,
+                            bot_options: this.bot.botOptions,
+                            chart_id: this.bot.chartId,
+                            bot_id: this.bot.botId
+                        }
+                        // get values to send to Trade DB
+                        this.symbolBoughtQuantity = res.executedQty
+                        this.notification!.sendNotification(decision, trade)
+                    }
                 })
             } else if(decision.decision === DecisionType.Sell) {
                 if(this.symbolBoughtQuantity === 0) {
                     // not sell, because there is no previous bought
+                    this.notification!.sendNotification(decision)
                 } else {
-                    await this.bot.client.sell('', 0).then((res: any) => {
+                    await this.bot.client.sell(this.bot.symbol, this.symbolBoughtQuantity).then((res: any) => {
+                        const trade: Trade = {
+                            type: 'SELL',
+                            symbol: this.bot.symbol,
+                            entry_price: res.fills[0].price,
+                            symbol_quantity: res.executedQty,
+                            usdt_quantity: res.cummulativeQuoteQty,
+                            time: res.transactTime,
+                            bot_strategy: this.bot.strategy,
+                            bot_options: this.bot.botOptions,
+                            chart_id: this.bot.chartId,
+                            bot_id: this.bot.botId
+                        }
                         // get values to send to Trade DB
-                        this.notification!.sendNotification(decision)
+                        this.symbolBoughtQuantity = 0
+                        this.notification!.sendNotification(decision, trade)
                     })
                 }
             }
@@ -87,6 +119,7 @@ class Strategy {
     }
 
     async trading() {
+        console.log('trading')
         // get candles by calling BinanceAPI
         const candles = await binanceAPI.getCandlelist(this.bot.symbol, this.bot.interval, '400');
         this.selectedStrategy.flow(candles);
@@ -116,13 +149,23 @@ class Strategy {
 
     }
 
-    //abstract flow(any): void;
+    calculateInvestment() {
+        var usdt = 0
 
-    /*abstract flowTrading(any): Decision | undefined; // Flow function for trading
-    // decide will execute order
+        if(!this.bot.client) return 0
 
-    abstract flowSimulation(any): Array<Decision> | undefined; // Flow function for simulation
-    // decide will not execute any order*/
+        // if investment is fixedInvesment, just return the quantity
+        if(this.bot.investment.investmentType === 'fixedInvestment') {
+            usdt = parseFloat(this.bot.investment.quantity)
+        }
+        // if investment is %, ask for USDT and get that %
+        else if(this.bot.investment.investmentType === 'percentageInvestment') {
+            this.bot.client.getUsdtBalance().then((res: any) => {
+                usdt = res * parseFloat(this.bot.investment.quantity)/100
+            })
+        }
+        return usdt;
+    }
 }
 
 export { Strategy }

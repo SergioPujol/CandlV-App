@@ -67,9 +67,10 @@ class Client {
             '/api/v3/order',
             order
         ).then((res: any) => {
-            console.log('data', res.data)
-            console.log('quantity', res.data.executedQty)
-            console.log('buy price', res.data.fills[0].price)
+            if(res.status === 200) {
+                console.log(res.data)
+                return res.data
+            } else return false
         })
     }
 
@@ -85,7 +86,10 @@ class Client {
             '/api/v3/order',
             order
         ).then((res: any) => {
-            console.log(res.data)
+            if(res.status === 200) {
+                console.log(res.data)
+                return res.data
+            } else return false
         })
     }
 

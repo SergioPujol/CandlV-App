@@ -239,3 +239,37 @@ async function updateBotStrategyOptions(chartId, botId, options) {
     }
 
 }
+
+async function getAllTrades() {
+    /**process
+     * 1. Obtener nombre de usuario
+     * --- en bbdd server ----
+     * 2. obtener id del userc
+     * 3. obtener todos los charts con id de usuario obtenida
+     * 4. Enviar de vuelta lista con charts
+     * --- en web ---
+     * 5. recorrer listado devuelto para añadir las charts
+     */
+     const result = await fetch('/api/getTrades', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ })
+    }).then((res) => res.json())
+    
+    if (result.status === 'ok') {
+        // everythign went fine
+        console.log(result)
+        result.data.forEach((trade) => {
+            addTradeToHtml(trade)
+        })
+        
+        return true
+        
+    } else {
+        showError(result.error)
+        return false
+    }
+
+}

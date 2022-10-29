@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const Chart = require('./routes/chart')
 const Bot = require('./routes/bot')
+const Trade = require('./routes/trade')
 const Settings = require('./routes/settings')
 
 const express = require('express');
@@ -24,6 +25,11 @@ app.post('/chart', async (req, res) => {
 app.post('/bot', async (req, res) => {
   const { method, data } = req.body;
   res.send(await callBotMethod(method, data))
+});
+
+app.post('/trade', async (req, res) => {
+  const { method, data } = req.body;
+  res.send(await callTradeMethod(method, data))
 });
 
 app.post('/settings', async (req, res) => {
@@ -55,6 +61,11 @@ const callBotMethod = (method, data) => {
   else if(method == 'updateOperationFromWeb') return Bot.updateBotOperationFromWeb(data) // from Web
   else if(method == 'updateOperationFromSP') return Bot.updateBotOperationFromServerProcess(data) // from Server Process
   else if(method == 'stopAllBots') return Bot.stopAllBots()
+}
+
+const callTradeMethod = (method, data) => {
+  if(method == 'sendDBAddTrade') return Trade.createTrade(data)
+  else if(method == 'getTrades') return Trade.getLast20Trades()
 }
 
 const callSettingsMethod = (method, data) => {

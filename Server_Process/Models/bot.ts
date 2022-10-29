@@ -10,5 +10,6 @@ export interface BotModel {
     strategy: string;
     botOptions: any;
 
+    investment: { investmentType: string, quantity: string };
     simulationPeriod?: {from:string, to:string}; // only necessary for simulation
 }

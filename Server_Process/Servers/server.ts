@@ -35,7 +35,7 @@ class Server {
         this.app.post('/createBot', async (req: any, res: any) => { // Start bot
             const data = req.body; // ex {  }
             console.log('createBot', data)
-            if(await this.processBot.addBot(data.chart_id, data.bot_id, data.bot_params, data.bot_options)) res.send({status:true})
+            if(await this.processBot.addBot(data.chart_id, data.bot_id, data.bot_params, data.bot_options, data.investment)) res.send({status:true})
             else res.send({status:false})
         });
 
@@ -62,7 +62,7 @@ class Server {
         this.app.post('/simulation', async (req: any, res: any) => {
             const { data } = req.body; // ex {  }
             console.log('simulation', data)
-            const bot = new Bot(false, data.bot_id, 'simulation-chart', data.symbol, data.interval, data.strategy, data.botOptions, data.period)
+            const bot = new Bot(false, data.bot_id, 'simulation-chart', data.symbol, data.interval, data.strategy, data.botOptions, { investmentType: 'fixedInvestment', quantity: '50' }, data.period)
             const simulationData = await bot.startSimulation()
             if(simulationData) res.send({status: true, data: simulationData})
             else res.send({status: false, error:'Error with Simulation'})

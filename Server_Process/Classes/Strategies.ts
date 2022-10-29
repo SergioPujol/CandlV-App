@@ -116,7 +116,7 @@ class DEMA {
             this.strategyClass.decide(decision)
         } else if((this.state == 'None' || this.state == 'InShort') && (this.signal == 'hold' || this.signal == 'awaitEntry')) {
         } else { }
-        
+        console.log(this.state, this.signal)
     }
 
     updateSignal(firstEMA: EMA, secondEMA: EMA, actualPrice: string, actualDate: number) {

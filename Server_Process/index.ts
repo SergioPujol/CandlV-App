@@ -19,7 +19,7 @@ const serverDBRequests = new ServerDBRequest();
     });
     const client: Client = new Client(keys.pb_bkey, keys.pv_bkey);
     //await client.sell('BTCUSDT', 0.006)
-    //await client.buy('BTCUSDT', 100)
+    //await client.buy('BTCUSDT', 30)
     const balanceRequestTest = await client.getUsdtBalance();
     if(!balanceRequestTest?.error) console.log(balanceRequestTest);
     

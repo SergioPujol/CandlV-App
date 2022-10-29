@@ -122,6 +122,13 @@ app.post('/api/getBots', async (req, res) => {
 	}))
 })
 
+app.post('/api/getTrades', async (req, res) => {
+	return await res.json(await serverDBReq('trade', {
+		method: 'getTrades',
+		data: req.body
+	}))
+})
+
 // Post Server Process for the simulation
 app.post('/api/simulation', async (req, res) => {
 	return await res.json(await serverProcessReq('simulation', {

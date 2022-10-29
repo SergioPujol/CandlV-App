@@ -535,6 +535,49 @@ function updateHtmlOperation(operationData) {
     operationContainer.querySelector('div.operation-percentage').textContent = operation.percentage;
 }
 
+const padL = (nr, len = 2, chr = `0`) => `${nr}`.padStart(2, chr);
+
+function addTradeToHtml(trade) {
+    const tradeContainer = document.createElement('div');
+    tradeContainer.classList.add('trade-trading');
+    var dt = new Date(trade.time)
+    var dateFormat = `${padL(dt.getDate())}/${padL(dt.getMonth()+1)}/${dt.getFullYear()} ${padL(dt.getHours())}:${padL(dt.getMinutes())}:${padL(dt.getSeconds())}`
+    tradeContainer.innerHTML = `
+        <div class="main-info">
+        
+            <div class="trade-icon"><i class="bi bi-graph-up"></i></div>
+            <div class="trade-order col">${trade.type}</div>
+            <div class="trade-symbol col">${trade.symbol}</div>
+            <div class="trade-entry-price col">${parseFloat(trade.entry_price).toFixed(2)} USDT</div>
+            <div class="trade-symbol-quantity col">${parseFloat(trade.symbol_quantity).toFixed(4)}</div>
+            <div class="trade-usdt-quantity col">${parseFloat(trade.usdt_quantity).toFixed(2)}</div>
+            <div class="trade-time col">${dateFormat}</div>
+
+            <div data-bs-toggle="collapse" data-bs-target="#trade-${trade.trade_id}" aria-expanded="false" aria-controls="trade-${trade.trade_id}"><i class="bi bi-caret-down-fill"></i></div>
+        </div>
+        <div class="collapsed-info collapse multi-collapse" id="trade-${trade.trade_id}">
+            <div>
+                <div class="trade-chart-bot-names trade-chart-info"><strong>Chart Id:</strong> <span>${trade.chart_id}</span></div>
+                <div class="trade-chart-bot-names trade-bot-info"><strong>Bot Name:</strong> <span>${trade.bot_name}</span></div>
+                <div class="trade-bot-strategy-options"><strong>Strategy options:</strong> <span>${trade.bot_strategy} - ${getStrategyOptionsParameters(trade.bot_options)}</span></div>
+            </div>
+        </div>
+        `
+
+    document.getElementById('trades').append(tradeContainer)
+
+}
+
+function getStrategyOptionsParameters(bot_options) {
+    var str = '';
+
+    Object.keys(bot_options).forEach(option => {
+        str =+ `${option.replace('_', ' ')}: ${bot_options[option]}`
+    })
+
+    return str
+}
+
 async function createSelectSymbol() {
     const select = document.createElement('select')
     select.classList.add('col-md-6','form-select')
@@ -590,5 +633,6 @@ function changeProcess(chartId, botId) {
     console.log('check login status')
     /*const status = await checkLoginStatus()
     if(!status) location.href = 'home.html'*/
-    await loadChartsFromDB()
+    await loadChartsFromDB();
+    await getAllTrades();
 })();

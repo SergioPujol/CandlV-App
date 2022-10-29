@@ -271,7 +271,17 @@ const stopAllBots = async () => {
 	}
 
 	return { status: 'ok' }
-} 
+}
+
+const getBotNameByBotId = async (bot_id) => {
+    console.log('getBotNameByBotId')
+	const bot = await Bot.findOne({ bot_id }).lean();
+	if (!bot) {
+		return false
+	}
+
+	return bot.bot_name
+}
 
 module.exports = {
 	createBot,
@@ -281,5 +291,6 @@ module.exports = {
 	updateOptionsBot,
 	updateBotOperationFromWeb,
 	updateBotOperationFromServerProcess,
-	stopAllBots
+	stopAllBots,
+	getBotNameByBotId
 }
