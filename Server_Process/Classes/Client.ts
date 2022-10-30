@@ -8,12 +8,7 @@ const k: string = 'lkgna8723nlkfmas23#11]sad';
 
 
 
-/** 
- * Spot
-API Key: rIi4kvUydJRKaMJWKTM7X0uswxE03sbpTbtpH0oLDGZJRqrRO7OkaERis4Kq9hGx
 
-Secret Key: fzi8NenRbF9oQ0Ox6MEy4MjvnzKOglCEvo3X19ugxrGKoTYu0RwEfTw4LEOS0pcL
-*/
 
 class Client {
 
@@ -23,10 +18,12 @@ class Client {
     client: any;
     private publicKey;
     private secretKey;
+    private testnet;
 
-    constructor(_publicKey: string, _secretKey: string) {
+    constructor(_publicKey: string, _secretKey: string, _testnet: Boolean = true) {
         this.publicKey = _publicKey ? cryptojs.AES.decrypt(_publicKey, k).toString(cryptojs.enc.Utf8) : '';
         this.secretKey = _secretKey ? cryptojs.AES.decrypt(_secretKey, k).toString(cryptojs.enc.Utf8) : '';
+        this.testnet = _testnet
     }
 
     async getUsdtBalance() {
@@ -104,7 +101,7 @@ class Client {
         console.log(`${queryString}&signature=${signature}`)
         return createRequest({
           method,
-          baseURL: 'https://testnet.binance.vision/',
+          baseURL: this.testnet ? 'https://testnet.binance.vision/' : 'https://api.binance.com/api/',
           url: `${path}?${queryString}&signature=${signature}`,
           apiKey: this.publicKey,
           timeout: 2500,

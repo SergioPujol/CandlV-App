@@ -217,6 +217,17 @@ const stopOperationFromWeb = async (data) => {
 
 }
 
+const startOperationFromWeb = async (data) => {
+
+	const { botId } = data;
+	// send request to Server Process
+	let serverProcessRes = await ServerProcess.sendStartOperation({bot_id: botId})
+
+	if(serverProcessRes) return { status: 'ok' }
+	return { status: 'error', error: 'Bot operation could not be started' }
+
+}
+
 const updateBotOperationFromServerProcess = async (data) => {
 	const resUpdate = await updateBotOperation(data);
 
@@ -294,6 +305,7 @@ module.exports = {
 	updateStatusBot,
 	updateOptionsBot,
 	stopOperationFromWeb,
+	startOperationFromWeb,
 	updateBotOperationFromServerProcess,
 	stopAllBots,
 	getBotNameByBotId

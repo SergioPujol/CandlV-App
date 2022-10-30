@@ -5,23 +5,24 @@ const k = 'lkgna8723nlkfmas23#11]sad';
 const saveKeys = async (data) => {
     console.log('saveKeys')
     const { pb_bkey, pv_bkey } = encryptKeys(data);
+	const { testnet } = data
 	var response;
     const settings = await Settings.find({ });
 	if(settings.length > 0) {
 		// update settings
-		response = await updateSettings(settings[0]._id, { pb_bkey: pb_bkey, pv_bkey: pv_bkey })
+		response = await updateSettings(settings[0]._id, { pb_bkey: pb_bkey, pv_bkey: pv_bkey, testnet })
 	} else {
 		// create settings
-		response = await createSettings({ pb_bkey, pv_bkey })
+		response = await createSettings({ pb_bkey, pv_bkey, testnet })
 	}
 	console.log('Settings saved successfully: ', response)
 	return response;
     
 }
 
-const updateSettings = async (id, keys) => {
+const updateSettings = async (id, settings) => {
 	try {
-		const response = await Settings.updateOne({ _id: id }, keys);
+		const response = await Settings.updateOne({ _id: id }, settings);
 		console.log('Settings updated: ', response)
 		if(response.nModified == 0) {
 			return { status: 'error', error: 'Keys could not be saved' }
@@ -57,7 +58,8 @@ const getKeys = async () => {
 	if(settings.length > 0) {
 		keys = {
 			pb_bkey: settings[0].pb_bkey,
-			pv_bkey: settings[0].pv_bkey
+			pv_bkey: settings[0].pv_bkey,
+			testnet: settings[0].testnet
 		}
 		return { status: 'ok' , keys }
 	} else {

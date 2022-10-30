@@ -53,6 +53,15 @@ class processBot {
             return false
         }
     }
+
+    async startBotOperation(bot_id: string) {
+        try {
+            await this.bots[bot_id].startOperation();
+            return true
+        } catch (error) {
+            return false
+        }
+    }
 }
 
 export { processBot }

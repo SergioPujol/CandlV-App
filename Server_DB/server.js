@@ -59,6 +59,7 @@ const callBotMethod = (method, data) => {
   else if(method == 'updateStrategyOptionsBot') return Bot.updateOptionsBot(data)
   else if(method == 'getBots') return Bot.getChartsBots(data)
   else if(method == 'stopOperationFromWeb') return Bot.stopOperationFromWeb(data) // from Web
+  else if(method == 'startOperationFromWeb') return Bot.startOperationFromWeb(data) // from Web
   else if(method == 'updateOperationFromSP') return Bot.updateBotOperationFromServerProcess(data) // from Server Process
   else if(method == 'stopAllBots') return Bot.stopAllBots()
 }

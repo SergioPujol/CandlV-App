@@ -80,6 +80,10 @@ class Bot {
         await this.strategy.stopClientOperation();
     }
 
+    async startOperation() {
+        await this.strategy.startClientOperation();
+    }
+
 }
 
 export { Bot }

@@ -2,22 +2,97 @@ import { Strategy } from "./Strategy";
 import { Candle } from "./Candle";
 import { EMA } from "./EMA";
 import { BotModel } from "../Models/bot";
+import { DEMAObj, PriceDateObj } from "../Models/strategies";
 import { Decision, DecisionType } from "../Models/decision";
 
-class DEMA {
+abstract class Strategies {
+    bot: BotModel;
+    strategyClass: Strategy;
 
-    private bot: BotModel;
-    private strategyClass: Strategy;
+    state: 'None' | 'InLong' | 'InShort' = 'None';
+    signal: 'hold' | 'buy' | 'sell' | 'abortLong' | 'abortShort' | 'awaitEntry' = 'hold';
 
-    private periods: Array<number>;
-    private lastCallPrice: string = '0';
-
-    private state: 'None' | 'InLong' | 'InShort' = 'None';
-    private signal: 'hold' | 'buy' | 'sell' | 'abortLong' | 'abortShort' | 'awaitEntry' = 'hold';
+    pricedateObject: PriceDateObj | undefined;
+    lastCallPrice: string = '0';
 
     constructor(_bot: BotModel, _strategyClass: Strategy) {
         this.bot = _bot;
         this.strategyClass = _strategyClass;
+    }
+
+    abstract flow(candles: Candle[]): Promise<void>;
+
+    abstract updateSignal(): void;
+
+    decideAct() {
+
+        if(this.state == 'InLong' && this.signal == 'abortLong') {
+            // Exit Long
+            this.state = 'None';
+            let decision: Decision = {
+                type: 'exit',
+                decision: DecisionType.Sell,
+                percentage: this.getPercentageFromLastCross(this.pricedateObject!.actualPrice),
+                price: this.pricedateObject!.actualPrice,
+                date: this.pricedateObject!.actualDate,
+                state: this.state
+            }
+            this.strategyClass.decide(decision)
+            this.updateSignal();
+        } else if(this.state == 'InShort' && this.signal == 'abortShort') {
+            // Exit Short
+            this.state = 'None';
+            this.updateSignal();
+        } else if(this.state == 'None' && this.signal == 'buy') {
+            // Go Long
+            this.state = 'InLong';
+            let decision: Decision = {
+                type: 'enter',
+                decision: DecisionType.Buy,
+                percentage: '0%',
+                price: this.pricedateObject!.actualPrice,
+                date: this.pricedateObject!.actualDate,
+                state: this.state
+            }
+            this.lastCallPrice = this.pricedateObject!.actualPrice
+            this.strategyClass.decide(decision)
+        } else if(this.state == 'None' && this.signal == 'sell') {
+            // Go Short
+            this.state = 'InShort';
+        } else if((this.state == 'InLong') && this.signal == 'hold') {
+             let decision: Decision = {
+                type: 'hold',
+                decision: DecisionType.Hold,
+                percentage: this.getPercentageFromLastCross(this.pricedateObject!.actualPrice),
+                price: this.pricedateObject!.actualPrice,
+                date: this.pricedateObject!.actualDate,
+                state: this.state
+            }
+            this.strategyClass.decide(decision)
+        } else if((this.state == 'None' || this.state == 'InShort') && (this.signal == 'hold' || this.signal == 'awaitEntry')) {
+        } else { }
+        console.log(this.state, this.signal)
+    }
+
+    private getPercentageFromLastCross(actualPrice: string): string {
+        const lastPrice: number = parseFloat(this.lastCallPrice);
+        return (((parseFloat(actualPrice) - lastPrice) / lastPrice) * 100).toFixed(3) + '%'
+    }
+
+    changeState(state: "None" | "InLong" | "InShort") {
+        this.state = state;
+        if(state === "InLong") this.lastCallPrice = this.pricedateObject!.actualPrice
+    }
+
+}
+
+class DEMA extends Strategies {
+
+    private periods: Array<number>;
+    private demaObject: DEMAObj | undefined;
+
+    constructor(_bot: BotModel, _strategyClass: Strategy) {
+        super(_bot, _strategyClass)
         this.periods = [parseInt(this.bot.botOptions.ema_short_period), parseInt(this.bot.botOptions.ema_long_period)]
     }
 
@@ -39,9 +114,15 @@ class DEMA {
             EMAs.push(new EMA(listEMAs, period))
         });
 
-        const actualPrice = candles[candles.length-1].getClose()
-        const actualDate = candles[candles.length-1].getOpenTime()
-        this.updateSignal(EMAs[0], EMAs[1], actualPrice, actualDate)
+        this.pricedateObject = {
+            actualPrice: candles[candles.length-1].getClose(),
+            actualDate: candles[candles.length-1].getOpenTime()
+        }
+        this.demaObject = {
+            firstEMA: EMAs[0],
+            secondEMA: EMAs[1]
+        }
+        this.updateSignal()
     }
 
     private calculateEMA(previousEmaValue: number, multiplicator: number, actualClosePrice: string) {
@@ -63,31 +144,30 @@ class DEMA {
         return 2/(nPeriod+1)
     }
 
-    private getPercentageFromLastCross(actualPrice: string): string {
+    /*private getPercentageFromLastCross(actualPrice: string): string {
         const lastPrice: number = parseFloat(this.lastCallPrice);
         return (((parseFloat(actualPrice) - lastPrice) / lastPrice) * 100).toFixed(3) + '%'
     }
 
-    decideAct(firstEMA: EMA, secondEMA: EMA, actualPrice: string, actualDate: number) {
+    decideAct() {
 
         if(this.state == 'InLong' && this.signal == 'abortLong') {
             // Exit Long
             this.state = 'None';
-            const percentage = this.getPercentageFromLastCross(actualPrice)
             let decision: Decision = {
                 type: 'exit',
                 decision: DecisionType.Sell,
-                percentage: percentage,
-                price: actualPrice,
-                date: actualDate,
+                percentage: '0%',
+                price: this.pricedateObject!.actualPrice,
+                date: this.pricedateObject!.actualDate,
                 state: this.state
             }
             this.strategyClass.decide(decision)
-            this.updateSignal(firstEMA, secondEMA, actualPrice, actualDate);
+            this.updateSignal();
         } else if(this.state == 'InShort' && this.signal == 'abortShort') {
             // Exit Short
             this.state = 'None';
-            this.updateSignal(firstEMA, secondEMA, actualPrice, actualDate);
+            this.updateSignal();
         } else if(this.state == 'None' && this.signal == 'buy') {
             // Go Long
             this.state = 'InLong';
@@ -95,11 +175,11 @@ class DEMA {
                 type: 'enter',
                 decision: DecisionType.Buy,
                 percentage: '0%',
-                price: actualPrice,
-                date: actualDate,
+                price: this.pricedateObject!.actualPrice,
+                date: this.pricedateObject!.actualDate,
                 state: this.state
             }
-            this.lastCallPrice = actualPrice
+            this.lastCallPrice = this.pricedateObject!.actualPrice
             this.strategyClass.decide(decision)
         } else if(this.state == 'None' && this.signal == 'sell') {
             // Go Short
@@ -108,21 +188,21 @@ class DEMA {
              let decision: Decision = {
                 type: 'hold',
                 decision: DecisionType.Hold,
-                percentage: this.getPercentageFromLastCross(actualPrice),
-                price: actualPrice,
-                date: actualDate,
+                percentage: this.getPercentageFromLastCross(this.pricedateObject!.actualPrice),
+                price: this.pricedateObject!.actualPrice,
+                date: this.pricedateObject!.actualDate,
                 state: this.state
             }
             this.strategyClass.decide(decision)
         } else if((this.state == 'None' || this.state == 'InShort') && (this.signal == 'hold' || this.signal == 'awaitEntry')) {
         } else { }
         console.log(this.state, this.signal)
-    }
+    }*/
 
-    updateSignal(firstEMA: EMA, secondEMA: EMA, actualPrice: string, actualDate: number) {
-        const fastEma = firstEMA.getLastPoint().EMA // Small period - fast ema
-        const slowEma = secondEMA.getLastPoint().EMA // Big period - slow ema
-        const basePrice = parseFloat(actualPrice)
+    updateSignal() {
+        const fastEma = this.demaObject!.firstEMA.getLastPoint().EMA // Small period - fast ema
+        const slowEma = this.demaObject!.secondEMA.getLastPoint().EMA // Big period - slow ema
+        const basePrice = parseFloat(this.pricedateObject!.actualPrice)
         if(this.state == 'None') {
             if(fastEma > slowEma) {
                 if (basePrice > fastEma) this.signal = 'buy'
@@ -136,9 +216,19 @@ class DEMA {
         else if(this.state == 'InShort' && basePrice > slowEma) this.signal = 'abortShort' // Abort Short
         else this.signal = 'hold'
 
-        return this.decideAct(firstEMA, secondEMA, actualPrice, actualDate)
+        return this.decideAct()
     }
+}
 
+class MACD {
+    
+    private bot: BotModel;
+    private strategyClass: Strategy;
+
+    constructor(_bot: BotModel, _strategyClass: Strategy) {
+        this.bot = _bot;
+        this.strategyClass = _strategyClass;
+    }
 }
 
 export { DEMA }

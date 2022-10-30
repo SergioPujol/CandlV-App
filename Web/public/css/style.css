@@ -624,6 +624,6 @@ main.landing-page .start-trading {
     align-items: center;
 }
 
-.trade.trade-close .trade-decision, .trade.trade-close .trade-price {
+.trade.trade-close .trade-decision {
     width: 20% !important;
 }

@@ -126,7 +126,6 @@ class Strategy {
     }
 
     async simulation() {
-        console.log(this.bot)
         const period = this.bot.simulationPeriod;
         if(!period) return []
         // get values for simulation 
@@ -176,6 +175,19 @@ class Strategy {
             date: Date.now(),
             state: 'None'
         })
+        this.selectedStrategy.changeState('None')
+    }
+
+    async startClientOperation() {
+        await this.decide({
+            type: 'enter',
+            decision: DecisionType.Buy,
+            percentage: '0%',
+            price: '',
+            date: Date.now(),
+            state: 'InLong'
+        })
+        this.selectedStrategy.changeState('InLong')
     }
 
 }

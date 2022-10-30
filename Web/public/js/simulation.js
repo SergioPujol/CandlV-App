@@ -264,27 +264,16 @@ async function loadTradeContainers(trades) {
         var dt = new Date(trade.date)
         var dateFormat = `${padL(dt.getDate())}/${padL(dt.getMonth()+1)}/${dt.getFullYear()} ${padL(dt.getHours())}:${padL(dt.getMinutes())}:${padL(dt.getSeconds())}`
 
-        if(trade.type == 'enter') {
-            tradeCont.classList.add('trade', 'trade-decision')
-            tradeCont.innerHTML = `
-                <div class="trade-icon"><i class="bi bi-graph-${trade.decision == 'Buy' ? 'up' : 'down' }"></i></div>
-                <div class="trade-decision">${trade.decision}</div>
-                <div class="trade-price">${parseFloat(trade.price).toFixed(2)}</div>
-                <div class="trade-percentage">${trade.percentage}</div>
-                <div class="trade-time">${dateFormat}</div>
-            `
-        } else {
-            tradeCont.classList.add('trade', 'trade-close')
-            tradeCont.innerHTML = `
-                <div class="trade-icon"><i class="bi bi-chevron-${trade.percentage.includes('-') ? 'down' : 'up'}"></i></div>
-                <div class="trade-decision">${trade.decision}</div>
-                <div class="trade-price">${parseFloat(trade.price).toFixed(2)}</div>
-                <div class="trade-percentage">${trade.percentage}</div>
-                <div class="trade-time">${dateFormat}</div>
-            `
-        }
+        tradeCont.classList.add('trade', 'trade-decision')
+        tradeCont.innerHTML = `
+            <div class="trade-icon"><i class="bi bi-${trade.decision == 'Buy' ? 'graph-up' : trade.decision == 'Sell' ? ( trade.percentage.includes('-') ? 'exclamation-circle' : 'check-circle' ) : 'dash'}"></i></div>
+            <div class="trade-decision">${trade.decision}</div>
+            <div class="trade-price">${parseFloat(trade.price).toFixed(2)}</div>
+            <div class="trade-percentage">${trade.percentage}</div>
+            <div class="trade-time">${dateFormat}</div>
+        `
         tradesContainer.append(tradeCont)
-        await sleep(50)
+        await sleep(25)
     }
 
     loadingSpinner();

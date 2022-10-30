@@ -55,6 +55,7 @@ async function registerKeys() {
     event.preventDefault()
     const pb_bkey = document.getElementById('pb_bkey').value
     const pv_bkey = document.getElementById('pv_bkey').value
+    const testnet = document.getElementById('testnetCheckbox').checked
 
     const result = await fetch('/api/registerKeys', {
         method: 'POST',
@@ -63,7 +64,8 @@ async function registerKeys() {
         },
         body: JSON.stringify({
             pb_bkey,
-            pv_bkey
+            pv_bkey,
+            testnet
         })
     }).then((res) => res.json())
 

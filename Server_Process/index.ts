@@ -13,11 +13,12 @@ const serverDBRequests = new ServerDBRequest();
         } else {
             return {
                 pb_bkey: '',
-                pv_bkey: ''
+                pv_bkey: '',
+                testnet: true
             }
         }
     });
-    const client: Client = new Client(keys.pb_bkey, keys.pv_bkey);
+    const client: Client = new Client(keys.pb_bkey, keys.pv_bkey, keys.testnet);
     //await client.sell('BTCUSDT', 0.006)
     //await client.buy('BTCUSDT', 30)
     const balanceRequestTest = await client.getUsdtBalance();

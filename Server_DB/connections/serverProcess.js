@@ -20,6 +20,11 @@ const sendStopOperation = async (data) => {
     return await serverDBReq('stopOperation', data)
 }
 
+const sendStartOperation = async (data) => {
+	console.log('startOperation', data)
+    return await serverDBReq('startOperation', data)
+}
+
 const serverDBReq = async (req, data) => {
 	const res = await got.post(`http://localhost:3330/${req}/`, { json: data });
 	if(res.statusCode == 200 && JSON.parse(res.body).status) return true 
@@ -30,5 +35,6 @@ module.exports = {
     sendCreateBot,
 	sendDeleteBot,
 	sendUpdateOperation,
-	sendStopOperation
+	sendStopOperation,
+	sendStartOperation
 }

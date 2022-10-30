@@ -53,6 +53,13 @@ class Server {
             else res.send({status:false})
         });
 
+        this.app.post('/startOperation', async (req: any, res: any) => {
+            const data = req.body; // ex {  }
+            console.log('stopOperation', data)
+            if(await this.processBot.startBotOperation(data.bot_id)) res.send({status:true})
+            else res.send({status:false})
+        });
+
         // Web
         this.app.post('/simulation', async (req: any, res: any) => {
             const { data } = req.body; // ex {  }

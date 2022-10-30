@@ -192,10 +192,10 @@ async function createHtmlWindow(chartId, options) {
             </div>
         </div>
 
-        <div class="buy-sell-buttons d-flex flex-row align-items-center mb-2" id="buy-sell-${chartId}-buttons">
+        <!--<div class="buy-sell-buttons d-flex flex-row align-items-center mb-2" id="buy-sell-${chartId}-buttons">
             <button class="col-md-6 btn btn-2">BUY</button>
             <button class="col-md-6 btn btn-2">SELL</button>
-        </div>
+        </div>-->
         
         </div>
 
@@ -515,12 +515,13 @@ function createHtmlOperation(chartId, botId, values) {
         <div class="operation-state">${operation.state.replace(/([A-Z])/g, ' $1').trim()}</div>
         <div class="operation-entry-price">${operation.price == '' ? '' : parseFloat(operation.price).toFixed(2)}</div>
         <div class="operation-percentage">${operation.percentage}</div>
-        <button id="stop-operation-${chartId}-${botId}" class="stop-operation btn btn-1">Stop operation</button>
+        <button id="stop-operation-${chartId}-${botId}" class="stop-operation btn btn-1" ${operation.state == 'Stopped' ? 'disabled' : ''}>${(operation.state === 'None' || operation.state === 'InShort' || operation.state === 'Awaiting entry' || operation.state === 'Stopped') ? 'Start operation' : 'Stop operation' }</button>
     `
 
-    operationContainer.onclick = () => {
-        console.log('Stop operation', chartId, botId)
-        stopBotOperation(botId)
+    operationContainer.querySelector('button').onclick = () => {
+        console.log('Start/stop operation', chartId, botId)
+        if(operation.state === 'None' || operation.state === 'InShort') startBotOperation(botId)
+        else stopBotOperation(botId)
     }
 
     operationFatherContainer.appendChild(operationContainer)
@@ -534,6 +535,15 @@ function updateHtmlOperation(operationData) {
     operationContainer.querySelector('div.operation-entry-price').textContent = operation.price == '' ? '' : parseFloat(operation.price).toFixed(2);
     operationContainer.querySelector('div.operation-state').textContent = operation.state.replace(/([A-Z])/g, ' $1').trim();
     operationContainer.querySelector('div.operation-percentage').textContent = operation.percentage;
+
+    operationContainer.querySelector('button.stop-operation').disabled = operation.state == 'Stopped' ? true : false;
+    operationContainer.querySelector('button.stop-operation').textContent = (operation.state === 'None' || operation.state === 'InShort' || operation.state === 'Awaiting entry' || operation.state === 'Stopped') ? 'Start operation' : 'Stop operation' ;
+
+    operationContainer.querySelector('button').onclick = () => {
+        console.log('Start/stop operation', chartId, botId)
+        if(operation.state === 'None' || operation.state === 'InShort' || operation.state === 'Awaiting entry') startBotOperation(botId)
+        else stopBotOperation(botId)
+    }
 }
 
 const padL = (nr, len = 2, chr = `0`) => `${nr}`.padStart(2, chr);
@@ -546,7 +556,7 @@ function addTradeToHtml(trade) {
     tradeContainer.innerHTML = `
         <div class="main-info">
         
-            <div class="trade-icon"><i class="bi bi-graph-up"></i></div>
+            <div class="trade-icon"><i class="bi bi-${trade.type == "BUY" ? 'graph-up' : 'exclamation-circle'}"></i></div>
             <div class="trade-order col">${trade.type}</div>
             <div class="trade-symbol col">${trade.symbol}</div>
             <div class="trade-entry-price col">${parseFloat(trade.entry_price).toFixed(2)} USDT</div>
@@ -576,7 +586,7 @@ function getStrategyOptionsParameters(bot_options) {
     var str = '';
 
     Object.keys(bot_options).forEach(option => {
-        str += ` - ${option.replace('_', ' ')}: ${bot_options[option]}`
+        str += ` - ${option.replaceAll('_', ' ')}: ${bot_options[option]}`
     })
 
     return str

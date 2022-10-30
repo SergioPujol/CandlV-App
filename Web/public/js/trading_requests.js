@@ -295,3 +295,25 @@ async function stopBotOperation(botId) {
     }
 
 }
+
+async function startBotOperation(botId) {
+    
+    const result = await fetch('/api/startOperation', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ botId })
+    }).then((res) => res.json())
+
+    if (result.status === 'ok') {
+        // everythign went fine
+        showSuccess('Started operation')
+        return true
+        
+    } else {
+        showError(result.error)
+        return false
+    }
+
+}
