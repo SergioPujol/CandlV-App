@@ -31,7 +31,11 @@ const strategies = {
     '2EMA': {
         ema_short_period: 3, // default value
         ema_long_period: 6 // default value
-        // TODO, add more options to 2EMA
+    },
+    'MACD': {
+        ema_short_period: 12, // default value
+        ema_long_period: 26, // default value
+        signal_period: 9 // default value
     }
 }
 
@@ -47,7 +51,8 @@ function appendOptionsToStrategySelect(element) {
 function updateModalWithStrategy(chartId, strategy) {
     console.log(chartId, strategy)
     const strategyContainer = document.querySelector(`#add-bot-modal-${chartId} .container-strategy-options`);
-    const strategyOptions = strategies[strategy]
+    strategyContainer.innerHTML = '';
+    const strategyOptions = strategies[strategy];
 
     Object.keys(strategyOptions).forEach(option => {
         let div = document.createElement('div')
@@ -65,9 +70,6 @@ async function createWindow() {
 
     // create chart id
     const chartId = createId()
-
-    // TODO
-
 
     // info from select
     const addChartContainer = document.getElementById('add-chart')
@@ -99,26 +101,38 @@ async function loadChartIntoHtml(chartId, values) {
 }
 
 function addTradingViewChart(chartId, valuesChart) {
-    const widget = new TradingView.widget(
-        {
-            "autosize": true,
-            "symbol": `BINANCE:${valuesChart.symbol}`,
-            "interval": valuesChart.interval,
-            "timezone": "Etc/UTC",
-            "theme": "dark",
-            "style": "1",
-            "locale": "es",
-            "toolbar_bg": "#f1f3f6",
-            "enable_publishing": false,
-            "allow_symbol_change": true,
-            "container_id": `tradingview_${chartId}`
-        }
-    );
+
+    const widget = new TradingView.widget({
+        "autosize": true,
+        "symbol": `BINANCE:${valuesChart.symbol}`,
+        "interval": valuesChart.interval,
+        "timezone": "Etc/UTC",
+        "theme": "dark",
+        "style": "1",
+        "locale": "es",
+        "toolbar_bg": "#f1f3f6",
+        "enable_publishing": false,
+        "allow_symbol_change": true,
+        "container_id": `tradingview_${chartId}`,
+    });
     
     /*setTimeout(()=>{
         widget.activeChart().createStudy('Moving Average Exponential', false, false, { length: 3 })
         widget.activeChart().createStudy('Moving Average Exponential', false, false, { length: 6 })
     },2000)*/
+}
+
+function addIndicators(strategy) {
+    switch(strategy) {
+        case '2EMA':
+
+        break;
+        case 'MACD':
+            widgetObj.studies = [
+                "MACD@tv-basicstudies"
+              ]
+        break;
+    }
 }
 
 async function createHtmlWindow(chartId, options) {
@@ -316,9 +330,12 @@ function addBotButtonAndModal(chartId) {
     // TODO automatic way for the moment, will be added 2EMA
     
     const strategySelect = popup.querySelector('.strategies-select')
-    appendOptionsToStrategySelect(strategySelect)
+    appendOptionsToStrategySelect(strategySelect);
+    updateModalWithStrategy(chartId, popup.querySelector('.strategies-select').value);
 
-    strategySelect.addEventListener('change', updateModalWithStrategy(chartId, strategySelect.value));
+    strategySelect.addEventListener('change', () => {
+        updateModalWithStrategy(chartId, popup.querySelector('.strategies-select').value)
+    });
 
     // once the button for creating a bot is clicked, send request to server DB and server Process, to add this bot
     popup.querySelector('#addBot-button').addEventListener('click', async () => await createBot(chartId))
@@ -562,11 +579,12 @@ function addTradeToHtml(trade) {
             <div class="trade-entry-price col">${parseFloat(trade.entry_price).toFixed(2)} USDT</div>
             <div class="trade-symbol-quantity col">${parseFloat(trade.symbol_quantity).toFixed(4)}</div>
             <div class="trade-usdt-quantity col">${parseFloat(trade.usdt_quantity).toFixed(2)}</div>
+            <div class="trade-percentage col">${trade.percentage}</div>
             <div class="trade-time col">${dateFormat}</div>
 
-            <div data-bs-toggle="collapse" data-bs-target="#trade-${trade.trade_id}" aria-expanded="false" aria-controls="trade-${trade.trade_id}"><i class="bi bi-caret-down-fill"></i></div>
+            <div data-bs-toggle="collapse" data-bs-target="#trade-${trade._id}" aria-expanded="false" aria-controls="trade-${trade._id}"><i class="bi bi-caret-down-fill"></i></div>
         </div>
-        <div class="collapsed-info collapse multi-collapse" id="trade-${trade.trade_id}">
+        <div class="collapsed-info collapse multi-collapse" id="trade-${trade._id}">
             <div>
                 <div class="trade-chart-bot-names trade-chart-info"><strong>Chart Id:</strong> <span>${trade.chart_id}</span></div>
                 <div class="trade-chart-bot-names trade-bot-info"><strong>Bot Name:</strong> <span>${trade.bot_name}</span></div>

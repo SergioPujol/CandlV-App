@@ -498,7 +498,7 @@ main.landing-page .start-trading {
 }
 
 #actual-operations .operation-container > div.bot-name, #actual-operations .operations-title > div.bot-name {
-    width: 15%;
+    width: 17.5%;
 }
 
 #actual-operations .operation-container > div.operation-entry-price, #actual-operations .operations-title > div.operation-entry-price {
@@ -514,7 +514,7 @@ main.landing-page .start-trading {
 }
 
 #actual-operations .operation-container > button, #actual-operations .operations-title > div.operation-button {
-    width: 30%;
+    width: 27.5%;
 }
 
 /** SIMULATION **/

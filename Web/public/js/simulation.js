@@ -6,9 +6,13 @@ const strategies = {
     '2EMA': {
         ema_short_period: 3, // default value
         ema_long_period: 6 // default value
-        // TODO, add more options to 2EMA
+    },
+    'MACD': {
+        ema_short_period: 12, // default value
+        ema_long_period: 26, // default value
+        signal_period: 9 // default value
     }
-}
+};
 
 var botOpts = {}
 var simulationOpts = {}
@@ -71,13 +75,10 @@ function addStudies(widget) {
         case '2EMA':
     
             Object.keys(botOptions).forEach((opt) => {
-                console.log()
                 widget.activeChart().createStudy('Moving Average Exponential', false, false, { length: parseInt(botOptions[opt]) })
             })
 
         break;
-
-        // case '':
     }
 }
 
@@ -197,12 +198,13 @@ const createStartLongShape = (obj) => {
     );
 }
 
-const createStartShortShape = (obj) => {
+
+const createExitShape = (obj) => {
     let color = '#5e078a'
     window.tvWidget.activeChart().createShape(
         obj,
         {
-            shape: "arrow_down",
+            shape: "arrow_left",
             lock: true,
             overrides: {
                 color: color,
@@ -234,16 +236,15 @@ function loadInvestingPoints(trades) {
     let tempTrade;
     trades.forEach(trade => {
         let tempObject = {time: trade.date/1000, price: parseFloat(trade.price)}
-        if(trade.type == 'enter') {
-            if(trade.decision == 'Buy') createStartLongShape(tempObject)
-            //else if(trade.decision == 'Start Short') createStartShortShape(tempObject)
-        } else {
-            if(trade.decision == 'Sell' && trade.percentage.includes('-')/* || trade.decision == 'Exit Short' && !trade.percentage.includes('-')*/) createRectangle([tempTrade, tempObject], '#bf1515')
-            else if(/*trade.decision == 'Exit Short' && trade.percentage.includes('-') || */trade.decision == 'Sell' && !trade.percentage.includes('-')) createRectangle([tempTrade, tempObject], '#2b9915')
+        if(trade.decision == 'Buy') createStartLongShape(tempObject)
+        else if(trade.decision == 'Sell') {
+            if(trade.percentage.includes('-')) createRectangle([tempTrade, tempObject], '#bf1515')
+            else if(!trade.percentage.includes('-')) createRectangle([tempTrade, tempObject], '#2b9915')
+            createExitShape(tempObject)
         }
 
         if(trade.date/1000 < new Date(document.getElementById('from-time').value).getTime()/1000) console.log('weird trade data', trade)
-        else tempTrade = tempObject
+        else if(trade.decision == 'Buy' || trade.decision == 'Sell') tempTrade = tempObject
     })
 }
 

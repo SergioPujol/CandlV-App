@@ -2,7 +2,7 @@ import { BotModel } from "../Models/bot";
 import { Trade } from "../Models/trade";
 import { Decision, DecisionType } from "../Models/decision";
 import { Notification } from './Notification';
-import { DEMA } from "./Strategies";
+import { DEMA, MACD } from "./Strategies";
 import { BinanceAPI } from "../Requests/BinanceAPI";
 import { Candle } from "./Candle";
 import { getPeriods } from "./Utils";
@@ -19,6 +19,7 @@ class Strategy {
 
     private bot: BotModel;
     private symbolBoughtQuantity: number = 0;
+    private lastEntryPrice: string = '';
 
     // Simulation
     private simulationList: Array<Decision> = []
@@ -27,10 +28,11 @@ class Strategy {
     // Trading
     private notification: Notification | undefined;
 
-    private selectedStrategy: DEMA /*| */;
+    private selectedStrategy: DEMA | MACD;
 
     /* Strategies to be defined */
-    private dema: DEMA
+    private dema: DEMA;
+    private macd: MACD;
 
     constructor(_bot: BotModel, customStrategy: Boolean = false , _simulation: Boolean = false) {
         this.bot = _bot
@@ -39,6 +41,7 @@ class Strategy {
 
         // Define Strategies
         this.dema = new DEMA(this.bot, this)
+        this.macd = new MACD(this.bot, this)
 
         // selected strategy
         this.selectedStrategy = this.dema
@@ -63,6 +66,7 @@ class Strategy {
                             type: 'BUY',
                             symbol: this.bot.symbol,
                             entry_price: res.fills[0].price,
+                            percentage: '-',
                             symbol_quantity: res.executedQty,
                             usdt_quantity: res.cummulativeQuoteQty,
                             time: res.transactTime,
@@ -72,6 +76,7 @@ class Strategy {
                             bot_id: this.bot.botId
                         }
                         // get values to send to Trade DB
+                        this.lastEntryPrice = res.fills[0].price;
                         this.symbolBoughtQuantity = res.executedQty
                         this.notification!.sendNotification(decision, trade)
                     }
@@ -86,6 +91,7 @@ class Strategy {
                             type: 'SELL',
                             symbol: this.bot.symbol,
                             entry_price: res.fills[0].price,
+                            percentage: this.getPercentageFromLastCross(res.fills[0].price),
                             symbol_quantity: res.executedQty,
                             usdt_quantity: res.cummulativeQuoteQty,
                             time: res.transactTime,
@@ -103,12 +109,19 @@ class Strategy {
         }
     }
 
+    private getPercentageFromLastCross(actualPrice: string): string {
+        const lastPrice: number = parseFloat(this.lastEntryPrice);
+        return (((parseFloat(actualPrice) - lastPrice) / lastPrice) * 100).toFixed(3) + '%'
+    }
+
     private selectStrategy(strategyName: string) {
         switch (strategyName) {
             case '2EMA':
                 this.selectedStrategy = this.dema
                 break;
-        
+            case 'MACD':
+                this.selectedStrategy = this.macd
+                break;
             default:
                 break;
         }
@@ -168,7 +181,6 @@ class Strategy {
 
     async stopClientOperation() {
         await this.decide({
-            type: 'exit',
             decision: DecisionType.Sell,
             percentage: '',
             price: '',
@@ -180,7 +192,6 @@ class Strategy {
 
     async startClientOperation() {
         await this.decide({
-            type: 'enter',
             decision: DecisionType.Buy,
             percentage: '0%',
             price: '',

@@ -5,14 +5,14 @@ export enum DecisionType {
     StartShort = 'Start Short',*/
     Buy = 'Buy',
     Sell = 'Sell',
-    Hold = 'Hold'
+    Hold = 'Hold',
 }
 
 export interface Decision {
-    type: 'enter' | 'exit' | 'hold',
+    //type: 'enter' | 'exit' | 'hold' | 'awaitEntry',
     decision: DecisionType, 
     percentage?: string, 
     price: string,
     date: number,
-    state: 'None' | 'InLong' | 'InShort'
+    state: 'None' | 'InLong'
 }

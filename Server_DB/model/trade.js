@@ -7,6 +7,7 @@ const ChartSchema = new mongoose.Schema(
 		entry_price: { type: String, required: true },
 		symbol_quantity: { type: String, required: true },
 		usdt_quantity: { type: String, required: true },
+		percentage: { type: String, required: true },
 		time: { type: String, required: true },
         bot_strategy: { type: String, required: true },
 		bot_options: { type: Object, required: true },

@@ -10,8 +10,8 @@ abstract class Strategies {
     bot: BotModel;
     strategyClass: Strategy;
 
-    state: 'None' | 'InLong' | 'InShort' = 'None';
-    signal: 'hold' | 'buy' | 'sell' | 'abortLong' | 'abortShort' | 'awaitEntry' = 'hold';
+    state: 'None' | 'InLong' = 'None';
+    signal: DecisionType = DecisionType.Hold;
 
     pricedateObject: PriceDateObj | undefined;
     lastCallPrice: string = '0';
@@ -27,42 +27,31 @@ abstract class Strategies {
 
     decideAct() {
 
-        if(this.state == 'InLong' && this.signal == 'abortLong') {
+        if(this.state == 'InLong' && this.signal == DecisionType.Sell) {
             // Exit Long
             this.state = 'None';
-            let decision: Decision = {
-                type: 'exit',
+            this.strategyClass.decide({
                 decision: DecisionType.Sell,
                 percentage: this.getPercentageFromLastCross(this.pricedateObject!.actualPrice),
                 price: this.pricedateObject!.actualPrice,
                 date: this.pricedateObject!.actualDate,
                 state: this.state
-            }
-            this.strategyClass.decide(decision)
+            })
             this.updateSignal();
-        } else if(this.state == 'InShort' && this.signal == 'abortShort') {
-            // Exit Short
-            this.state = 'None';
-            this.updateSignal();
-        } else if(this.state == 'None' && this.signal == 'buy') {
+        } else if(this.state == 'None' && this.signal == DecisionType.Buy) {
             // Go Long
             this.state = 'InLong';
             let decision: Decision = {
-                type: 'enter',
                 decision: DecisionType.Buy,
-                percentage: '0%',
+                percentage: '-',
                 price: this.pricedateObject!.actualPrice,
                 date: this.pricedateObject!.actualDate,
                 state: this.state
             }
             this.lastCallPrice = this.pricedateObject!.actualPrice
             this.strategyClass.decide(decision)
-        } else if(this.state == 'None' && this.signal == 'sell') {
-            // Go Short
-            this.state = 'InShort';
-        } else if((this.state == 'InLong') && this.signal == 'hold') {
+        } else if(this.state == 'InLong' && this.signal == DecisionType.Hold) {
              let decision: Decision = {
-                type: 'hold',
                 decision: DecisionType.Hold,
                 percentage: this.getPercentageFromLastCross(this.pricedateObject!.actualPrice),
                 price: this.pricedateObject!.actualPrice,
@@ -70,8 +59,7 @@ abstract class Strategies {
                 state: this.state
             }
             this.strategyClass.decide(decision)
-        } else if((this.state == 'None' || this.state == 'InShort') && (this.signal == 'hold' || this.signal == 'awaitEntry')) {
-        } else { }
+        }
         console.log(this.state, this.signal)
     }
 
@@ -80,7 +68,7 @@ abstract class Strategies {
         return (((parseFloat(actualPrice) - lastPrice) / lastPrice) * 100).toFixed(3) + '%'
     }
 
-    changeState(state: "None" | "InLong" | "InShort") {
+    changeState(state: "None" | "InLong") {
         this.state = state;
         if(state === "InLong") this.lastCallPrice = this.pricedateObject!.actualPrice
     }
@@ -131,17 +119,12 @@ class DEMA extends Strategies {
         const slowEma = this.demaObject!.slowEMA.getLastPoint().EMA // Big period - slow ema
         const basePrice = parseFloat(this.pricedateObject!.actualPrice)
         if(this.state == 'None') {
-            if(fastEma > slowEma) {
-                if (basePrice > fastEma) this.signal = 'buy'
-                else this.signal = 'awaitEntry' // Fast Ema is above slow, but not the price => wait
-            } else if(fastEma < slowEma) {
-                if (basePrice < fastEma) this.signal = 'sell'
-                else this.signal = 'awaitEntry' // Fast Ema is bellow slow, but not the price => wait
-            }
+            if(fastEma > slowEma && basePrice > fastEma) this.signal = DecisionType.Buy
+            else if(fastEma < slowEma && basePrice < fastEma) this.signal = DecisionType.Sell
+            else this.signal = DecisionType.Hold
         } 
-        else if(this.state == 'InLong' && basePrice < slowEma) this.signal = 'abortLong' // Abort Long
-        else if(this.state == 'InShort' && basePrice > slowEma) this.signal = 'abortShort' // Abort Short
-        else this.signal = 'hold'
+        else if(this.state == 'InLong' && basePrice < slowEma) this.signal = DecisionType.Sell // Abort Long
+        else this.signal = DecisionType.Hold
 
         this.decideAct()
     }
@@ -154,7 +137,7 @@ class MACD extends Strategies {
 
     constructor(_bot: BotModel, _strategyClass: Strategy) {
         super(_bot, _strategyClass)
-        this.periods = [parseInt(this.bot.botOptions.ema_short_period), parseInt(this.bot.botOptions.ema_long_period), parseInt(this.bot.botOptions.ema_signal_period)]
+        this.periods = [parseInt(this.bot.botOptions.ema_short_period), parseInt(this.bot.botOptions.ema_long_period), parseInt(this.bot.botOptions.signal_period)]
     }
 
     async flow(candles: Candle[]) {
@@ -190,35 +173,22 @@ class MACD extends Strategies {
     updateSignal() {
         const macd = this.macdObject!.fastEMA.getLastPoint().EMA - this.macdObject!.slowEMA.getLastPoint().EMA; // Big period - slow ema
         const signalEma = this.macdObject!.signalEMA.getLastPoint().EMA; // Signal period
-        //const basePrice = parseFloat(this.pricedateObject!.actualPrice);
 
         const macdHistogram = macd - signalEma;
 
         if(this.state == 'None') {
-            if(macdHistogram > 0) {
-                // buy
-            } else if(macdHistogram < 0) {
-                // sell
-            } else {
-                // hold
-            }
+            if(macdHistogram > 0) this.signal = DecisionType.Buy
+            else if(macdHistogram < 0) this.signal = DecisionType.Sell
+            else this.signal = DecisionType.Hold
         }
-        
-        /*if(this.state == 'None') {
-            if(fastEma > slowEma) {
-                if (basePrice > fastEma) this.signal = 'buy'
-                else this.signal = 'awaitEntry' // Fast Ema is above slow, but not the price => wait
-            } else if(fastEma < slowEma) {
-                if (basePrice < fastEma) this.signal = 'sell'
-                else this.signal = 'awaitEntry' // Fast Ema is bellow slow, but not the price => wait
-            }
-        } 
-        else if(this.state == 'InLong' && basePrice < slowEma) this.signal = 'abortLong' // Abort Long
-        else if(this.state == 'InShort' && basePrice > slowEma) this.signal = 'abortShort' // Abort Short
-        else this.signal = 'hold'*/
+        else if(this.state == 'InLong' && macdHistogram < 0) this.signal = DecisionType.Sell // Abort Long
+        else this.signal = DecisionType.Hold
 
         this.decideAct()
     }
 }
 
-export { DEMA }
+export {
+    DEMA,
+    MACD
+}
