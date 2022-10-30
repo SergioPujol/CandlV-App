@@ -106,4 +106,40 @@ const stringifyKeyValuePair = ([key, value]: any) => {
     return `${key}=${encodeURIComponent(valueString)}`
 }
 
-export { getCandlesForChart, splitData, logInfo, logSuccess, logEnterExit, logFailure, getPeriods, sleep, getRequestInstance, createRequest, removeEmptyValue, buildQueryString }
+const calculateEMA = (previousEmaValue: number, multiplicator: number, actualClosePrice: string) => {
+  return (parseFloat(actualClosePrice) - previousEmaValue) * multiplicator + previousEmaValue
+}
+
+const calculateSMA = (dataset: Array<Candle>, n: number) => {
+  const listClosePriceValues = getNClosePrice(dataset, n)
+  let sumCloseValues = listClosePriceValues.reduce((previousValue: number, currentValue: string) => previousValue + parseInt(currentValue), 0);
+  return sumCloseValues/listClosePriceValues.length
+}
+
+const getNClosePrice = (dataset: Array<Candle>, n: number) => {
+  let listClosePrice: Array<string> = dataset.map(function(x: Candle) { return x.getClose(); });
+  return listClosePrice.slice(-n)
+}
+
+const calculateMultiplicator = (nPeriod: number) => {
+  return 2/(nPeriod+1)
+}
+
+export { 
+  getCandlesForChart, 
+  splitData, 
+  logInfo, 
+  logSuccess, 
+  logEnterExit, 
+  logFailure, 
+  getPeriods, 
+  sleep, 
+  getRequestInstance, 
+  createRequest, 
+  removeEmptyValue, 
+  buildQueryString, 
+  calculateEMA, 
+  calculateSMA, 
+  getNClosePrice, 
+  calculateMultiplicator 
+}
