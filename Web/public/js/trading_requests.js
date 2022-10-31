@@ -58,7 +58,6 @@ async function loadChartsFromDB() {
 
     if (result.status === 'ok') {
         // everythign went fine
-        console.log(result)
         result.data.forEach(async (chart) => {
             await loadChartIntoHtml(chart.chartId, chart.chartOptions)
             await loadBotsFromDB(chart.chartId)
@@ -126,7 +125,6 @@ async function loadBotsFromDB(chartId) {
 
     if (result.status === 'ok') {
         // everythign went fine
-        console.log(result)
         result.data.forEach(bot => {
             //chartId, botId, values
             loadBotIntoHtml(bot.chartId, bot.botId, { name: bot.name, strategy: bot.strategy, custom: bot.botOptions, status: bot.status, operation: bot.operation, investment: bot.investment })
@@ -260,7 +258,6 @@ async function getAllTrades() {
     
     if (result.status === 'ok') {
         // everythign went fine
-        console.log(result)
         result.data.forEach((trade) => {
             addTradeToHtml(trade)
         })

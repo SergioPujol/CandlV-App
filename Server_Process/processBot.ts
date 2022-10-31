@@ -28,8 +28,8 @@ class processBot {
             delete this.bots[bot_id];
             return true
         } catch (error) {
-            console.log(`Error deleting bot ${bot_id}`)
-            return false
+            console.log(`Error deleting bot on Server Process ${bot_id}`)
+            return true
         }
     }
 

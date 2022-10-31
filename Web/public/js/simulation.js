@@ -11,6 +11,10 @@ const strategies = {
         ema_short_period: 12, // default value
         ema_long_period: 26, // default value
         signal_period: 9 // default value
+    },
+    'Bollinger': {
+        period: 20, // default value
+        times: 2, // default value
     }
 };
 
@@ -70,15 +74,18 @@ async function generateChart() {
 function addStudies(widget) {
     /**Add studies depending the strategy selected and options for the strategy */
     const {botStrategy, botOptions} = botOpts
-
     switch(botStrategy) {
         case '2EMA':
-    
             Object.keys(botOptions).forEach((opt) => {
                 widget.activeChart().createStudy('Moving Average Exponential', false, false, { length: parseInt(botOptions[opt]) })
             })
-
-        break;
+            break;
+        case 'MACD':
+            widget.activeChart().createStudy('MACD', false, false, { in_0: botOptions.ema_short_period, in_1: botOptions.ema_long_period, in_3: 'close', in_2: botOptions.signal_period })
+            break;
+        case 'Bollinger':
+            widget.activeChart().createStudy('Bollinger Bands', false, false, { in_0: botOptions.period, in_1: botOptions.times, in_3: 'close' })
+            break;
     }
 }
 
@@ -91,7 +98,8 @@ function loadBotStrategyModal() {
 function loadBotModal() {
     const strategySelect = document.querySelector('#add-bot-modal-simulation .strategies-select')
     appendOptionsToStrategySelect(strategySelect)
-    strategySelect.addEventListener('change', updateModalWithStrategy(strategySelect.value));
+    updateModalWithStrategy(strategySelect.value)
+    strategySelect.addEventListener('change', () => updateModalWithStrategy(strategySelect.value));
 }
 
 function saveBotOptionsModal() {
@@ -114,7 +122,6 @@ function saveBotOptionsModal() {
     botOpts = {
         botId: 'simulation-bot', botStrategy: values.strategy, botOptions: customOptions
     }
-    console.log('botOpts',botOpts)
 
     showSuccess('Saved bot options')
     
@@ -173,7 +180,6 @@ async function startSimulation() {
     }).then((res) => res.json())
 
     if(result.status) {
-        console.log(result.data)
         loadInvestingPoints(result.data)
         await loadTradeContainers(result.data)
     } else {
@@ -281,7 +287,6 @@ async function loadTradeContainers(trades) {
 }
 
 (async function () {
-    console.log('check login status')
     /*const status = await checkLoginStatus()
     if(!status) location.href = 'home.html'*/
     loadBotModal();

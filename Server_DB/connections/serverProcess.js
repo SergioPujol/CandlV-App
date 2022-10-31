@@ -1,27 +1,22 @@
 const got = require('got');
 
 const sendCreateBot = async (data) => {
-	console.log('createBot', data)
     return await serverDBReq('createBot', data)
 }
 
 const sendDeleteBot = async (data) => {
-	console.log('deleteBot', data)
     return await serverDBReq('deleteBot', data)
 }
 
 const sendUpdateOperation = async (data) => {
-	console.log('updateOperation', data)
     return await serverDBReq('updateOperation', data)
 }
 
 const sendStopOperation = async (data) => {
-	console.log('stopOperation', data)
     return await serverDBReq('stopOperation', data)
 }
 
 const sendStartOperation = async (data) => {
-	console.log('startOperation', data)
     return await serverDBReq('startOperation', data)
 }
 

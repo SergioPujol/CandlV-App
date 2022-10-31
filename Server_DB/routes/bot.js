@@ -163,7 +163,7 @@ const updateOptionsBot = async (data) => {
 			// Update values and send request to server process
 			console.log('bot', bot)
 			try {
-				const response = await Bot.updateOne({ bot_id, chart_id, bot_strategy: strategy }, { bot_strategy_options: strategyOptions, investment })
+				const response = await Bot.updateOne({ bot_id }, { bot_strategy_options: strategyOptions, investment })
 				console.log('Bot updated: ', response)
 				if(response.nModified == 0) {
 					return { status: 'error', error: 'Bot trying to update does not exist' }

@@ -10,7 +10,6 @@ ws.addEventListener("message", ({ data }) => {
     switch(data.type) {
         case "trade":
             // post trade notification
-            console.log("trade data", data)
             const trade = data.data;
             // format { type, symbol, entry_price, symbol_quantity, usdt_quantity, time, bot_strategy, bot_options, chart_id, bot_id, bot_name, trade_id }
             addTradeToHtml(trade)
@@ -19,7 +18,6 @@ ws.addEventListener("message", ({ data }) => {
         case "operation":
             // update operation
             const operation = data.data;
-            console.log("operation data", operation)
             updateHtmlOperation(operation)
         break;
 

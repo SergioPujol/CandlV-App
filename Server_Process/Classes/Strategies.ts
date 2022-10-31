@@ -2,9 +2,9 @@ import { Strategy } from "./Strategy";
 import { Candle } from "./Candle";
 import { EMA } from "./EMA";
 import { BotModel } from "../Models/bot";
-import { DEMAObj, MACDObj, PriceDateObj } from "../Models/strategies";
+import { BollingerObj, DEMAObj, MACDObj, PriceDateObj } from "../Models/strategies";
 import { Decision, DecisionType } from "../Models/decision";
-import { calculateEMA, calculateMultiplicator, calculateSMA, calculateSMAWithEMA } from "./Utils";
+import { calculateEMA, calculateMultiplicator, calculateSMA, calculateSMAWithEMA, getArrayClosePrice, getBollingerBands, getLastArrayItem } from "./Utils";
 
 abstract class Strategies {
     bot: BotModel;
@@ -230,7 +230,60 @@ class MACD extends Strategies {
     }
 }
 
+class Bollinger extends Strategies {
+
+    private bollingerObject: BollingerObj | undefined;
+    private period: number;
+    private times: number;
+
+    constructor(_bot: BotModel, _strategyClass: Strategy) {
+        super(_bot, _strategyClass)
+        this.period = this.bot.botOptions.period
+        this.times = this.bot.botOptions.times
+    }
+
+    async flow(candles: Candle[]) {
+
+        /* 
+        Flow:
+        1. Get close price of candles
+        2. Calculate bollinger data with close price list
+        */
+
+        const closeCandleValues = getArrayClosePrice(candles);
+        this.bollingerObject = { ...getBollingerBands(closeCandleValues, this.period, this.times), closeValues: closeCandleValues }
+
+        this.pricedateObject = {
+            actualPrice: candles[candles.length-1].getClose(),
+            actualDate: candles[candles.length-1].getOpenTime()
+        }
+
+        this.updateSignal()
+    }
+
+    updateSignal(): void {
+
+        const bollingerLastValue = {
+            upperBound: getLastArrayItem(this.bollingerObject!.upperBound),
+            midBound: getLastArrayItem(this.bollingerObject!.midBound),
+            lowerBound: getLastArrayItem(this.bollingerObject!.lowerBound),
+        };
+        const lastCloseValue = getLastArrayItem(this.bollingerObject!.closeValues);
+
+        if(this.state == 'None') {
+            if(lastCloseValue <= bollingerLastValue.lowerBound) this.signal = DecisionType.Buy
+            else if(lastCloseValue >= bollingerLastValue.upperBound) this.signal = DecisionType.Sell
+            else this.signal = DecisionType.Hold
+        }
+        else if(this.state == 'InLong' && lastCloseValue >= bollingerLastValue.upperBound) this.signal = DecisionType.Sell // Abort Long
+        else this.signal = DecisionType.Hold
+
+        this.decideAct()
+    }
+}
+
 export {
     DEMA,
-    MACD
+    MACD,
+    Bollinger
 }

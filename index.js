@@ -5,7 +5,7 @@ const { machineId } = require('node-machine-id');
 
 app.whenReady().then(async () => {
   
-    const win = new BrowserWindow({ width: 1850, height: 1000, show: false, icon: __dirname + '/icons/CV.png' })
+    const win = new BrowserWindow({ width: 1850, height: 1000, show: false, icon: __dirname + '/icons/CV.png', autoHideMenuBar: true, })
 
     // Load a remote URL
     win.loadURL('http://localhost:3000')

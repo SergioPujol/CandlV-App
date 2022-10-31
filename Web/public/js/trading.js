@@ -37,6 +37,10 @@ const strategies = {
         ema_short_period: 12, // default value
         ema_long_period: 26, // default value
         signal_period: 9 // default value
+    },
+    'Bollinger': {
+        period: 20, // default value
+        times: 2, // default value
     }
 }
 
@@ -50,7 +54,6 @@ function appendOptionsToStrategySelect(element) {
 }
 
 function updateModalWithStrategy(chartId, strategy) {
-    console.log(chartId, strategy)
     const strategyContainer = document.querySelector(`#add-bot-modal-${chartId} .container-strategy-options`);
     strategyContainer.innerHTML = '';
     const strategyOptions = strategies[strategy];
@@ -82,7 +85,6 @@ async function createWindow() {
     const status = await createChartDB({
         chartId, chartOptions: { symbol: values.symbol, interval: values.interval }, minimized: false
     })
-    console.log('createChartDB', status)
     if(!status) return
 
     await loadChartIntoHtml(chartId, values)
@@ -140,7 +142,14 @@ function addIndicatorsToChart(strategy, options, chartId) {
         break;
         case 'MACD':
             widgetConfig.studies = widgetConfig.studies.concat([{
-                id: "MACD@tv-basicstudies"
+                id: "MACD@tv-basicstudies",
+                inputs: { in_0: parseInt(options.ema_short_period), in_1: parseInt(options.ema_long_period), in_3: 'close', in_2: parseInt(options.signal_period) }
+            }])
+        break;
+        case 'Bollinger':
+            widgetConfig.studies = widgetConfig.studies.concat([{
+                id: "BB@tv-basicstudies",
+                inputs: { in_0: parseInt(options.period), in_1: parseInt(options.times), in_3: 'close' }
             }])
         break;
     }
@@ -258,21 +267,21 @@ async function createHtmlWindow(chartId, options) {
                             <div class="investment-options">
                                 <div class="fixed-investment-container d-flex flex-row align-items-center mb-2">
                                     <div class="form-check col-md-6">
-                                        <input class="form-check-input" type="radio" name="investmentRadioButtons" id="fixedInvestment" checked>
-                                        <label class="form-check-label" for="fixedInvestment">
+                                        <input class="form-check-input" type="radio" name="investmentRadioButtons" id="fixedInvestment-${chartId}" checked>
+                                        <label class="form-check-label" for="fixedInvestment-${chartId}">
                                             Fixed investment
                                         </label>
                                     </div>
-                                    <input class="col-md-6 form-control" type="text" id="fixedInvestment-value" placeholder="USDT Investment">
+                                    <input class="col-md-6 form-control" type="text" id="fixedInvestment-value-${chartId}" placeholder="USDT Investment">
                                 </div>
                                 <div class="fixed-investment-container d-flex flex-row align-items-center mb-2">
                                     <div class="form-check col-md-6">
-                                        <input class="form-check-input" type="radio" name="investmentRadioButtons" id="percentageInvestment">
-                                        <label class="form-check-label" for="percentageInvestment">
+                                        <input class="form-check-input" type="radio" name="investmentRadioButtons" id="percentageInvestment-${chartId}">
+                                        <label class="form-check-label" for="percentageInvestment-${chartId}">
                                             Percentage investment
                                         </label>
                                     </div>
-                                    <input class="col-md-6 form-control" type="text" id="percentageInvestment-value" placeholder="% Investment">
+                                    <input class="col-md-6 form-control" type="text" id="percentageInvestment-value-${chartId}" placeholder="% Investment">
                                 </div>
                             </div>
                         </div>
@@ -345,9 +354,7 @@ function addBotButtonAndModal(chartId) {
     appendOptionsToStrategySelect(strategySelect);
     updateModalWithStrategy(chartId, popup.querySelector('.strategies-select').value);
 
-    strategySelect.addEventListener('change', () => {
-        updateModalWithStrategy(chartId, popup.querySelector('.strategies-select').value)
-    });
+    strategySelect.addEventListener('change', () => updateModalWithStrategy(chartId, popup.querySelector('.strategies-select').value));
 
     // once the button for creating a bot is clicked, send request to server DB and server Process, to add this bot
     popup.querySelector('#addBot-button').addEventListener('click', async () => await createBot(chartId))
@@ -369,12 +376,12 @@ async function createBot(chartId) { // what do I need? options from modal and Id
     const addBotModalContainer = document.getElementById(`add-bot-modal-${chartId}`);
     const staticValuesContainer = addBotModalContainer.querySelector('.static-bot-values');
     const optionsContainer = addBotModalContainer.querySelectorAll('.container-strategy-options > div');
-    const investment = addBotModalContainer.querySelector('#fixedInvestment').checked ? {
+    const investment = addBotModalContainer.querySelector(`#fixedInvestment-${chartId}`).checked ? {
         investmentType: 'fixedInvestment',
-        quantity: addBotModalContainer.querySelector('#fixedInvestment-value').value
+        quantity: addBotModalContainer.querySelector(`#fixedInvestment-value-${chartId}`).value
     } : {
         investmentType: 'percentageInvestment',
-        quantity: addBotModalContainer.querySelector('#percentageInvestment-value').value
+        quantity: addBotModalContainer.querySelector(`#percentageInvestment-value-${chartId}`).value
     }
     
     let customOptions = {};
@@ -394,7 +401,6 @@ async function createBot(chartId) { // what do I need? options from modal and Id
     const status = await createBotDB({
         botId, botName: values.name, botStrategy: values.strategy, botOptions: customOptions, botStatus: true, investment
     }, chartId)
-    console.log('CreateBotDB', status)
     if(!status) return
 
     loadBotIntoHtml(chartId, botId, values)
@@ -416,7 +422,6 @@ function createHtmlBot(chartId, botId, options) {
      *  ]
      * }
      */
-    console.log(options)
     let botHtml = document.createElement('div')
     botHtml.classList.add('accordion-item')
     botHtml.id = `accordion-bot-${botId}`
@@ -452,21 +457,21 @@ function createHtmlBot(chartId, botId, options) {
             <div class="investment-options">
                 <div class="fixed-investment-container d-flex flex-row align-items-center mb-2">
                     <div class="form-check col-md-6">
-                        <input class="form-check-input" type="radio" name="investmentRadioButtons" id="fixedInvestment" checked>
-                        <label class="form-check-label" for="fixedInvestment">
+                        <input class="form-check-input" type="radio" name="investmentRadioButtons" id="fixedInvestment-${chartId}-${botId}" checked>
+                        <label class="form-check-label" for="fixedInvestment-${chartId}-${botId}">
                             Fixed investment
                         </label>
                     </div>
-                    <input class="col-md-6 form-control" type="text" id="fixedInvestment-value" placeholder="USDT Investment">
+                    <input class="col-md-6 form-control" type="text" id="fixedInvestment-value-${chartId}-${botId}" placeholder="USDT Investment">
                 </div>
                 <div class="fixed-investment-container d-flex flex-row align-items-center mb-2">
                     <div class="form-check col-md-6">
-                        <input class="form-check-input" type="radio" name="investmentRadioButtons" id="percentageInvestment">
-                        <label class="form-check-label" for="percentageInvestment">
+                        <input class="form-check-input" type="radio" name="investmentRadioButtons" id="percentageInvestment-${chartId}-${botId}">
+                        <label class="form-check-label" for="percentageInvestment-${chartId}-${botId}">
                             Percentage investment
                         </label>
                     </div>
-                    <input class="col-md-6 form-control" type="text" id="percentageInvestment-value" placeholder="% Investment">
+                    <input class="col-md-6 form-control" type="text" id="percentageInvestment-value-${chartId}-${botId}" placeholder="% Investment">
                 </div>
             </div>
         </div>
@@ -500,10 +505,13 @@ function createHtmlBot(chartId, botId, options) {
     botHtml.querySelector(`#status-bot-${botId}`).addEventListener('change', (e) => updateBotStatus(chartId, botId, e.target.checked))
 
     // STRATEGY OPTIONS BOT
-    botHtml.querySelector(`#save-bot-options-${botId}`).addEventListener('click', (e) => updateBotStrategyOptions(chartId, botId, { ...getInputBotOptions(botHtml.querySelector(`#collapse-bot-${botId} > div`)), investment: getInvestment(botHtml.querySelector(`#collapse-bot-${botId} .investment-options`)) } ))
+    botHtml.querySelector(`#save-bot-options-${botId}`).addEventListener('click', (e) => {
+        if(botHtml.querySelector(`#status-bot-${botId}`).checked) showError('Turn the bot off before changing the options')
+        else updateBotStrategyOptions(chartId, botId, { ...getInputBotOptions(botHtml.querySelector(`#collapse-bot-${botId} > div`)), investment: getInvestment(botHtml.querySelector(`#collapse-bot-${botId} .investment-options`), chartId, botId) } )
+    })
     
-    collapseContainer.querySelector(`#${options.investment.investmentType}`).checked = true;
-    collapseContainer.querySelector(`#${options.investment.investmentType}-value`).value = options.investment.quantity;
+    collapseContainer.querySelector(`#${options.investment.investmentType}-${chartId}-${botId}`).checked = true;
+    collapseContainer.querySelector(`#${options.investment.investmentType}-value-${chartId}-${botId}`).value = options.investment.quantity;
 
     Object.keys(options.custom).forEach(objectKey => {
         let div = document.createElement('div');
@@ -521,19 +529,17 @@ function createHtmlBot(chartId, botId, options) {
     return botHtml
 }
 
-function getInvestment(container) {
-    return container.querySelector('#fixedInvestment').checked ? {
+function getInvestment(container, chartId, botId) {
+    return container.querySelector(`#fixedInvestment-${chartId}-${botId}`).checked ? {
         investmentType: 'fixedInvestment',
-        quantity: container.querySelector('#fixedInvestment-value').value
+        quantity: container.querySelector(`#fixedInvestment-value-${chartId}-${botId}`).value
     } : {
         investmentType: 'percentageInvestment',
-        quantity: container.querySelector('#percentageInvestment-value').value
+        quantity: container.querySelector(`#percentageInvestment-value-${chartId}-${botId}`).value
     }
 }
 
 function createHtmlOperation(chartId, botId, values) {
-
-    console.log(values)
 
     const { name, operation } = values;
 
@@ -550,7 +556,6 @@ function createHtmlOperation(chartId, botId, values) {
     `
 
     operationContainer.querySelector('button').onclick = () => {
-        console.log('Start/stop operation', chartId, botId)
         if(operation.state === 'None' || operation.state === 'InShort') startBotOperation(botId)
         else stopBotOperation(botId)
     }
@@ -571,7 +576,6 @@ function updateHtmlOperation(operationData) {
     operationContainer.querySelector('button.stop-operation').textContent = (operation.state === 'None' || operation.state === 'InShort' || operation.state === 'Awaiting entry' || operation.state === 'Stopped') ? 'Start operation' : 'Stop operation' ;
 
     operationContainer.querySelector('button').onclick = () => {
-        console.log('Start/stop operation', chartId, botId)
         if(operation.state === 'None' || operation.state === 'InShort' || operation.state === 'Awaiting entry') startBotOperation(botId)
         else stopBotOperation(botId)
     }
@@ -676,7 +680,6 @@ function changeProcess(chartId, botId) {
 }
 
 (async function () {
-    console.log('check login status')
     /*const status = await checkLoginStatus()
     if(!status) location.href = 'home.html'*/
     await loadChartsFromDB();

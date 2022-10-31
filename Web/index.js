@@ -188,7 +188,7 @@ wss.on("connection", ws => {
 
 function sendWebClientMessage(data) {
 	console.log('sendWebClientMessage')
-	if(sendWebClientMessage) wsWebClient.send(data);
+	if(sendWebClientMessage && wsWebClient) wsWebClient.send(data);
 	else console.log('Not WebClient Connected');
 }
 

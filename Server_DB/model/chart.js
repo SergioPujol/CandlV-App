@@ -8,7 +8,6 @@ const ChartSchema = new mongoose.Schema(
             interval: String
         }, required: true },
 		minimized: { type: Boolean, required: true },
-		//user_id: { type: mongoose.Schema.ObjectId, ref: 'UserSchema', required: true },
 	},
 	{ collection: 'charts' }
 )

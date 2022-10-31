@@ -2,7 +2,7 @@ import { BotModel } from "../Models/bot";
 import { Trade } from "../Models/trade";
 import { Decision, DecisionType } from "../Models/decision";
 import { Notification } from './Notification';
-import { DEMA, MACD } from "./Strategies";
+import { Bollinger, DEMA, MACD } from "./Strategies";
 import { BinanceAPI } from "../Requests/BinanceAPI";
 import { Candle } from "./Candle";
 import { getPeriods } from "./Utils";
@@ -28,11 +28,12 @@ class Strategy {
     // Trading
     private notification: Notification | undefined;
 
-    private selectedStrategy: DEMA | MACD;
+    private selectedStrategy: DEMA | MACD | Bollinger;
 
     /* Strategies to be defined */
     private dema: DEMA;
     private macd: MACD;
+    private bollinger: Bollinger;
 
     constructor(_bot: BotModel, customStrategy: Boolean = false , _simulation: Boolean = false) {
         this.bot = _bot
@@ -42,6 +43,7 @@ class Strategy {
         // Define Strategies
         this.dema = new DEMA(this.bot, this)
         this.macd = new MACD(this.bot, this)
+        this.bollinger = new Bollinger(this.bot, this)
 
         // selected strategy
         this.selectedStrategy = this.dema
@@ -122,6 +124,9 @@ class Strategy {
             case 'MACD':
                 this.selectedStrategy = this.macd
                 break;
+            case 'Bollinger':
+                this.selectedStrategy = this.bollinger
+                break;
             default:
                 break;
         }
@@ -134,7 +139,7 @@ class Strategy {
     async trading() {
         console.log('trading')
         // get candles by calling BinanceAPI
-        const candles = await binanceAPI.getCandlelist(this.bot.symbol, this.bot.interval, '400');
+        const candles = await binanceAPI.getCandlelist(this.bot.symbol, this.bot.interval, '500');
         this.selectedStrategy.flow(candles);
     }
 

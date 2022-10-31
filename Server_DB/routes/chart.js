@@ -89,6 +89,10 @@ const updateChart = async (data) => {
     return { status: 'ok' }
 }
 
+const updateChartMinimized = async (data) => {
+    console.log('updateChartMinimized')
+}
+
 const getIdByChartId = async (chart_id) => {
     console.log('getIdByChartId')
 	const chart = await Chart.findOne({ chart_id }).lean();

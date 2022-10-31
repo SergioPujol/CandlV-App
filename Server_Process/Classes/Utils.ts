@@ -1,5 +1,6 @@
 import { Candle } from "./Candle";
 const axios = require('axios');
+var bollingerbands = require('bollinger-bands')
 
 const getCandlesForChart = (dataset: Array<Candle>): any => { // open close lowest highest
     let data: any = []
@@ -127,9 +128,26 @@ const getNClosePrice = (dataset: Array<Candle>, n: number) => {
   return listClosePrice.slice(-n)
 }
 
+const getArrayClosePrice = (dataset: Array<Candle>) => {
+  return dataset.map(function(x: Candle) { return parseFloat(x.getClose()); });
+}
+
 const calculateMultiplicator = (nPeriod: number) => {
   return 2/(nPeriod+1)
 }
+
+const getBollingerBands = (candleValues: Array<number>, period: number, times: number) => {
+  const result = bollingerbands(candleValues, period, times)
+  return {
+    upperBound : result.upper,
+    midBound: result.mid,
+    lowerBound : result.lower
+  }
+}
+
+const getLastArrayItem = (list: Array<any>) => {
+  return list[list.length-1]
+} 
 
 export { 
   getCandlesForChart, 
@@ -148,5 +166,8 @@ export {
   calculateSMA,
   calculateSMAWithEMA,
   getNClosePrice, 
-  calculateMultiplicator 
+  calculateMultiplicator,
+  getBollingerBands,
+  getArrayClosePrice,
+  getLastArrayItem
 }
