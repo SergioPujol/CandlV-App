@@ -604,6 +604,11 @@ main.landing-page .start-trading {
     align-items: center;
 }
 
+#settingsModal .modal-body form > h6 {
+    text-align: left;
+    font-weight: bold;
+}
+
 /* Trade types */
 
 .trade {

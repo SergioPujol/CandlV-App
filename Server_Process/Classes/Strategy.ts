@@ -47,7 +47,8 @@ class Strategy {
 
         // selected strategy
         this.selectedStrategy = this.dema
-        this.selectStrategy(this.bot.strategy)
+        if(customStrategy) this.customStrategy()
+        else this.selectStrategy(this.bot.strategy)
     }
 
     async decide(decision: Decision) {
