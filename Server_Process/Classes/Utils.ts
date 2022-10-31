@@ -106,13 +106,19 @@ const stringifyKeyValuePair = ([key, value]: any) => {
     return `${key}=${encodeURIComponent(valueString)}`
 }
 
-const calculateEMA = (previousEmaValue: number, multiplicator: number, actualClosePrice: string) => {
-  return (parseFloat(actualClosePrice) - previousEmaValue) * multiplicator + previousEmaValue
+const calculateEMA = (previousEmaValue: number, multiplicator: number, actualClosePrice: number) => {
+  return (actualClosePrice - previousEmaValue) * multiplicator + previousEmaValue
 }
 
 const calculateSMA = (dataset: Array<Candle>, n: number) => {
   const listClosePriceValues = getNClosePrice(dataset, n)
   let sumCloseValues = listClosePriceValues.reduce((previousValue: number, currentValue: string) => previousValue + parseInt(currentValue), 0);
+  return sumCloseValues/listClosePriceValues.length
+}
+
+const calculateSMAWithEMA = (emaValues: Array<{ EMA: number, date: number }>, n_period: number) => {
+  const listClosePriceValues = emaValues.map(function(x: { EMA: number, date: number }) { return x.EMA; }).slice(-n_period);
+  let sumCloseValues = listClosePriceValues.reduce((previousValue: number, currentValue: number) => previousValue + currentValue, 0);
   return sumCloseValues/listClosePriceValues.length
 }
 
@@ -139,7 +145,8 @@ export {
   removeEmptyValue, 
   buildQueryString, 
   calculateEMA, 
-  calculateSMA, 
+  calculateSMA,
+  calculateSMAWithEMA,
   getNClosePrice, 
   calculateMultiplicator 
 }

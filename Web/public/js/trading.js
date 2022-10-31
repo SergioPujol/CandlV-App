@@ -1,3 +1,4 @@
+var tradingViewCharts = {}
 function minmaxWindows() {
     document.querySelectorAll('.window').forEach(window => {
         let id = window.id
@@ -101,8 +102,7 @@ async function loadChartIntoHtml(chartId, values) {
 }
 
 function addTradingViewChart(chartId, valuesChart) {
-
-    const widget = new TradingView.widget({
+    const widgetConfig = {
         "autosize": true,
         "symbol": `BINANCE:${valuesChart.symbol}`,
         "interval": valuesChart.interval,
@@ -114,25 +114,37 @@ function addTradingViewChart(chartId, valuesChart) {
         "enable_publishing": false,
         "allow_symbol_change": true,
         "container_id": `tradingview_${chartId}`,
-    });
-    
-    /*setTimeout(()=>{
-        widget.activeChart().createStudy('Moving Average Exponential', false, false, { length: 3 })
-        widget.activeChart().createStudy('Moving Average Exponential', false, false, { length: 6 })
-    },2000)*/
+        "studies": []
+    }
+    tradingViewCharts[chartId] = widgetConfig
+    new TradingView.widget(widgetConfig);
 }
 
-function addIndicators(strategy) {
+function addIndicatorsToChart(strategy, options, chartId) {
+    const widgetConfig = tradingViewCharts[chartId];
     switch(strategy) {
         case '2EMA':
-
+            widgetConfig.studies = widgetConfig.studies.concat([{
+                    id: "MAExp@tv-basicstudies",
+                    inputs: {
+                        length: parseInt(options.ema_short_period)
+                    }
+                },{
+                    id: "MAExp@tv-basicstudies",
+                    inputs: {
+                        length: parseInt(options.ema_long_period)
+                    }
+                }
+            ])
+                
         break;
         case 'MACD':
-            widgetObj.studies = [
-                "MACD@tv-basicstudies"
-              ]
+            widgetConfig.studies = widgetConfig.studies.concat([{
+                id: "MACD@tv-basicstudies"
+            }])
         break;
     }
+    new TradingView.widget(widgetConfig);
 }
 
 async function createHtmlWindow(chartId, options) {
@@ -503,6 +515,8 @@ function createHtmlBot(chartId, botId, options) {
         `;
         collapseContainer.querySelector('.strategies-modal').appendChild(div);
     })
+
+    addIndicatorsToChart(options.strategy, options.custom, chartId)
 
     return botHtml
 }

@@ -11,7 +11,6 @@ export interface DEMAObj {
 }
 
 export interface MACDObj {
-    fastEMA: EMA;
-    slowEMA: EMA;
-    signalEMA: EMA;
+    MACDLineEMA: Array<{ EMA: number, date: number }>;
+    SignalLineEMA: Array<{ EMA: number, date: number }>;
 }

@@ -4,7 +4,7 @@ import { EMA } from "./EMA";
 import { BotModel } from "../Models/bot";
 import { DEMAObj, MACDObj, PriceDateObj } from "../Models/strategies";
 import { Decision, DecisionType } from "../Models/decision";
-import { calculateEMA, calculateMultiplicator, calculateSMA } from "./Utils";
+import { calculateEMA, calculateMultiplicator, calculateSMA, calculateSMAWithEMA } from "./Utils";
 
 abstract class Strategies {
     bot: BotModel;
@@ -95,7 +95,7 @@ class DEMA extends Strategies {
             let listEMAs: Array<{ EMA: number, date: number }> = [];
             for (let ind = 0; ind < (candles.length - period); ind++) {
                 let actualCandel: Candle = candles[ind + period];
-                let ema = calculateEMA(previousEma, multiplicator, actualCandel.getClose())
+                let ema = calculateEMA(previousEma, multiplicator, parseFloat(actualCandel.getClose()))
                 listEMAs.push({ EMA: ema, date: actualCandel.getOpenTime() })
                 previousEma = ema
             }
@@ -137,20 +137,28 @@ class MACD extends Strategies {
 
     constructor(_bot: BotModel, _strategyClass: Strategy) {
         super(_bot, _strategyClass)
-        this.periods = [parseInt(this.bot.botOptions.ema_short_period), parseInt(this.bot.botOptions.ema_long_period), parseInt(this.bot.botOptions.signal_period)]
+        this.periods = [parseInt(this.bot.botOptions.ema_short_period), parseInt(this.bot.botOptions.ema_long_period)]
     }
 
     async flow(candles: Candle[]) {
 
         var EMAs: Array<EMA> = [];
 
+        /*
+        Flow:
+        1. Calculate EMas of short_period and long_period
+        2. Calculate MACD Line = short_period ema - long_period ema
+        3. Calculate Ema of the MACD Line
+        */
+
+        // calculate Short Period and Long Period EMAs
         this.periods.forEach(period => {
             let previousEma = calculateSMA(candles, period)
             let multiplicator = calculateMultiplicator(period);
             let listEMAs: Array<{ EMA: number, date: number }> = [];
             for (let ind = 0; ind < (candles.length - period); ind++) {
                 let actualCandel: Candle = candles[ind + period];
-                let ema = calculateEMA(previousEma, multiplicator, actualCandel.getClose())
+                let ema = calculateEMA(previousEma, multiplicator, parseFloat(actualCandel.getClose()))
                 listEMAs.push({ EMA: ema, date: actualCandel.getOpenTime() })
                 previousEma = ema
             }
@@ -158,23 +166,28 @@ class MACD extends Strategies {
             EMAs.push(new EMA(listEMAs, period))
         });
 
+        // calculate MACD Line
+        const macdLine = this.calculateMACDLine(EMAs[0], EMAs[1]);
+
+        // calculate Signal line with EMA of the MACD Line
+        const signalLine = this.calculateSignalLine(macdLine, parseInt(this.bot.botOptions.signal_period));
+
         this.pricedateObject = {
             actualPrice: candles[candles.length-1].getClose(),
             actualDate: candles[candles.length-1].getOpenTime()
         }
         this.macdObject = {
-            fastEMA: EMAs[0],
-            slowEMA: EMAs[1],
-            signalEMA: EMAs[2]
+            MACDLineEMA: macdLine,
+            SignalLineEMA: signalLine,
         }
         this.updateSignal()
     }
 
     updateSignal() {
-        const macd = this.macdObject!.fastEMA.getLastPoint().EMA - this.macdObject!.slowEMA.getLastPoint().EMA; // Big period - slow ema
-        const signalEma = this.macdObject!.signalEMA.getLastPoint().EMA; // Signal period
+        const macd = this.macdObject!.MACDLineEMA[this.macdObject!.MACDLineEMA.length - 1].EMA
+        const signal = this.macdObject!.SignalLineEMA[this.macdObject!.SignalLineEMA.length - 1].EMA
 
-        const macdHistogram = macd - signalEma;
+        const macdHistogram = macd - signal;
 
         if(this.state == 'None') {
             if(macdHistogram > 0) this.signal = DecisionType.Buy
@@ -185,6 +198,35 @@ class MACD extends Strategies {
         else this.signal = DecisionType.Hold
 
         this.decideAct()
+    }
+
+    private calculateMACDLine(short_EMA: EMA, long_EMA: EMA): Array<{ EMA: number, date: number }> {
+        var MACDLine: Array<{ EMA: number, date: number }> = []
+
+        var shortEMAValues: Array<{ EMA: number, date: number }> = short_EMA.getListValues();
+        var longEMAValues: Array<{ EMA: number, date: number }> = long_EMA.getListValues();
+
+        const revertedShortValues = shortEMAValues.reverse();
+        const revertedLongValues = longEMAValues.reverse();
+
+        for (let i = 0; i < revertedLongValues.length; i++) {
+            MACDLine.push({ EMA: revertedShortValues[i].EMA - revertedLongValues[i].EMA, date: revertedLongValues[i].date })
+        }
+        return MACDLine.reverse();
+    }
+
+    private calculateSignalLine(macdLine: Array<{ EMA: number, date: number }>, signalPeriod: number) {
+        let previousEma = calculateSMAWithEMA(macdLine, signalPeriod);
+        let multiplicator = calculateMultiplicator(signalPeriod);
+        let listEMAs: Array<{ EMA: number, date: number }> = [];
+        for (let ind = 0; ind < (macdLine.length); ind++) {
+            let actualCandel: { EMA: number, date: number } = macdLine[ind];
+            let ema = calculateEMA(previousEma, multiplicator, actualCandel.EMA)
+            listEMAs.push({ EMA: ema, date: actualCandel.date })
+            previousEma = ema
+        }
+
+        return listEMAs
     }
 }
 
