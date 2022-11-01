@@ -1,5 +1,21 @@
 var username_gbl = '';
 
+var strategies = {
+    '2EMA': {
+        ema_short_period: 3, // default value
+        ema_long_period: 6 // default value
+    },
+    'MACD': {
+        ema_short_period: 12, // default value
+        ema_long_period: 26, // default value
+        signal_period: 9 // default value
+    },
+    'Bollinger': {
+        period: 20, // default value
+        times: 2, // default value
+    }
+};
+
 async function checkToken() {
     const result = await fetch('/api/checktoken', {
         method: 'POST',
@@ -72,6 +88,61 @@ async function registerKeys() {
     if (result.status === 'ok') {
         // everythign went fine
         showSuccess('Saved, restart App to complete the change');
+    } else {
+        showError(result.error)
+    }
+}
+
+const form_import_strategies = document.getElementById('import-strategy-container')
+form_import_strategies.addEventListener('submit', importStrategy)
+async function importStrategy() {
+    event.preventDefault()
+    if(document.getElementById('import-strategy-file').files.length == 0 || document.getElementById('import-strategy-object').value == '') {
+        showError('Add strategy object and file for importing a strategy')
+        return
+    }
+    var strategyObject;
+    try {
+        strategyObject = JSON.parse(document.getElementById('import-strategy-object').value)
+    } catch (error) {
+        showError('Strategy object format is not correct')
+        return
+    }
+    const path = document.getElementById('import-strategy-file').files[0].path
+
+    const result = await fetch('/api/importStrategy', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            strategyObject,
+            path
+        })
+    }).then((res) => res.json())
+
+    if (result.status === 'ok') {
+        // everythign went fine
+        showSuccess('Custom strategy added');
+    } else {
+        showError(result.error)
+    }
+}
+
+var customStrategies = {}
+async function loadCustomStrategies() {
+    const result = await fetch('/api/getStrategyObjects', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+    }).then((res) => res.json())
+
+    if (result.status === 'ok') {
+        // everythign went fine
+        strategies = { ...strategies, ...({ ...customStrategies, ...Object.assign({}, ...result.strategiesObjects )}) }
+        console.log('strategies', strategies)
     } else {
         showError(result.error)
     }

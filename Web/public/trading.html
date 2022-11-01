@@ -25,24 +25,32 @@
           <button type="button" class="btn btn-2 me-2" data-bs-toggle="modal" data-bs-target="#settingsModal"><i class="bi bi-sliders"></i></button>
           
           <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="settingsModalLabel">Settings</h5>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                  <form class="d-flex flex-column m-0" id="form_settings">
+                <div class="modal-body d-flex flex-row">
+                  <form class="d-flex flex-column m-0 me-1 w-50" id="form_settings">
+                    <h6>Binance Keys</h6>
                     <input type="password" autocomplete="off" id="pb_bkey" placeholder="Public Binance Key" class="mb-2 p-2 rounded border border-secondary" />
                     <input type="password" autocomplete="off" id="pv_bkey" placeholder="Private Binance Key" class="mb-2 p-2 rounded border border-secondary" />
                     <div class="d-flex justify-content-center form-switch">
                       <label class="form-check-label" for="testnetCheckbox">Use testnet Network</label>
                       <input class="form-check-input ms-2" type="checkbox" id="testnetCheckbox" checked>
                     </div>
+                    <div class="settings-buttons d-flex flex-row pt-2 pb-2" style="margin-top: auto">
+                      <input type="submit" class="btn btn-1 ms-0 w-100" value="Save" />
+                    </div>
+                  </form>
+                  <form class="d-flex flex-column import-strategy-file w-50 m-0 ms-1" id="import-strategy-container">
+                    <h6>Strategies</h6>
                     <!-- Import class for strategy -->
-                    <div class="settings-buttons d-flex flex-row pt-2 pb-2">
-                      <button type="button" class="btn btn-secondary w-50" data-bs-dismiss="modal">Close</button>
-                      <input type="submit" class="btn btn-1 w-50" value="Save" />
+                    <textarea id="import-strategy-object" placeholder='Strategy object&#10;Example:&#10;{&#10; "Bollinger": {&#10;  "period": 20,&#10;  "times": 2&#10; }&#10;}' class="mb-2 p-2 rounded border border-secondary"></textarea>
+                    <input type="file" autocomplete="off" id="import-strategy-file" placeholder="Import strategy file" class="mb-2 p-2 rounded border border-secondary" />
+                    <div class="settings-buttons d-flex flex-row pt-2 pb-2" style="margin-top: auto">
+                      <input type="submit" class="btn btn-1 ms-0 w-100" value="Import Strategy" />
                     </div>
                   </form>
                 </div>

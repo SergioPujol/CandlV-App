@@ -47,7 +47,7 @@
                   <form class="d-flex flex-column import-strategy-file w-50 m-0 ms-1" id="import-strategy-container">
                     <h6>Strategies</h6>
                     <!-- Import class for strategy -->
-                    <input type="text" autocomplete="off" id="import-strategy-name" placeholder="Strategy name" class="mb-2 p-2 rounded border border-secondary" />
+                    <textarea id="import-strategy-object" placeholder='Strategy object&#10;Example:&#10;{&#10; "Bollinger": {&#10;  "period": 20,&#10;  "times": 2&#10; }&#10;}' class="mb-2 p-2 rounded border border-secondary"></textarea>
                     <input type="file" autocomplete="off" id="import-strategy-file" placeholder="Import strategy file" class="mb-2 p-2 rounded border border-secondary" />
                     <div class="settings-buttons d-flex flex-row pt-2 pb-2" style="margin-top: auto">
                       <input type="submit" class="btn btn-1 ms-0 w-100" value="Import Strategy" />

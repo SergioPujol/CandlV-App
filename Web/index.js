@@ -27,34 +27,23 @@ app.post('/api/verify', async (req, res) => {
 	}))
 })
 
-
-/*app.post('/api/register', async (req, res) => {
-	const { username, password: plainTextPassword } = req.body
-
-	if (!username || typeof username !== 'string') {
-		return res.json({ status: 'error', error: 'Invalid username' })
-	}
-
-	if (!plainTextPassword || typeof plainTextPassword !== 'string') {
-		return res.json({ status: 'error', error: 'Invalid password' })
-	}
-
-	if (plainTextPassword.length < 5) {
-		return res.json({
-			status: 'error',
-			error: 'Password too small. Should be atleast 6 characters'
-		})
-	}
-
-	return await res.json(await serverDBReq('user', {
-		method: 'register',
-		data: { username, plainTextPassword }
-	}))
-})*/
-
 app.post('/api/registerKeys', async (req, res) => {
 	return await res.json(await serverDBReq('settings', {
 		method: 'saveKeys',
+		data: req.body
+	}))
+})
+
+app.post('/api/importStrategy', async (req, res) => {
+	return await res.json(await serverDBReq('strategies', {
+		method: 'createStrategy',
+		data: req.body
+	}))
+})
+
+app.post('/api/getStrategyObjects', async (req, res) => {
+	return await res.json(await serverDBReq('strategies', {
+		method: 'getStrategyObjects',
 		data: req.body
 	}))
 })

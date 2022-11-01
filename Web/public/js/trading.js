@@ -28,21 +28,6 @@ function minmaxWindows() {
 }
 minmaxWindows()
 // MODAL
-const strategies = {
-    '2EMA': {
-        ema_short_period: 3, // default value
-        ema_long_period: 6 // default value
-    },
-    'MACD': {
-        ema_short_period: 12, // default value
-        ema_long_period: 26, // default value
-        signal_period: 9 // default value
-    },
-    'Bollinger': {
-        period: 20, // default value
-        times: 2, // default value
-    }
-}
 
 function appendOptionsToStrategySelect(element) {
     Object.keys(strategies).forEach(strategy => {
@@ -684,4 +669,5 @@ function changeProcess(chartId, botId) {
     if(!status) location.href = 'home.html'*/
     await loadChartsFromDB();
     await getAllTrades();
+    loadCustomStrategies();
 })();

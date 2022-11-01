@@ -2,22 +2,6 @@ import Datafeed from '../TradingView/datafeed.js';
 
 document.getElementById('add-chart-simulation').onclick = await generateChart
 
-const strategies = {
-    '2EMA': {
-        ema_short_period: 3, // default value
-        ema_long_period: 6 // default value
-    },
-    'MACD': {
-        ema_short_period: 12, // default value
-        ema_long_period: 26, // default value
-        signal_period: 9 // default value
-    },
-    'Bollinger': {
-        period: 20, // default value
-        times: 2, // default value
-    }
-};
-
 var botOpts = {}
 var simulationOpts = {}
 
@@ -290,5 +274,6 @@ async function loadTradeContainers(trades) {
     /*const status = await checkLoginStatus()
     if(!status) location.href = 'home.html'*/
     loadBotModal();
+    loadCustomStrategies();
     document.getElementById('open-bot-options').onclick = () => loadBotStrategyModal()
 })();

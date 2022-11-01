@@ -3,6 +3,7 @@ const Chart = require('./routes/chart')
 const Bot = require('./routes/bot')
 const Trade = require('./routes/trade')
 const Settings = require('./routes/settings')
+const Strategies = require('./routes/strategies')
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -35,6 +36,11 @@ app.post('/trade', async (req, res) => {
 app.post('/settings', async (req, res) => {
   const { method, data } = req.body;
   res.send(await callSettingsMethod(method, data))
+});
+
+app.post('/strategies', async (req, res) => {
+  const { method, data } = req.body;
+  res.send(await callStrategiesMethod(method, data))
 });
 
 app.listen(port, () => console.log(`Server_DB listening on port ${port}!`));
@@ -72,4 +78,10 @@ const callTradeMethod = (method, data) => {
 const callSettingsMethod = (method, data) => {
   if(method == 'saveKeys') return Settings.saveKeys(data)
   else if(method == 'getKeys') return Settings.getKeys()
+}
+
+const callStrategiesMethod = (method, data) => {
+  if(method == 'createStrategy') return Strategies.createStrategy(data)
+  else if(method == 'getStrategyObjects') return Strategies.getStrategyObjects()
+  else if(method == 'getStrategyPathFromName') return Strategies.getStrategyPathFromName(data)
 }
