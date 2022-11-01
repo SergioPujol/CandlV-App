@@ -17,7 +17,7 @@ const createStrategy = async (data) => {
 		}
 		throw error
 	}
-	return { status: 'ok' }
+	return { status: 'ok', strategy: {...data, name} }
 }
 
 const getStrategyObjects = async () => {
@@ -41,10 +41,20 @@ const getStrategyPathFromName = async (name) => {
 
 	return bot.path
 
-} 
+}
+
+const isStrategyCustom = async (name) => {
+	console.log('isStrategyCustom')
+	const strategy = await Strategies.findOne({ name }).lean();
+	if (!strategy) {
+		return false
+	}
+	return true
+}
 
 module.exports = {
     createStrategy,
 	getStrategyObjects,
-	getStrategyPathFromName
+	getStrategyPathFromName,
+	isStrategyCustom
 }

@@ -283,6 +283,7 @@ class Bollinger extends Strategies {
 }
 
 export {
+    Strategies,
     DEMA,
     MACD,
     Bollinger

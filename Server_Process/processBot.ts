@@ -11,9 +11,9 @@ class processBot {
         this.client = _client;
     }
 
-    async addBot(chart_id: string, bot_id: string, { status, symbol, interval, strategy }: any, botOptions: any, investment: { investmentType: string, quantity: string }) {
+    async addBot(chart_id: string, bot_id: string, { status, symbol, interval, strategy, isStrategyCustom }: any, botOptions: any, investment: { investmentType: string, quantity: string }) {
         try {
-            this.bots[bot_id] = new Bot(this.client, bot_id, chart_id, symbol, interval, strategy, botOptions, investment);
+            this.bots[bot_id] = new Bot(this.client, bot_id, chart_id, symbol, interval, strategy, botOptions, investment, isStrategyCustom);
             this.bots[bot_id].startBot()
             return true
         } catch (error) {

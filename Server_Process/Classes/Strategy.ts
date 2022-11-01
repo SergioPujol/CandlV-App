@@ -6,6 +6,7 @@ import { Bollinger, DEMA, MACD } from "./Strategies";
 import { BinanceAPI } from "../Requests/BinanceAPI";
 import { Candle } from "./Candle";
 import { getPeriods } from "./Utils";
+const fs = require('fs');
 
 const binanceAPI = new BinanceAPI();
 
@@ -135,6 +136,35 @@ class Strategy {
 
     private async customStrategy() {
         // request strategy code
+        console.log('customStrategy')
+        var src = 'D:\\Desktop\\Universidad\\TFG\\NodejsProject\\custom_strategies\\CustomModelClass.ts';
+        
+        // File destination.txt will be created or overwritten by default.
+        try {
+            await fs.copyFile(src, './Server_Process/Classes/CustomStrategy.ts', async (error: any) => {
+                // incase of any error
+                if (error) {
+                  console.error(error);
+                  return;
+                }
+              
+                console.log("Copied Successfully!");
+                fs.readFile('./Server_Process/Classes/CustomStrategy.ts', 'utf8', async (error: any, data: any) => {
+                    // incase of any error
+                    if (error) {
+                      console.error(error);
+                      return;
+                    }
+
+                    const aa = './CustomStrategy'
+                    const importedClass = await import(aa);
+                    this.selectedStrategy = new importedClass['CustomModelClass'](this.bot, this)
+                })
+              });
+        } catch (err) {
+            console.error(err);
+        }
+
     }
 
     async trading() {

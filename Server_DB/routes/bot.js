@@ -1,5 +1,6 @@
 const Bot = require('../model/bot');
 const Chart = require('./chart');
+const Strategies = require('./strategies');
 const ServerProcess = require('../connections/serverProcess');
 const Web = require('../connections/web');
 const _ = require('lodash');
@@ -43,7 +44,8 @@ const _ = require('lodash');
 	// create bot in server process
 	// if status true from serverProcess, return status 'ok'
 	const chartParams = await Chart.getChartParamsByChartId(chartId) // { symbol, interval }
-	const serverProcessRes = await ServerProcess.sendCreateBot({bot_id: botId, chart_id: chartId, bot_params: { status: botStatus, ...chartParams, strategy: botStrategy }, bot_options: botOptions, investment})
+	const boolStrategyCustom = await Strategies.isStrategyCustom(botStrategy);
+	const serverProcessRes = await ServerProcess.sendCreateBot({bot_id: botId, chart_id: chartId, bot_params: { status: botStatus, ...chartParams, strategy: botStrategy, isStrategyCustom: boolStrategyCustom }, bot_options: botOptions, investment})
 
 	if(serverProcessRes) return { status: 'ok' }
 	return { status: 'error', error: 'Bot could not be created' }

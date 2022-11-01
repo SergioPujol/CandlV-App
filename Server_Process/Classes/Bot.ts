@@ -12,16 +12,18 @@ class Bot {
     client: Client | false;
 
     private strategy: Strategy;
+    private isStrategyCustom: boolean;
 
     private bot: BotModel;
 
-    constructor(_client: Client | false, _id: string, chartId: string, _symbol: string, _interval: string, _strategy: string, _botOptions: any, _investment: { investmentType: string, quantity: string }, _period: {from:string, to:string} | undefined = undefined) {
+    constructor(_client: Client | false, _id: string, chartId: string, _symbol: string, _interval: string, _strategy: string, _botOptions: any, _investment: { investmentType: string, quantity: string }, _isStrategyCustom: boolean = false, _period: {from:string, to:string} | undefined = undefined) {
 
         this.client = _client
 
         this.id = _id;
 
         this.botInterval;
+        this.isStrategyCustom = _isStrategyCustom
 
         this.bot = {
             client: _client,
@@ -37,7 +39,7 @@ class Bot {
             }))
         }
 
-        this.strategy = new Strategy(this.bot);
+        this.strategy = new Strategy(this.bot, this.isStrategyCustom);
     }
 
     async startBot() {
@@ -68,7 +70,7 @@ class Bot {
 
     async startSimulation() {
 
-        const strategy = new Strategy(this.bot, false, true)
+        const strategy = new Strategy(this.bot, this.isStrategyCustom, true)
 
         const simulationData = await strategy.simulation()
 

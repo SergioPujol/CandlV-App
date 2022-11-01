@@ -29,15 +29,6 @@ function minmaxWindows() {
 minmaxWindows()
 // MODAL
 
-function appendOptionsToStrategySelect(element) {
-    Object.keys(strategies).forEach(strategy => {
-        let opt = document.createElement('option');
-        opt.value = strategy;
-        opt.innerHTML = strategy;
-        element.appendChild(opt)
-    })
-}
-
 function updateModalWithStrategy(chartId, strategy) {
     const strategyContainer = document.querySelector(`#add-bot-modal-${chartId} .container-strategy-options`);
     strategyContainer.innerHTML = '';

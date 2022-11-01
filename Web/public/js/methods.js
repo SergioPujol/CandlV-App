@@ -15,6 +15,7 @@ var strategies = {
         times: 2, // default value
     }
 };
+var nonCustomStrategies = strategies;
 
 async function checkToken() {
     const result = await fetch('/api/checktoken', {
@@ -123,13 +124,14 @@ async function importStrategy() {
 
     if (result.status === 'ok') {
         // everythign went fine
+        strategies = { ...strategies, ...strategyObject};
         showSuccess('Custom strategy added');
+        console.log('strategies', strategies)
     } else {
         showError(result.error)
     }
 }
 
-var customStrategies = {}
 async function loadCustomStrategies() {
     const result = await fetch('/api/getStrategyObjects', {
         method: 'POST',
@@ -141,7 +143,7 @@ async function loadCustomStrategies() {
 
     if (result.status === 'ok') {
         // everythign went fine
-        strategies = { ...strategies, ...({ ...customStrategies, ...Object.assign({}, ...result.strategiesObjects )}) }
+        strategies = { ...strategies, ...Object.assign({}, ...result.strategiesObjects) }
         console.log('strategies', strategies)
     } else {
         showError(result.error)
@@ -239,4 +241,13 @@ function buildToast(text, type, color) {
         setTimeout(() => div.remove(), 1000)
     }, 2500);
 
+}
+
+function appendOptionsToStrategySelect(element) {
+    Object.keys(strategies).forEach(strategy => {
+        let opt = document.createElement('option');
+        opt.value = strategy;
+        opt.innerHTML = strategy;
+        element.appendChild(opt)
+    })
 }

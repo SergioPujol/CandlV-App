@@ -111,15 +111,6 @@ function saveBotOptionsModal() {
     
 }
 
-function appendOptionsToStrategySelect(element) {
-    Object.keys(strategies).forEach(strategy => {
-        let opt = document.createElement('option');
-        opt.value = strategy;
-        opt.innerHTML = strategy;
-        element.appendChild(opt)
-    })
-}
-
 function updateModalWithStrategy(strategy) {
     let strategyContainer = document.querySelector(`#add-bot-modal-simulation .container-strategy-options`);
     strategyContainer.innerHTML = ''
@@ -154,13 +145,13 @@ async function startSimulation() {
     loadingSpinner();
     const { symbol, interval, period } = simulationOpts;
     const { botId, botStrategy, botOptions } = botOpts;
-
+    const isStrategyCustom = !Object.keys(nonCustomStrategies).includes(botStrategy);
      const result = await fetch('/api/simulation', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ bot_id: botId, symbol, interval, period, strategy: botStrategy, botOptions })
+        body: JSON.stringify({ bot_id: botId, symbol, interval, period, strategy: botStrategy, botOptions, isStrategyCustom })
     }).then((res) => res.json())
 
     if(result.status) {
@@ -273,7 +264,7 @@ async function loadTradeContainers(trades) {
 (async function () {
     /*const status = await checkLoginStatus()
     if(!status) location.href = 'home.html'*/
+    await loadCustomStrategies();
     loadBotModal();
-    loadCustomStrategies();
     document.getElementById('open-bot-options').onclick = () => loadBotStrategyModal()
 })();
