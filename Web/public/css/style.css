@@ -670,3 +670,7 @@ main.landing-page .start-trading {
     height: 100%;
     align-items: center;
 }
+
+#form_settings {
+    border-right: 2px solid var(--primary-color);
+}

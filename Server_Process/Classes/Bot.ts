@@ -1,4 +1,5 @@
 import { BotModel } from '../Models/bot';
+import { getTimeRemainingToNextCandle } from '../Requests/BinanceAPI';
 import { Client } from './Client';
 import { Strategy } from './Strategy';
 
@@ -47,7 +48,7 @@ class Bot {
     async startBot() {
         console.log(`${this.getId()} - bot started`)
         let interval: number = parseInt(this.bot.interval);
-        let tWaitMilisecs = await this.getWaitStart(interval);
+        let tWaitMilisecs = await this.getWaitStart();
         await setTimeout(async () => {
             if(this.isBotDeleted) return
             this.strategy.trading();
@@ -57,10 +58,9 @@ class Bot {
         }, tWaitMilisecs);
     }
 
-    async getWaitStart(intervalMins: number) {
-        var time = new Date(), timeRemaining = (intervalMins * 60 - time.getSeconds()) * 1000 + 200; //200 ms added to make sure is next Kandle
-        console.log(`Waiting ${timeRemaining/1000} seconds to start`)
-        return timeRemaining;
+    async getWaitStart() {
+        const nextCandleTimestamp = await getTimeRemainingToNextCandle(this.bot.symbol, this.bot.interval)
+        if(nextCandleTimestamp) return nextCandleTimestamp - Date.now();
     }
 
     deleteBot() {

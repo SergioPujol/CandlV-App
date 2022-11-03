@@ -117,10 +117,6 @@ export default {
 	getBars: async (symbolInfo, resolution, periodParams, onHistoryCallback, onErrorCallback) => {
 		
 		var { from, to, firstDataRequest } = periodParams;
-		if(firstDataRequest) { 
-			from = new Date(document.getElementById('from-time').value).getTime()/1000;
-			to = new Date(document.getElementById('to-time').value).getTime()/1000;
-		}
 		console.log('[getBars]: Method call', symbolInfo, resolution, from, to);
 
         const interval = {

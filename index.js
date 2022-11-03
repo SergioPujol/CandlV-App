@@ -1,10 +1,10 @@
 const { app, BrowserWindow } = require('electron');
-const got = require('got');
 
 const { machineId } = require('node-machine-id');
 
 const fs = require("fs");
 const path = require("path");
+const got = require('got');
 
 app.whenReady().then(async () => {
   

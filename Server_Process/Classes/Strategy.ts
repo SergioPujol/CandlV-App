@@ -3,13 +3,12 @@ import { Trade } from "../Models/trade";
 import { Decision, DecisionType } from "../Models/decision";
 import { Notification } from './Notification';
 import { Bollinger, DEMA, MACD } from "./Strategies";
-import { BinanceAPI } from "../Requests/BinanceAPI";
 import { Candle } from "./Candle";
 import { getPeriods, sendErrorToWeb } from "./Utils";
 import { ServerDBRequest } from "../Requests/serverDB";
+import { getPeriodCandleList, getCandlelist } from "../Requests/BinanceAPI"
 const fs = require('fs');
 
-const binanceAPI = new BinanceAPI();
 const serverDBRequests = new ServerDBRequest();
 
 class Strategy {
@@ -187,7 +186,7 @@ class Strategy {
     async trading() {
         console.log('trading')
         // get candles by calling BinanceAPI
-        const candles = await binanceAPI.getCandlelist(this.bot.symbol, this.bot.interval, '500');
+        const candles = await getCandlelist(this.bot.symbol, this.bot.interval, '500');
         this.selectedStrategy.flow(candles);
     }
 
@@ -201,10 +200,10 @@ class Strategy {
         var nPeriods = getPeriods(from, to, parseInt(this.bot.interval)) + 400;
         var Tperiods = nPeriods;
         while(nPeriods > 1000) {
-            candles = [...(await binanceAPI.getPeriodCandleList(this.bot.symbol, this.bot.interval, { from: ((to - (Tperiods - nPeriods + 1000)*60*parseInt(this.bot.interval)) * 1000).toString(), to: ((to - (Tperiods - nPeriods)*60*parseInt(this.bot.interval)) * 1000).toString() })), ...candles]
+            candles = [...(await getPeriodCandleList(this.bot.symbol, this.bot.interval, { from: ((to - (Tperiods - nPeriods + 1000)*60*parseInt(this.bot.interval)) * 1000).toString(), to: ((to - (Tperiods - nPeriods)*60*parseInt(this.bot.interval)) * 1000).toString() })), ...candles]
             nPeriods -= 1001
         }
-        candles = [...(await binanceAPI.getPeriodCandleList(this.bot.symbol, this.bot.interval, { from: ((to - (Tperiods)*60*parseInt(this.bot.interval)) * 1000).toString(), to: ((to - (Tperiods - nPeriods)*60*parseInt(this.bot.interval)) * 1000).toString() })), ...candles]
+        candles = [...(await getPeriodCandleList(this.bot.symbol, this.bot.interval, { from: ((to - (Tperiods)*60*parseInt(this.bot.interval)) * 1000).toString(), to: ((to - (Tperiods - nPeriods)*60*parseInt(this.bot.interval)) * 1000).toString() })), ...candles]
         
         for(let i=0; i < (Tperiods - 400); i++) {
             this.selectedStrategy.flow(candles.slice(i, 402 + i))

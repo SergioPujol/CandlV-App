@@ -1,11 +1,16 @@
+// Classes
+
 import { Strategy } from "../Classes/Strategy";
 import { Strategies } from '../Classes/Strategies';
-import { BotModel } from "../Models/bot";
 import { Candle } from "../Classes/Candle";
-import { DecisionType } from "../Models/decision";
-import { calculateEMA, calculateMultiplicator, calculateSMA, calculateSMAWithEMA, getArrayClosePrice, getBollingerBands, getLastArrayItem } from "../Classes/Utils";
 
-class CustomModelClass extends Strategies {
+// Models
+
+import { BotModel } from "../Models/bot";
+import { DecisionType } from "../Models/decision";
+
+
+export class CustomModelClass extends Strategies {
 
     private customStrategyObject: { topLimit: number, bottomLimit: number } | undefined; // EXAMPLE
 
@@ -68,5 +73,3 @@ class CustomModelClass extends Strategies {
         this.decideAct()
     }
 }
-
-export { CustomModelClass }

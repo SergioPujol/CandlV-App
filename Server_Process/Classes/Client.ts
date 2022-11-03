@@ -1,14 +1,9 @@
-import { BinanceAPI } from "../Requests/BinanceAPI";
 import { createHmac } from "crypto";
 import { getRequestInstance, createRequest, removeEmptyValue, buildQueryString } from './Utils';
 import { Order, Side, Type } from "../Models/order";
 const cryptojs = require('crypto-js')
 
 const k: string = 'lkgna8723nlkfmas23#11]sad';
-
-
-
-
 
 class Client {
 
