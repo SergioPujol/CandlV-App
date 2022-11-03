@@ -6,9 +6,11 @@ import { Bollinger, DEMA, MACD } from "./Strategies";
 import { BinanceAPI } from "../Requests/BinanceAPI";
 import { Candle } from "./Candle";
 import { getPeriods } from "./Utils";
+import { ServerDBRequest } from "../Requests/serverDB";
 const fs = require('fs');
 
 const binanceAPI = new BinanceAPI();
+const serverDBRequests = new ServerDBRequest();
 
 class Strategy {
     /** Class strategy, abstract strategy
@@ -48,7 +50,7 @@ class Strategy {
 
         // selected strategy
         this.selectedStrategy = this.dema
-        if(customStrategy) this.customStrategy()
+        if(customStrategy) this.customStrategy(this.bot.strategy)
         else this.selectStrategy(this.bot.strategy)
     }
 
@@ -134,31 +136,41 @@ class Strategy {
         }
     }
 
-    private async customStrategy() {
+    private async customStrategy(strategyName: string) {
         // request strategy code
         console.log('customStrategy')
-        var src = 'D:\\Desktop\\Universidad\\TFG\\NodejsProject\\custom_strategies\\CustomModelClass.ts';
+        var strategyPath = ''
+        await serverDBRequests.getStrategyPathFromName(strategyName).then((res) => {
+            console.log('getStrategyPathFromName', res);
+            strategyPath = res.path;
+        })
+        //strategyPath = 'D:\\Desktop\\Universidad\\TFG\\NodejsProject\\custom_strategies\\CustomModelClass.ts';
         
         // File destination.txt will be created or overwritten by default.
         try {
-            await fs.copyFile(src, './Server_Process/Classes/CustomStrategy.ts', async (error: any) => {
+            await fs.copyFile(strategyPath, `./Server_Process/CustomStrategies/CustomStrategy-${strategyName}.ts`, async (error: any) => {
                 // incase of any error
                 if (error) {
                   console.error(error);
                   return;
                 }
               
-                console.log("Copied Successfully!");
-                fs.readFile('./Server_Process/Classes/CustomStrategy.ts', 'utf8', async (error: any, data: any) => {
+                fs.readFile(`./Server_Process/CustomStrategies/CustomStrategy-${strategyName}.ts`, 'utf8', async (error: any, data: any) => {
                     // incase of any error
                     if (error) {
                       console.error(error);
                       return;
                     }
 
-                    const aa = './CustomStrategy'
-                    const importedClass = await import(aa);
-                    this.selectedStrategy = new importedClass['CustomModelClass'](this.bot, this)
+                    try {
+                        const CustomStrategyPath = `../CustomStrategies/CustomStrategy-${strategyName}`
+                        const importedClass = await import(CustomStrategyPath);
+                        this.selectedStrategy = new importedClass[strategyName](this.bot, this)
+                    } catch (error) {
+                        console.log(error)
+                        console.log('Custom strategy could not be imported')
+                    }
+                    console.log("Loaded Custom Strategy");
                 })
               });
         } catch (err) {

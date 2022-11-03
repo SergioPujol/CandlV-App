@@ -39,7 +39,7 @@ const getStrategyPathFromName = async (name) => {
 		return false
 	}
 
-	return bot.path
+	return { status: 'ok', path: strategy.path }
 
 }
 

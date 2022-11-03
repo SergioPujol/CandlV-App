@@ -1,9 +1,9 @@
-import { Strategy } from "./Strategy";
-import { Strategies } from './Strategies';
+import { Strategy } from "../Classes/Strategy";
+import { Strategies } from '../Classes/Strategies';
 import { BotModel } from "../Models/bot";
-import { Candle } from "./Candle";
+import { Candle } from "../Classes/Candle";
 import { DecisionType } from "../Models/decision";
-import { calculateEMA, calculateMultiplicator, calculateSMA, calculateSMAWithEMA, getArrayClosePrice, getBollingerBands, getLastArrayItem } from "./Utils";
+import { calculateEMA, calculateMultiplicator, calculateSMA, calculateSMAWithEMA, getArrayClosePrice, getBollingerBands, getLastArrayItem } from "../Classes/Utils";
 
 class CustomModelClass extends Strategies {
 

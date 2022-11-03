@@ -1,4 +1,4 @@
-const got = require('got');
+import got from 'got';
 
 class ServerDBRequest {
     private port = 3100;
@@ -18,6 +18,12 @@ class ServerDBRequest {
     getApiKeys = async () => {
         return await this.DBrequest('settings', { 
             method: 'getKeys', data: {} 
+        })
+    }
+
+    getStrategyPathFromName = async (data: any) => {
+        return await this.DBrequest('strategies', { 
+            method: 'getStrategyPathFromName', data 
         })
     }
 

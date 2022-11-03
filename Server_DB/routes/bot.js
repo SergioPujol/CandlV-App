@@ -131,7 +131,8 @@ const updateStatusBot = async (data) => {
 	if(status) {
 		const chartParams = await Chart.getChartParamsByChartId(chartId) // { symbol, interval }
 		const bot = await Bot.findOne({ chart_id, bot_id });
-		let serverProcessRes = await ServerProcess.sendCreateBot({bot_id: botId, chart_id: chartId, bot_params: { status: status, ...chartParams, strategy: bot.bot_strategy }, bot_options: bot.bot_strategy_options, investment: bot.investment})
+		const boolStrategyCustom = await Strategies.isStrategyCustom(bot.bot_strategy);
+		let serverProcessRes = await ServerProcess.sendCreateBot({bot_id: botId, chart_id: chartId, bot_params: { status: status, ...chartParams, strategy: bot.bot_strategy, isStrategyCustom: boolStrategyCustom }, bot_options: bot.bot_strategy_options, investment: bot.investment})
 
 		if(serverProcessRes) return { status: 'ok' }
 		return { status: 'error', error: 'Bot could not be created' }

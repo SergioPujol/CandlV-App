@@ -3,6 +3,9 @@ const got = require('got');
 
 const { machineId } = require('node-machine-id');
 
+const fs = require("fs");
+const path = require("path");
+
 app.whenReady().then(async () => {
   
     const win = new BrowserWindow({ width: 1850, height: 1000, show: false, icon: __dirname + '/icons/CV.png', autoHideMenuBar: true, })
@@ -21,6 +24,7 @@ app.whenReady().then(async () => {
     win.once('closed', async () => {
         stopApp()
         sendStopAllBots();
+        clearCustomStrategiesFolder();
     })
 
 })
@@ -32,6 +36,21 @@ process.on('exit', function(code) {
 const stopApp = () => {
   console.log('Stop App')
   process.exit(0);
+}
+
+const clearCustomStrategiesFolder = async () => {
+    console.log('clearCustomStrategiesFolder')
+    const directory = "Server_Process/CustomStrategies";
+
+    fs.readdir(directory, (err, files) => {
+      if (err) throw err;
+    
+      for (const file of files) {
+        fs.unlink(path.join(directory, file), (err) => {
+          if (err) throw err;
+        });
+      }
+    });
 }
 
 // ServerDB

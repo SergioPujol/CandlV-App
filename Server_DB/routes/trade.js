@@ -36,7 +36,7 @@ const getAllTrades = async () => {
 
 const getLast20Trades = async () => {
     // get some trades to display on the web
-    const first20Trades = (await getAllTrades()).slice(0, 20);
+    const first20Trades = (await getAllTrades()).slice(-20);
     return { status: 'ok', data: first20Trades }
 }
 
