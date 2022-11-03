@@ -472,6 +472,7 @@ function createHtmlBot(chartId, botId, options) {
     </div>`
     const strategySelect = botHtml.querySelector(`#strategy-select-bot-${botId}`)
     appendOptionsToStrategySelect(strategySelect)
+    strategySelect.value = options.strategy;
     const collapseContainer = botHtml.querySelector(`#collapse-bot-${botId} > div`)
 
     // DELETE BOT
