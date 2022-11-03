@@ -146,8 +146,12 @@ const getBollingerBands = (candleValues: Array<number>, period: number, times: n
 }
 
 const getLastArrayItem = (list: Array<any>) => {
-  return list[list.length-1]
-} 
+  return list[list.length-1];
+}
+
+const sendErrorToWeb = async (message: string, botId: string) => {
+	await axios.post(`http://localhost:3000/serverError/`, { message, botId });
+}
 
 export { 
   getCandlesForChart, 
@@ -169,5 +173,6 @@ export {
   calculateMultiplicator,
   getBollingerBands,
   getArrayClosePrice,
-  getLastArrayItem
+  getLastArrayItem,
+  sendErrorToWeb
 }

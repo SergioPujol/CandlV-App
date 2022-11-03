@@ -3,7 +3,7 @@
     --secondary-color: #21252b;
     --tertiary-color: #3a3d41;
 
-    --blue-color: #4d78cc;
+    --blue-color: #5474B3;
     --white-color: #fff;
 }
 
@@ -76,6 +76,10 @@ body.launcher .auth .separator {
     width: 1px;
     border: 1px solid var(--white-color);
     margin: 0 50px;
+}
+
+a:hover {
+    color: #5078c9 !important;
 }
 
 /** Header **/
@@ -609,6 +613,10 @@ main.landing-page .start-trading {
     font-weight: bold;
 }
 
+#settingsModal .modal-body form > h7 {
+    text-align: left;
+}
+
 /* Trade types */
 
 .trade {
@@ -633,6 +641,32 @@ main.landing-page .start-trading {
     align-items: center;
 }
 
+.trade .trade-percentage.negative_percentage {
+    border-color: #973232;
+}
+
+.trade .trade-percentage.positive_percentage {
+    border-color: #278f3e;
+}
+
 .trade.trade-close .trade-decision {
     width: 20% !important;
+}
+
+#tv_chart_container {
+    
+    color: white;
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    align-items: center;
+
+}
+
+.no-trades {
+    color: white;
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    align-items: center;
 }

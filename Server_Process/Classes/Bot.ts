@@ -16,6 +16,8 @@ class Bot {
 
     private bot: BotModel;
 
+    private isBotDeleted: Boolean = false;
+
     constructor(_client: Client | false, _id: string, chartId: string, _symbol: string, _interval: string, _strategy: string, _botOptions: any, _investment: { investmentType: string, quantity: string }, _isStrategyCustom: boolean = false, _period: {from:string, to:string} | undefined = undefined) {
 
         this.client = _client
@@ -47,6 +49,7 @@ class Bot {
         let interval: number = parseInt(this.bot.interval);
         let tWaitMilisecs = await this.getWaitStart(interval);
         await setTimeout(async () => {
+            if(this.isBotDeleted) return
             this.strategy.trading();
             this.botInterval = setInterval(()=>{
                 this.strategy.trading();
@@ -61,6 +64,7 @@ class Bot {
     }
 
     deleteBot() {
+        this.isBotDeleted = true;
         clearInterval(this.botInterval)
     }
 

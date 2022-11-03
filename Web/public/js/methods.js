@@ -124,9 +124,10 @@ async function importStrategy() {
 
     if (result.status === 'ok') {
         // everythign went fine
-        strategies = { ...strategies, ...strategyObject};
-        showSuccess('Custom strategy added');
-        console.log('strategies', strategies)
+        showSuccess('Custom strategy added. Reloading the APP');
+        setTimeout(() => {
+            location.reload();
+        }, 2000)
     } else {
         showError(result.error)
     }
@@ -144,6 +145,7 @@ async function loadCustomStrategies() {
     if (result.status === 'ok') {
         // everythign went fine
         strategies = { ...strategies, ...Object.assign({}, ...result.strategiesObjects) }
+        appendCustomStrategiesToDeleteSelect(Object.assign({}, ...result.strategiesObjects))
         console.log('strategies', strategies)
     } else {
         showError(result.error)
@@ -250,4 +252,51 @@ function appendOptionsToStrategySelect(element) {
         opt.innerHTML = strategy;
         element.appendChild(opt)
     })
+}
+
+function stopBot(botId) {
+    if(document.URL.includes('simulation.html')) return
+    if(document.getElementById(`status-bot-${botId}`).checked) {
+        const statusElement = document.getElementById(`status-bot-${botId}`);
+        statusElement.checked = false;
+        let change = new Event('change');
+        statusElement.dispatchEvent(change)
+    }
+}
+
+function appendCustomStrategiesToDeleteSelect(customStrategies) {
+    const customStrSelect = document.getElementById('delete-strategy-select')
+    Object.keys(customStrategies).forEach(strategy => {
+        let opt = document.createElement('option');
+        opt.value = strategy;
+        opt.innerHTML = strategy;
+        customStrSelect.appendChild(opt)
+    })
+
+    document.getElementById('delete-strategy').onclick = () => {
+        if(customStrSelect.value) deleteStrategy(customStrSelect.value)
+    }
+}
+
+async function deleteStrategy(strategyName) {
+
+    const result = await fetch('/api/deleteStrategy', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: strategyName
+        })
+    }).then((res) => res.json())
+
+    if (result.status === 'ok') {
+        // everythign went fine
+        showSuccess('Strategy deleted. Reloading the APP');
+        setTimeout(() => {
+            location.reload();
+        }, 2000)
+    } else {
+        showError(result.error)
+    }
 }

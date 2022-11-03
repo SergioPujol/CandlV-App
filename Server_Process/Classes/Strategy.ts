@@ -5,7 +5,7 @@ import { Notification } from './Notification';
 import { Bollinger, DEMA, MACD } from "./Strategies";
 import { BinanceAPI } from "../Requests/BinanceAPI";
 import { Candle } from "./Candle";
-import { getPeriods } from "./Utils";
+import { getPeriods, sendErrorToWeb } from "./Utils";
 import { ServerDBRequest } from "../Requests/serverDB";
 const fs = require('fs');
 
@@ -63,55 +63,62 @@ class Strategy {
             // if buy, call buy - if sell, call sell
             // then, if respond its fine, sendNotification
             // if decision is hold or await, just sendNotification
-            if(!this.bot.client || decision.decision === DecisionType.Hold) this.notification!.sendNotification(decision)
-            else if(decision.decision === DecisionType.Buy) {
-                await this.bot.client.buy(this.bot.symbol, this.calculateInvestment()).then((res: any) => {
-                    if(!res) return
-                    else {
-                        const trade: Trade = {
-                            type: 'BUY',
-                            symbol: this.bot.symbol,
-                            entry_price: res.fills[0].price,
-                            percentage: '-',
-                            symbol_quantity: res.executedQty,
-                            usdt_quantity: res.cummulativeQuoteQty,
-                            time: res.transactTime,
-                            bot_strategy: this.bot.strategy,
-                            bot_options: this.bot.botOptions,
-                            chart_id: this.bot.chartId,
-                            bot_id: this.bot.botId
+            try {
+                if(!this.bot.client || decision.decision === DecisionType.Hold) this.notification!.sendNotification(decision)
+                else if(decision.decision === DecisionType.Buy) {
+                    const investmentQuantity = await this.calculateInvestment()
+                    await this.bot.client.buy(this.bot.symbol, investmentQuantity).then((res: any) => {
+                        if(!res) return
+                        else {
+                            const trade: Trade = {
+                                type: 'BUY',
+                                symbol: this.bot.symbol,
+                                entry_price: res.fills[0].price,
+                                percentage: '-',
+                                symbol_quantity: res.executedQty,
+                                usdt_quantity: res.cummulativeQuoteQty,
+                                time: res.transactTime,
+                                bot_strategy: this.bot.strategy,
+                                bot_options: this.bot.botOptions,
+                                chart_id: this.bot.chartId,
+                                bot_id: this.bot.botId
+                            }
+                            // get values to send to Trade DB
+                            this.lastEntryPrice = res.fills[0].price;
+                            this.symbolBoughtQuantity = res.executedQty
+                            this.notification!.sendNotification(decision, trade)
                         }
-                        // get values to send to Trade DB
-                        this.lastEntryPrice = res.fills[0].price;
-                        this.symbolBoughtQuantity = res.executedQty
-                        this.notification!.sendNotification(decision, trade)
-                    }
-                })
-            } else if(decision.decision === DecisionType.Sell) {
-                if(this.symbolBoughtQuantity === 0) {
-                    // not sell, because there is no previous bought
-                    this.notification!.sendNotification(decision)
-                } else {
-                    await this.bot.client.sell(this.bot.symbol, this.symbolBoughtQuantity).then((res: any) => {
-                        const trade: Trade = {
-                            type: 'SELL',
-                            symbol: this.bot.symbol,
-                            entry_price: res.fills[0].price,
-                            percentage: this.getPercentageFromLastCross(res.fills[0].price),
-                            symbol_quantity: res.executedQty,
-                            usdt_quantity: res.cummulativeQuoteQty,
-                            time: res.transactTime,
-                            bot_strategy: this.bot.strategy,
-                            bot_options: this.bot.botOptions,
-                            chart_id: this.bot.chartId,
-                            bot_id: this.bot.botId
-                        }
-                        // get values to send to Trade DB
-                        this.symbolBoughtQuantity = 0
-                        this.notification!.sendNotification(decision, trade)
                     })
-                }
+                } else if(decision.decision === DecisionType.Sell) {
+                    if(this.symbolBoughtQuantity === 0) {
+                        // not sell, because there is no previous bought
+                        this.notification!.sendNotification(decision)
+                    } else {
+                        await this.bot.client.sell(this.bot.symbol, this.symbolBoughtQuantity).then((res: any) => {
+                            const trade: Trade = {
+                                type: 'SELL',
+                                symbol: this.bot.symbol,
+                                entry_price: res.fills[0].price,
+                                percentage: this.getPercentageFromLastCross(res.fills[0].price),
+                                symbol_quantity: res.executedQty,
+                                usdt_quantity: res.cummulativeQuoteQty,
+                                time: res.transactTime,
+                                bot_strategy: this.bot.strategy,
+                                bot_options: this.bot.botOptions,
+                                chart_id: this.bot.chartId,
+                                bot_id: this.bot.botId
+                            }
+                            // get values to send to Trade DB
+                            this.symbolBoughtQuantity = 0
+                            this.notification!.sendNotification(decision, trade)
+                        })
+                    }
+                } 
+            } catch (error) {
+                console.log('Order could not be completed')
+                sendErrorToWeb('Order could not be completed', this.bot.botId);
             }
+            
         }
     }
 
@@ -138,15 +145,12 @@ class Strategy {
 
     private async customStrategy(strategyName: string) {
         // request strategy code
-        console.log('customStrategy')
+        console.log('customStrategy');
         var strategyPath = ''
         await serverDBRequests.getStrategyPathFromName(strategyName).then((res) => {
-            console.log('getStrategyPathFromName', res);
             strategyPath = res.path;
         })
-        //strategyPath = 'D:\\Desktop\\Universidad\\TFG\\NodejsProject\\custom_strategies\\CustomModelClass.ts';
-        
-        // File destination.txt will be created or overwritten by default.
+
         try {
             await fs.copyFile(strategyPath, `./Server_Process/CustomStrategies/CustomStrategy-${strategyName}.ts`, async (error: any) => {
                 // incase of any error
@@ -168,6 +172,7 @@ class Strategy {
                         this.selectedStrategy = new importedClass[strategyName](this.bot, this)
                     } catch (error) {
                         console.log(error)
+                        sendErrorToWeb('Class configuration is not correct', this.bot.botId)
                         console.log('Custom strategy could not be imported')
                     }
                     console.log("Loaded Custom Strategy");
@@ -209,22 +214,22 @@ class Strategy {
 
     }
 
-    calculateInvestment() {
+    async calculateInvestment() {
         var usdt = 0
 
         if(!this.bot.client) return 0
 
         // if investment is fixedInvesment, just return the quantity
         if(this.bot.investment.investmentType === 'fixedInvestment') {
-            usdt = parseFloat(this.bot.investment.quantity)
+            usdt = parseInt(this.bot.investment.quantity)
         }
         // if investment is %, ask for USDT and get that %
         else if(this.bot.investment.investmentType === 'percentageInvestment') {
-            this.bot.client.getUsdtBalance().then((res: any) => {
+            await this.bot.client.getUsdtBalance().then((res: any) => {
                 usdt = res * parseFloat(this.bot.investment.quantity)/100
             })
         }
-        return usdt;
+        return Math.floor(usdt);
     }
 
     async stopClientOperation() {

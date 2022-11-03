@@ -41,6 +41,13 @@ app.post('/api/importStrategy', async (req, res) => {
 	}))
 })
 
+app.post('/api/deleteStrategy', async (req, res) => {
+	return await res.json(await serverDBReq('strategies', {
+		method: 'deleteStrategy',
+		data: req.body
+	}))
+})
+
 app.post('/api/getStrategyObjects', async (req, res) => {
 	return await res.json(await serverDBReq('strategies', {
 		method: 'getStrategyObjects',
@@ -198,4 +205,11 @@ app.post('/addTrade', async (req, res) => {
 app.post('/instanceID', async (req, res) => {
 	console.log('instanceID', req.body)
 	if(req.body) sendWebClientMessage(JSON.stringify({ type: 'instanceID', data: req.body }))
+})
+
+// error
+
+app.post('/serverError', async (req, res) => {
+	console.log('error', req.body)
+	if(req.body) sendWebClientMessage(JSON.stringify({ type: 'error', data: req.body }))
 })

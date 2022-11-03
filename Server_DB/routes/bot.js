@@ -65,12 +65,12 @@ const deleteBot = async (data) => {
 		const response = await Bot.deleteOne({ bot_id, chart_id })
         console.log('Bot deleted: ', response)
         if(response.deletedCount == 0) {
-            return { status: 'error', error: 'Chart trying to delete does not exist' }
+            return { status: 'error', error: 'Bot trying to delete does not exist' }
         }
 	} catch (error) {
 		if (error.code === 11000) {
 			// duplicate key
-			return { status: 'error', error: 'Chart could not be deleted' }
+			return { status: 'error', error: 'Bot could not be deleted' }
 		}
 		throw error
 	}

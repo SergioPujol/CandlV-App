@@ -13,6 +13,11 @@ async function generateChart() {
         return
     }
 
+    if(new Date(document.getElementById('from-time').value).getTime() > new Date(document.getElementById('to-time').value).getTime() || (new Date(document.getElementById('from-time').value).getTime() > Date.now() || new Date(document.getElementById('to-time').value).getTime() > Date.now())) {
+        showError('Time fields are not correct')
+        return
+    }
+
     if(Object.keys(botOpts).length === 0) {
         showError('Bot options have to be selected')
         return
@@ -251,7 +256,7 @@ async function loadTradeContainers(trades) {
             <div class="trade-icon"><i class="bi bi-${trade.decision == 'Buy' ? 'graph-up' : trade.decision == 'Sell' ? ( trade.percentage.includes('-') ? 'exclamation-circle' : 'check-circle' ) : 'dash'}"></i></div>
             <div class="trade-decision">${trade.decision}</div>
             <div class="trade-price">${parseFloat(trade.price).toFixed(2)}</div>
-            <div class="trade-percentage">${trade.percentage}</div>
+            <div class="trade-percentage ${trade.decision == 'Buy' ? '' : (trade.percentage.includes('-') ? 'negative_percentage' : 'positive_percentage')}">${trade.percentage}</div>
             <div class="trade-time">${dateFormat}</div>
         `
         tradesContainer.append(tradeCont)

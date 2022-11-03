@@ -82,6 +82,7 @@ const callSettingsMethod = (method, data) => {
 
 const callStrategiesMethod = (method, data) => {
   if(method == 'createStrategy') return Strategies.createStrategy(data)
+  else if(method == 'deleteStrategy') return Strategies.deleteStrategy(data)
   else if(method == 'getStrategyObjects') return Strategies.getStrategyObjects()
   else if(method == 'getStrategyPathFromName') return Strategies.getStrategyPathFromName(data)
 }

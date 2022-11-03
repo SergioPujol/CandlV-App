@@ -26,5 +26,11 @@ ws.addEventListener("message", ({ data }) => {
             const instanceID = data.data.instanceID;
             setInstanceID(instanceID)
         break;
+
+        case "error":
+            // Show error from Server Process
+            showError(data.data.message)
+            stopBot(data.data.botId)
+        break;
     }
 })

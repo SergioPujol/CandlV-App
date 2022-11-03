@@ -32,7 +32,7 @@
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body d-flex flex-row">
-                  <form class="d-flex flex-column m-0 me-1 w-50" id="form_settings">
+                  <form class="d-flex flex-column m-0 me-2 w-50" id="form_settings">
                     <h6>Binance Keys</h6>
                     <input type="password" autocomplete="off" id="pb_bkey" placeholder="Public Binance Key" class="mb-2 p-2 rounded border border-secondary" />
                     <input type="password" autocomplete="off" id="pv_bkey" placeholder="Private Binance Key" class="mb-2 p-2 rounded border border-secondary" />
@@ -44,9 +44,16 @@
                       <input type="submit" class="btn btn-1 ms-0 w-100" value="Save" />
                     </div>
                   </form>
-                  <form class="d-flex flex-column import-strategy-file w-50 m-0 ms-1" id="import-strategy-container">
+                  <form class="d-flex flex-column import-strategy-file w-50 m-0 ms-2" id="import-strategy-container">
                     <h6>Strategies</h6>
-                    <!-- Import class for strategy -->
+                    <h7>Delete strategies</h7>
+                    <div class="delete-strategy-container d-flex flex-row mb-2 align-items-center">
+                      <select id="delete-strategy-select" class="form-select w-50 border-secondary me-2" size="2">
+                        
+                      </select>
+                      <button class="btn btn-1 w-50 bg-danger h-75" id="delete-strategy">Delete Strategy</button>
+                    </div>
+                    <h7>Import strategies</h7>
                     <textarea id="import-strategy-object" placeholder='Strategy object&#10;Example:&#10;{&#10; "Bollinger": {&#10;  "period": 20,&#10;  "times": 2&#10; }&#10;}' class="mb-2 p-2 rounded border border-secondary"></textarea>
                     <input type="file" autocomplete="off" id="import-strategy-file" placeholder="Import strategy file" class="mb-2 p-2 rounded border border-secondary" />
                     <div class="settings-buttons d-flex flex-row pt-2 pb-2" style="margin-top: auto">
@@ -112,8 +119,6 @@
             <option value="120">2h</option>
             <option value="180">3h</option>
             <option value="240">4h</option>
-            <option value="D">1d</option>
-            <option value="W">1s</option>
           </select>
         </div>
       </div>
@@ -165,7 +170,9 @@
 
       <!-- SIMULATION CHART -->
       <div class="simulation-chart col-md-8">
-        <div id="tv_chart_container"></div>
+        <div id="tv_chart_container">
+          Start a new simulation to view the chart
+        </div>
       </div>
 
       <!-- SIMULATED TRADES -->
@@ -179,7 +186,9 @@
           </div>
         </div>
         <div class="trade-container">
-         
+         <div class="no-trades">
+          No trades to show
+         </div>
         </div>
       </div>
     </div>

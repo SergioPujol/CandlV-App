@@ -52,9 +52,32 @@ const isStrategyCustom = async (name) => {
 	return true
 }
 
+const deleteStrategy = async (data) => {
+    console.log('deleteStrategy')
+
+    const { name } = data;
+
+    try {
+		const response = await Strategies.deleteOne({ name })
+        console.log('Strategy deleted: ', response)
+        if(response.deletedCount == 0) {
+            return { status: 'error', error: 'Strategy trying to delete does not exist' }
+        }
+	} catch (error) {
+		if (error.code === 11000) {
+			// duplicate key
+			return { status: 'error', error: 'Strategy could not be deleted' }
+		}
+		throw error
+	}
+
+	return { status: 'ok' }
+}
+
 module.exports = {
     createStrategy,
 	getStrategyObjects,
 	getStrategyPathFromName,
-	isStrategyCustom
+	isStrategyCustom,
+	deleteStrategy
 }
