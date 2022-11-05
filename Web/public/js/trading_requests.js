@@ -1,8 +1,9 @@
 async function getSymbols() {
-    const result = await fetch('https://testnet.binance.vision/api/v3/exchangeInfo', {
+    /*const result = await fetch('https://testnet.binance.vision/api/v3/exchangeInfo', {
         method: 'GET'
     }).then((res) => res.json())
-    return result.symbols.map((symbol) => symbol.symbol);
+    return result.symbols.map((symbol) => symbol.symbol);*/
+    return ['BNBUSDT', 'BTCUSDT', 'ETHUSDT', 'LTCUSDT', 'TRXUSDT', 'XRPUSDT']
 }
 
 function getIntervals() {

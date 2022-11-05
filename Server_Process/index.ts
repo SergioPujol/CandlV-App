@@ -3,10 +3,12 @@ import { Client } from './Classes/Client'
 import { processBot } from './processBot'
 import { Server } from './Servers/server'
 import { ServerDBRequest } from "./Requests/serverDB";
+import { sleep } from './Classes/Utils';
 
 const serverDBRequests = new ServerDBRequest();
 
 (async () => {
+    await sleep(4000) // Wait for ServerDB to load
     const keys = await serverDBRequests.getApiKeys().then((res: any) => {
         if(res) {
             return res.keys;

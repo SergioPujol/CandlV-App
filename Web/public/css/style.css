@@ -128,7 +128,7 @@ main .charts-information .window {
     flex-direction: row;
     background: var(--primary-color);
     padding: 5px;
-    border-radius: 15px;
+    border-radius: 6px;
 }
 
 main .charts-information .window .chart {
@@ -580,11 +580,31 @@ main.landing-page .start-trading {
     padding-left: 10px;
 }
 
+.simulation-content .simulation-trades .trade-titles {
+    display: flex;
+    flex-direction: row;
+    overflow-y: auto;
+    height: 5%;
+    width: 100%;
+    color: white;
+    justify-content: space-around;
+    font-weight: bold;
+    padding: 0 20px 0 10px;
+}
+
+.simulation-content .simulation-trades .trade-titles > div {
+    display: flex;
+    flex-direction: row;
+    width: 20%;
+    justify-content: center;
+    text-align: center;
+}
+
 .simulation-content .simulation-trades .trade-container {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    height: 94%;
+    height: 89%;
 }
 
 .simulation-content .simulation-trades .trade {
