@@ -9,15 +9,16 @@ function setInstanceID(id) {
 
 function authenticate() {
     const keyValue = document.getElementById('auth_key').value;
+    const emailValue = document.getElementById('auth_email').value;
 
-    if(!keyValue) showError('Insert valid Key');
+    if(!keyValue || !emailValue) showError('Insert credentials');
     else if(instanceID == null) showError('Not valid machine');
     else {
-        verifyKey(keyValue)
+        verifyUser(keyValue, emailValue)
     }
 }
 
-async function verifyKey(key) {
+async function verifyUser(key, email) {
     const result = await fetch('/api/verify', {
         method: 'POST',
         headers: {
@@ -25,6 +26,7 @@ async function verifyKey(key) {
         },
         body: JSON.stringify({
             key,
+            email,
             instanceID
         })
     }).then((res) => res.json())

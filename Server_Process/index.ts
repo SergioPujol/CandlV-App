@@ -10,7 +10,7 @@ const serverDBRequests = new ServerDBRequest();
 (async () => {
     await sleep(4000) // Wait for ServerDB to load
     const keys = await serverDBRequests.getApiKeys().then((res: any) => {
-        if(res) {
+        if(res.status != 'error') {
             return res.keys;
         } else {
             return {

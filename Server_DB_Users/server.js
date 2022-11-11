@@ -20,7 +20,7 @@ app.post('/user', async (req, res) => {
 
 app.listen(port, () => console.log(`Server_DB listening on port ${port}!`));
 
-mongoose.connect('mongodb://localhost:27017/candlv_users', {
+mongoose.connect('mongodb://localhost:27017/candlv_users_desktop', {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
 	useCreateIndex: true

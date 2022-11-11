@@ -118,6 +118,10 @@ export default {
 		
 		var { from, to, firstDataRequest } = periodParams;
 		console.log('[getBars]: Method call', symbolInfo, resolution, from, to);
+		if(firstDataRequest) { 
+			from = new Date(document.getElementById('from-time').value).getTime()/1000;
+			to = new Date(document.getElementById('to-time').value).getTime()/1000;
+		}
 
         const interval = {
             '1': '1m',

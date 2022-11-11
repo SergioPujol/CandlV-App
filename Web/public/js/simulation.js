@@ -48,14 +48,15 @@ async function generateChart() {
     });
 
 
-    widget.onChartReady(async () => {
+    widget.onChartReady(function () {
         const from = new Date(document.getElementById('from-time').value).getTime()/1000
         const to = new Date(document.getElementById('to-time').value).getTime()/1000
         widget.activeChart().setVisibleRange({ from, to });
         widget.activeChart().createShape({ time: from }, { shape: 'vertical_line', lock: true });
+        widget.activeChart().createShape({ time: to }, { shape: 'vertical_line', lock: true });
         addStudies(widget)
 
-        await startSimulation()
+        startSimulation()
     })
 
 }
@@ -215,12 +216,12 @@ const createRectangle = (obj, color) => {
         );
 }
 
-function loadInvestingPoints(trades) {
+async function loadInvestingPoints(trades) {
     /**
      * load investing points into the TradingView Chart
      */
     let tempTrade;
-    trades.forEach(trade => {
+    trades.forEach((trade) => {
         let tempObject = {time: trade.date/1000, price: parseFloat(trade.price)}
         if(trade.decision == 'Buy') createStartLongShape(tempObject)
         else if(trade.decision == 'Sell') {
@@ -231,6 +232,7 @@ function loadInvestingPoints(trades) {
 
         if(trade.date/1000 < new Date(document.getElementById('from-time').value).getTime()/1000) console.log('weird trade data', trade)
         else if(trade.decision == 'Buy' || trade.decision == 'Sell') tempTrade = tempObject
+
     })
 }
 
