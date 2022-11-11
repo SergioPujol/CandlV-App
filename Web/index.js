@@ -149,7 +149,7 @@ app.post('/api/simulation', async (req, res) => {
 app.listen(port, () => console.log(`Web listening on port ${port}!, http://localhost:${port}`));
 
 const serverUserDBReq = async (req, data) => {
-	const res = await got.post(`http://localhost:3101/${req}/`, { json: data });
+	const res = await got.post(`http://localhost:3100/${req}/`, { json: data });
 	if(res.statusCode == 200) return JSON.parse(res.body)
 	return { status: 'error', error: 'Server not available' }
 }

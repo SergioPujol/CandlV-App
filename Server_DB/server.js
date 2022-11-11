@@ -4,6 +4,7 @@ const Bot = require('./routes/bot')
 const Trade = require('./routes/trade')
 const Settings = require('./routes/settings')
 const Strategies = require('./routes/strategies')
+const User = require('./routes/user')
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -41,6 +42,11 @@ app.post('/settings', async (req, res) => {
 app.post('/strategies', async (req, res) => {
   const { method, data } = req.body;
   res.send(await callStrategiesMethod(method, data))
+});
+
+app.post('/user', async (req, res) => {
+  const { method, data } = req.body; // ex { method: register, data: {username: 'admin' , plainTextPassword: 'psswd'} }
+  res.send(await callUserMethod(method, data))
 });
 
 app.listen(port, () => console.log(`Server_DB listening on port ${port}!`));
@@ -85,4 +91,10 @@ const callStrategiesMethod = (method, data) => {
   else if(method == 'deleteStrategy') return Strategies.deleteStrategy(data)
   else if(method == 'getStrategyObjects') return Strategies.getStrategyObjects()
   else if(method == 'getStrategyPathFromName') return Strategies.getStrategyPathFromName(data)
+}
+
+const callUserMethod = (method, data) => {
+  if(method == 'verify') return User.verify(data)
+  //else if(method == 'checkToken') return User.checkToken(data)
+  //else if(method == 'getIdByName') return User.getIdByName(data)
 }
