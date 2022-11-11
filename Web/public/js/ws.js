@@ -2,6 +2,10 @@ const ws = new WebSocket("ws://localhost:3001");
 
 ws.addEventListener("open", () => {
     console.log("Connected from Website");
+    const _id = localStorage.getItem('wstoken')
+    console.log('_id', _id)
+
+    if(window.location.href.includes('trading.html')) ws.send(JSON.stringify({_id}))
 });
 
 ws.addEventListener("message", ({ data }) => {

@@ -661,5 +661,4 @@ function changeProcess(chartId, botId) {
     if(!status) location.href = 'home.html'*/
     await loadChartsFromDB();
     await getAllTrades();
-    loadCustomStrategies();
 })();

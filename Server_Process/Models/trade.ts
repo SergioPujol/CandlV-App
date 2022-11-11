@@ -9,6 +9,7 @@ export interface Trade {
     bot_options: any;
     chart_id: string;
     bot_id: string;
+    user_id: string;
 
     percentage?: string;
 }

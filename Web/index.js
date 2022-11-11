@@ -20,7 +20,6 @@ router.get('/',function(req,res){
 });
 
 app.post('/api/verify', async (req, res) => {
-	console.log('verify body', req.body)
 	return await res.json(await serverUserDBReq('user', {
 		method: 'verify',
 		data: req.body
@@ -139,13 +138,6 @@ app.post('/api/getTrades', async (req, res) => {
 	}))
 })
 
-// Post Server Process for the simulation
-app.post('/api/simulation', async (req, res) => {
-	return await res.json(await serverProcessReq('simulation', {
-		data: req.body
-	}))
-})
-
 app.listen(port, () => console.log(`Web listening on port ${port}!, http://localhost:${port}`));
 
 const serverUserDBReq = async (req, data) => {
@@ -169,47 +161,56 @@ const serverProcessReq = async (req, data) => {
 // Websocket configuration
 
 const wss = new WebSocket.Server({ port: wssPort });
-var wsWebClient = null
+var websockets = { } // user: token
 
 wss.on("connection", ws => {
 	console.log("Web client connected");
 
-	wsWebClient = ws
+	ws.on('message', (data) => {
+		const { _id } = JSON.parse(data)
+		if(_id) {
+			registerWS(ws, _id)
+		}
 
-	ws.on("close", () => {
-		console.log("Web client disconnected");
-	});
+		ws.on("close", () => {
+			console.log("Web client disconnected");
+			deleteRegisteredClient(_id)
+		});
+	})
 
 });
 
-function sendWebClientMessage(data) {
+function sendWebClientMessage(data, userId) {
 	console.log('sendWebClientMessage')
-	if(sendWebClientMessage && wsWebClient) wsWebClient.send(data);
-	else console.log('Not WebClient Connected');
+	if(websockets[userId]) websockets[userId].send(data);
+	else console.log('Not WebClient Connected to that User');
 }
 
 // api operations
 
 app.post('/updateOperation', async (req, res) => {
-	if(req.body) sendWebClientMessage(JSON.stringify({ type: 'operation', data: req.body }))
+	console.log('updateOperation', req.body)
+	if(req.body) sendWebClientMessage(JSON.stringify({ type: 'operation', data: req.body }), req.body.userId)
 })
 
 // api trades
 
 app.post('/addTrade', async (req, res) => {
-	if(req.body) sendWebClientMessage(JSON.stringify({ type: 'trade', data: req.body }))
-})
-
-// instance ID
-
-app.post('/instanceID', async (req, res) => {
-	console.log('instanceID', req.body)
-	if(req.body) sendWebClientMessage(JSON.stringify({ type: 'instanceID', data: req.body }))
+	console.log('addTrade', req.body)
+	if(req.body) sendWebClientMessage(JSON.stringify({ type: 'trade', data: req.body }), req.body.user_id)
 })
 
 // error
 
 app.post('/serverError', async (req, res) => {
 	console.log('error', req.body)
-	if(req.body) sendWebClientMessage(JSON.stringify({ type: 'error', data: req.body }))
+	if(req.body) sendWebClientMessage(JSON.stringify({ type: 'error', data: req.body }), req.body.userId)
 })
+
+// after login, init websocket connection
+function registerWS(ws, userId) {
+	websockets[userId] = ws;
+}
+function deleteRegisteredClient(userId) {
+	delete websockets[userId]
+}

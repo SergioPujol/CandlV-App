@@ -3,7 +3,7 @@ const Chart = require('../model/chart');
 const createChart = async (data) => {
     console.log('createChart')
 
-    const { chartId, chartOptions, minimized } = data
+    const { userId, chartId, chartOptions, minimized } = data
     /**Pasos a realizar
      * 1. Obtener usuario en el que se va a crear la chart con el String username
      * 2. Comprobar el usuario
@@ -13,6 +13,7 @@ const createChart = async (data) => {
 
     try {
 		const response = await Chart.create({
+            user_id: userId,
 			chart_id: chartId,
             chart_options: chartOptions,
             minimized,
@@ -32,8 +33,9 @@ const createChart = async (data) => {
 
 const getUserCharts = async (data) => {
     console.log('getUserCharts')
+    const { userId } = data
 
-    const charts = await Chart.find({ })
+    const charts = await Chart.find({ user_id: userId })
 
     const data_charts = charts.map((chart) => {
         return {
@@ -43,17 +45,17 @@ const getUserCharts = async (data) => {
         }
     })
 
-    return { status: 'ok', data: data_charts }
+    return { status: 'ok', data: data_charts, userId }
 }
 
 const deleteChart = async (data) => {
     console.log('deleteChart')
 
-    const { chartId } = data;
-    const chart_id = chartId;
+    const { chartId, userId } = data;
+    const chart_id = chartId, user_id = userId;
     
     try {
-		const response = await Chart.deleteOne({ chart_id })
+		const response = await Chart.deleteOne({ chart_id, user_id })
         console.log('Chart deleted: ', response)
         if(response.deletedCount == 0) {
             return { status: 'error', error: 'Chart trying to delete does not exist' }
@@ -73,7 +75,7 @@ const updateChart = async (data) => {
     console.log('updateChart')
 
     try {
-		const response = await Chart.updateOne({ chart_id: data.chartId }, { chart_options: data.chartOptions })
+		const response = await Chart.updateOne({ chart_id: data.chartId, user_id: data.userId }, { chart_options: data.chartOptions })
         console.log('Chart updated: ', response)
         if(response.nModified == 0) {
             return { status: 'error', error: 'Chart trying to update does not exist' }
@@ -113,11 +115,22 @@ const getChartParamsByChartId = async (chart_id) => {
 	return chart.chart_options
 }
 
+const getUserIdByChartId = async (chart_id) => {
+    console.log('getChartParamsByChartId')
+	const chart = await Chart.findOne({ chart_id }).lean();
+	if (!chart) {
+		return false
+	}
+
+	return chart.user_id
+}
+
 module.exports = {
     createChart,
     getUserCharts,
     deleteChart,
     getIdByChartId,
     updateChart,
-    getChartParamsByChartId
+    getChartParamsByChartId,
+    getUserIdByChartId
 }

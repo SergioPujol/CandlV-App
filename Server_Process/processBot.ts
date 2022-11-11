@@ -1,31 +1,46 @@
 import { Bot } from './Classes/Bot';
 import { Client } from './Classes/Client';
+import { ServerDBRequest } from "./Requests/serverDB";
+
+const serverDBRequests = new ServerDBRequest();
 
 class processBot {
 
     bots: any = {}; // { bot_id: new Bot(params to create bot) }
-    client: Client;
 
-    constructor(_client: Client) {
+    constructor() {
         this.bots;
-        this.client = _client;
     }
 
-    async addBot(chart_id: string, bot_id: string, { status, symbol, interval, strategy, isStrategyCustom }: any, botOptions: any, investment: { investmentType: string, quantity: string }) {
+    async addBot(user_id: string, chart_id: string, bot_id: string, { status, symbol, interval, strategy }: any, botOptions: any, investment: { investmentType: string, quantity: string }) {
         try {
-            this.bots[bot_id] = new Bot(this.client, bot_id, chart_id, symbol, interval, strategy, botOptions, investment, isStrategyCustom);
-            this.bots[bot_id].startBot()
+            const keys = await serverDBRequests.getApiKeys(user_id).then((res: any) => {
+                if(res) {
+                    return res.keys;
+                } else {
+                    return {
+                        pb_bkey: '',
+                        pv_bkey: '',
+                        testnet: true
+                    }
+                }
+            });
+            const client: Client = new Client(keys.pb_bkey, keys.pv_bkey, keys.testnet);
+            if(!this.bots[user_id]) this.bots[user_id] = {}
+            this.bots[user_id][bot_id] = new Bot(client, user_id, bot_id, chart_id, symbol, interval, strategy, botOptions, investment);
+            this.bots[user_id][bot_id].startBot()
             return true
         } catch (error) {
-            console.log(`Error creating bot ${bot_id} on chart ${chart_id}`)
+            console.log(`Error creating bot ${bot_id} on chart ${chart_id} for user ${user_id}`)
             return false
         }
     }
 
-    deleteBot(bot_id: string) {
+    deleteBot(user_id: string, bot_id: string) {
         try {
-            this.bots[bot_id].deleteBot();
-            delete this.bots[bot_id];
+            this.bots[user_id][bot_id].deleteBot();
+            delete this.bots[user_id][bot_id];
+            if(Object.keys(this.bots[user_id].length == 0)) delete this.bots[user_id];
             return true
         } catch (error) {
             console.log(`Error deleting bot on Server Process ${bot_id}`)
@@ -33,30 +48,26 @@ class processBot {
         }
     }
 
-    stopBot(bot_id: string) {
-        this.bots[bot_id].stopBot();
-    }
-
-    resumeBot(bot_id: string) {
-        this.bots[bot_id].resumeBot();
-    }
-
-    getNumRunningBots() {
+    getNumUsersRunningBots() {
         return Object.keys(this.bots).length
     }
 
-    async stopBotOperation(bot_id: string) {
+    getNumRunningBotsByUser(user_id: string) {
+        return Object.keys(this.bots[user_id]).length
+    }
+
+    async stopBotOperation(user_id: string, bot_id: string) {
         try {
-            await this.bots[bot_id].stopOperation();
+            await this.bots[user_id][bot_id].stopOperation();
             return true
         } catch (error) {
             return false
         }
     }
 
-    async startBotOperation(bot_id: string) {
+    async startBotOperation(user_id: string, bot_id: string) {
         try {
-            await this.bots[bot_id].startOperation();
+            await this.bots[user_id][bot_id].startOperation();
             return true
         } catch (error) {
             return false

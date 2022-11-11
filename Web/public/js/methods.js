@@ -82,71 +82,14 @@ async function registerKeys() {
         body: JSON.stringify({
             pb_bkey,
             pv_bkey,
-            testnet
+            testnet,
+            userId: localStorage.getItem('wstoken')
         })
     }).then((res) => res.json())
 
     if (result.status === 'ok') {
         // everythign went fine
-        showSuccess('Saved, restart App to complete the change');
-    } else {
-        showError(result.error)
-    }
-}
-
-const form_import_strategies = document.getElementById('import-strategy-container')
-form_import_strategies.addEventListener('submit', importStrategy)
-async function importStrategy() {
-    event.preventDefault()
-    if(document.getElementById('import-strategy-file').files.length == 0 || document.getElementById('import-strategy-object').value == '') {
-        showError('Add strategy object and file for importing a strategy')
-        return
-    }
-    var strategyObject;
-    try {
-        strategyObject = JSON.parse(document.getElementById('import-strategy-object').value)
-    } catch (error) {
-        showError('Strategy object format is not correct')
-        return
-    }
-    const path = document.getElementById('import-strategy-file').files[0].path
-
-    const result = await fetch('/api/importStrategy', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            strategyObject,
-            path
-        })
-    }).then((res) => res.json())
-
-    if (result.status === 'ok') {
-        // everythign went fine
-        showSuccess('Custom strategy added. Reloading the APP');
-        setTimeout(() => {
-            location.reload();
-        }, 2000)
-    } else {
-        showError(result.error)
-    }
-}
-
-async function loadCustomStrategies() {
-    const result = await fetch('/api/getStrategyObjects', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({})
-    }).then((res) => res.json())
-
-    if (result.status === 'ok') {
-        // everythign went fine
-        strategies = { ...strategies, ...Object.assign({}, ...result.strategiesObjects) }
-        appendCustomStrategiesToDeleteSelect(Object.assign({}, ...result.strategiesObjects))
-        console.log('strategies', strategies)
+        showSuccess('Saved keys');
     } else {
         showError(result.error)
     }
@@ -261,42 +204,5 @@ function stopBot(botId) {
         statusElement.checked = false;
         let change = new Event('change');
         statusElement.dispatchEvent(change)
-    }
-}
-
-function appendCustomStrategiesToDeleteSelect(customStrategies) {
-    const customStrSelect = document.getElementById('delete-strategy-select')
-    Object.keys(customStrategies).forEach(strategy => {
-        let opt = document.createElement('option');
-        opt.value = strategy;
-        opt.innerHTML = strategy;
-        customStrSelect.appendChild(opt)
-    })
-
-    document.getElementById('delete-strategy').onclick = () => {
-        if(customStrSelect.value) deleteStrategy(customStrSelect.value)
-    }
-}
-
-async function deleteStrategy(strategyName) {
-
-    const result = await fetch('/api/deleteStrategy', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            name: strategyName
-        })
-    }).then((res) => res.json())
-
-    if (result.status === 'ok') {
-        // everythign went fine
-        showSuccess('Strategy deleted. Reloading the APP');
-        setTimeout(() => {
-            location.reload();
-        }, 2000)
-    } else {
-        showError(result.error)
     }
 }

@@ -5,12 +5,12 @@ const Bot = require('./bot')
 const createTrade = async (data) => {
     // Request from ServerProcess: create trade on the db and send trade to web
     console.log('createTrade');
-    const { type, symbol, entry_price, symbol_quantity, usdt_quantity, percentage, time, bot_strategy, bot_options, chart_id, bot_id } = data;
+    const { type, symbol, entry_price, symbol_quantity, usdt_quantity, percentage, time, bot_strategy, bot_options, chart_id, bot_id, user_id } = data;
 
     const bot_name = await Bot.getBotNameByBotId(bot_id);
     var trade;
     try {
-        const response = await Trade.create({ type, symbol, entry_price, symbol_quantity, usdt_quantity, percentage, time, bot_strategy, bot_options, chart_id, bot_id, bot_name: bot_name ? bot_name : '' })
+        const response = await Trade.create({ type, symbol, entry_price, symbol_quantity, usdt_quantity, percentage, time, bot_strategy, bot_options, chart_id, bot_id, bot_name: bot_name ? bot_name : '', user_id })
         trade = response
 		console.log('Trade created successfully: ', response)
     } catch (error) {
@@ -27,16 +27,18 @@ const createTrade = async (data) => {
     return { status: 'error', error: 'Operation could not be updated on Web' }
 }
 
-const getAllTrades = async () => {
+const getAllTrades = async (user_id) => {
     // get all trades
-    const trades = await Trade.find({ })
+    const trades = await Trade.find({ user_id })
 
     return trades
 }
 
-const getLast20Trades = async () => {
+const getLast20Trades = async (data) => {
+
+    const { userId } = data;
     // get some trades to display on the web
-    const first20Trades = (await getAllTrades()).slice(-20);
+    const first20Trades = (await getAllTrades(userId)).slice(-20);
     return { status: 'ok', data: first20Trades }
 }
 

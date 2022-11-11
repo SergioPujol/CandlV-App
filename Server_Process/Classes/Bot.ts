@@ -10,25 +10,24 @@ class Bot {
 
     botInterval: NodeJS.Timer | undefined;
 
-    client: Client | false;
+    client: Client;
 
     private strategy: Strategy;
-    private isStrategyCustom: boolean;
 
     private bot: BotModel;
 
     private isBotDeleted: Boolean = false;
 
-    constructor(_client: Client | false, _id: string, chartId: string, _symbol: string, _interval: string, _strategy: string, _botOptions: any, _investment: { investmentType: string, quantity: string }, _isStrategyCustom: boolean = false, _period: {from:string, to:string} | undefined = undefined) {
+    constructor(_client: Client, user_id: string,  _id: string, chartId: string, _symbol: string, _interval: string, _strategy: string, _botOptions: any, _investment: { investmentType: string, quantity: string }) {
 
         this.client = _client
 
         this.id = _id;
 
         this.botInterval;
-        this.isStrategyCustom = _isStrategyCustom
 
         this.bot = {
+            userId: user_id,
             client: _client,
             botId: _id,
             chartId: chartId,
@@ -36,13 +35,10 @@ class Bot {
             interval: _interval,
             strategy: _strategy,
             botOptions: _botOptions,
-            investment: _investment,
-            ...(_period && ({
-                simulationPeriod: _period
-            }))
+            investment: _investment
         }
 
-        this.strategy = new Strategy(this.bot, this.isStrategyCustom);
+        this.strategy = new Strategy(this.bot);
     }
 
     async startBot() {
@@ -70,16 +66,6 @@ class Bot {
 
     getId() {
         return this.id
-    }
-
-    async startSimulation() {
-
-        const strategy = new Strategy(this.bot, this.isStrategyCustom, true)
-
-        const simulationData = await strategy.simulation()
-
-        return simulationData
-
     }
 
     async stopOperation() {

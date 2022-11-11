@@ -14,6 +14,7 @@ const ChartSchema = new mongoose.Schema(
         chart_id: { type: String, required: true },
         bot_id: { type: String, required: true },
         bot_name: { type: String, required: true },
+		user_id: { type: String, required: true }, 
 	},
 	{ collection: 'trades' }
 )

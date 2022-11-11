@@ -3,7 +3,6 @@ const Chart = require('./routes/chart')
 const Bot = require('./routes/bot')
 const Trade = require('./routes/trade')
 const Settings = require('./routes/settings')
-const Strategies = require('./routes/strategies')
 const User = require('./routes/user')
 
 const express = require('express');
@@ -37,11 +36,6 @@ app.post('/trade', async (req, res) => {
 app.post('/settings', async (req, res) => {
   const { method, data } = req.body;
   res.send(await callSettingsMethod(method, data))
-});
-
-app.post('/strategies', async (req, res) => {
-  const { method, data } = req.body;
-  res.send(await callStrategiesMethod(method, data))
 });
 
 app.post('/user', async (req, res) => {
@@ -78,19 +72,12 @@ const callBotMethod = (method, data) => {
 
 const callTradeMethod = (method, data) => {
   if(method == 'sendDBAddTrade') return Trade.createTrade(data)
-  else if(method == 'getTrades') return Trade.getLast20Trades()
+  else if(method == 'getTrades') return Trade.getLast20Trades(data)
 }
 
 const callSettingsMethod = (method, data) => {
   if(method == 'saveKeys') return Settings.saveKeys(data)
-  else if(method == 'getKeys') return Settings.getKeys()
-}
-
-const callStrategiesMethod = (method, data) => {
-  if(method == 'createStrategy') return Strategies.createStrategy(data)
-  else if(method == 'deleteStrategy') return Strategies.deleteStrategy(data)
-  else if(method == 'getStrategyObjects') return Strategies.getStrategyObjects()
-  else if(method == 'getStrategyPathFromName') return Strategies.getStrategyPathFromName(data)
+  else if(method == 'getKeys') return Settings.getKeys(data)
 }
 
 const callUserMethod = (method, data) => {

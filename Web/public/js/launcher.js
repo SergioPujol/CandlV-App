@@ -1,23 +1,16 @@
 document.getElementById('authenticate').onclick = authenticate
 
-var instanceID = null
-
-function setInstanceID(id) {
-    instanceID = id
-    console.log('instanceID setted', instanceID)
-}
-
 function authenticate() {
     const keyValue = document.getElementById('auth_key').value;
+    const emailValue = document.getElementById('auth_email').value;
 
-    if(!keyValue) showError('Insert valid Key');
-    else if(instanceID == null) showError('Not valid machine');
+    if(!keyValue || !emailValue) showError('Insert credentials');
     else {
-        verifyKey(keyValue)
+        verifyUser(keyValue, emailValue)
     }
 }
 
-async function verifyKey(key) {
+async function verifyUser(key, email) {
     const result = await fetch('/api/verify', {
         method: 'POST',
         headers: {
@@ -25,13 +18,14 @@ async function verifyKey(key) {
         },
         body: JSON.stringify({
             key,
-            instanceID
+            email
         })
     }).then((res) => res.json())
 
     if (result.status === 'ok') {
         // everythign went fine
         console.log('Verified')
+        localStorage.setItem('wstoken', result.id);
         location.href = 'trading.html'
     } else {
         showError(result.error)

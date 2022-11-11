@@ -8,7 +8,7 @@
     "dbserver": "node Server_DB/server.js",
     "web": "node Web/index.js",
     "pserver": "ts-node Server_Process/index.ts",
-    "start": "concurrently --kill-others \"npm run dbserver\" \"npm run web\" \"npm run pserver\" \"electron index.js\" "
+    "start": "concurrently --kill-others \"npm run dbserver\" \"npm run web\" \"npm run pserver\""
   },
   "repository": {
     "type": "git",
@@ -22,12 +22,6 @@
   "homepage": "https://github.com/SergioPujol/TrabajoFinGrado#readme",
   "devDependencies": {
     "concurrently": "^7.4.0",
-    "electron": "^21.2.0",
-    "fs": "^0.0.1-security",
-    "got": "^11.8.0",
-    "node-machine-id": "^1.1.12",
-    "nodemon": "^2.0.20",
-    "path": "^0.12.7",
     "ts-node": "^10.9.1"
   }
 }

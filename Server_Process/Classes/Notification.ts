@@ -9,9 +9,11 @@ class Notification {
 
     private botId: string;
     private chartId: string;
-    constructor(_botId: string, _chartId: string) {
+    private userId: string;
+    constructor(_userId: string, _botId: string, _chartId: string) {
         this.botId = _botId;
         this.chartId = _chartId;
+        this.userId = _userId;
     }
 
     private currentOperationStatus: { state: String, price: String, percentage: String } = { state: '', price: '', percentage: '' };
@@ -36,7 +38,7 @@ class Notification {
         const operation = { state: decision.state, price: decision.price, percentage: decision.percentage! };
 
         if(!_.isEqual(this.currentOperationStatus, operation)) {
-            serverDBRequests.sendDBOperationUpdate({ botId: this.botId, chartId: this.chartId, operation})
+            serverDBRequests.sendDBOperationUpdate({ userId: this.userId, botId: this.botId, chartId: this.chartId, operation})
         }
 
         this.currentOperationStatus = operation;

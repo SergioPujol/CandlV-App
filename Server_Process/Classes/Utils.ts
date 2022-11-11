@@ -149,8 +149,8 @@ const getLastArrayItem = (list: Array<any>) => {
   return list[list.length-1];
 }
 
-const sendErrorToWeb = async (message: string, botId: string) => {
-	await axios.post(`http://localhost:3000/serverError/`, { message, botId });
+const sendErrorToWeb = async (message: string, userId: string, botId: string) => {
+	await axios.post(`http://localhost:3000/serverError/`, { userId, message, botId });
 }
 
 export { 

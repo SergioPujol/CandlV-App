@@ -692,5 +692,5 @@ main.landing-page .start-trading {
 }
 
 #form_settings {
-    border-right: 2px solid var(--primary-color);
+    width: 100%;
 }

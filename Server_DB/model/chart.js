@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 
 const ChartSchema = new mongoose.Schema(
 	{
+		user_id: { type: String, required: true },
 		chart_id: { type: String, required: true, unique: true },
 		chart_options: { type: {
             symbol: String,

@@ -26,7 +26,7 @@ async function createChartDB(options) {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ ...options })
+        body: JSON.stringify({ ...options, userId: localStorage.getItem('wstoken') })
     }).then((res) => res.json())
 
     if (result.status === 'ok') {
@@ -54,7 +54,7 @@ async function loadChartsFromDB() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ })
+        body: JSON.stringify({ userId: localStorage.getItem('wstoken') })
     }).then((res) => res.json())
 
     if (result.status === 'ok') {
@@ -80,7 +80,7 @@ async function deleteChartFromDB(chartId) {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ chartId })
+        body: JSON.stringify({ chartId, userId: localStorage.getItem('wstoken') })
     }).then((res) => res.json())
 
     if (result.status === 'ok') {
@@ -146,7 +146,7 @@ async function updateChartOptions(chartId, options) {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ chartId, chartOptions: options })
+        body: JSON.stringify({ chartId, chartOptions: options, userId: localStorage.getItem('wstoken') })
     }).then((res) => res.json())
 
     if (result.status === 'ok') {
@@ -254,7 +254,7 @@ async function getAllTrades() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ })
+        body: JSON.stringify({userId: localStorage.getItem('wstoken')})
     }).then((res) => res.json())
     
     if (result.status === 'ok') {
@@ -279,7 +279,7 @@ async function stopBotOperation(botId) {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ botId })
+        body: JSON.stringify({ botId, userId: localStorage.getItem('wstoken') })
     }).then((res) => res.json())
 
     if (result.status === 'ok') {
@@ -301,7 +301,7 @@ async function startBotOperation(botId) {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ botId })
+        body: JSON.stringify({ botId, userId: localStorage.getItem('wstoken') })
     }).then((res) => res.json())
 
     if (result.status === 'ok') {

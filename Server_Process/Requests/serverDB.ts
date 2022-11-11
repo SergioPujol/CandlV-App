@@ -15,9 +15,9 @@ class ServerDBRequest {
         })
     }
 
-    getApiKeys = async () => {
+    getApiKeys = async (data: any) => {
         return await this.DBrequest('settings', { 
-            method: 'getKeys', data: {} 
+            method: 'getKeys', data
         })
     }
 
