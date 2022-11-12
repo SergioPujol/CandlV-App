@@ -200,13 +200,6 @@ app.post('/addTrade', async (req, res) => {
 	if(req.body) sendWebClientMessage(JSON.stringify({ type: 'trade', data: req.body }))
 })
 
-// instance ID
-
-app.post('/instanceID', async (req, res) => {
-	console.log('instanceID', req.body)
-	if(req.body) sendWebClientMessage(JSON.stringify({ type: 'instanceID', data: req.body }))
-})
-
 // error
 
 app.post('/serverError', async (req, res) => {

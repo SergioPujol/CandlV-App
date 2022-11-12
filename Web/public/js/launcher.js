@@ -1,18 +1,10 @@
 document.getElementById('authenticate').onclick = authenticate
 
-var instanceID = null
-
-function setInstanceID(id) {
-    instanceID = id
-    console.log('instanceID setted', instanceID)
-}
-
 function authenticate() {
     const keyValue = document.getElementById('auth_key').value;
     const emailValue = document.getElementById('auth_email').value;
 
     if(!keyValue || !emailValue) showError('Insert credentials');
-    else if(instanceID == null) showError('Not valid machine');
     else {
         verifyUser(keyValue, emailValue)
     }
@@ -27,7 +19,6 @@ async function verifyUser(key, email) {
         body: JSON.stringify({
             key,
             email,
-            instanceID
         })
     }).then((res) => res.json())
 

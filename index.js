@@ -1,7 +1,5 @@
 const { app, BrowserWindow } = require('electron');
 
-const { machineId } = require('node-machine-id');
-
 const fs = require("fs");
 const path = require("path");
 const got = require('got');
@@ -10,15 +8,13 @@ app.whenReady().then(async () => {
   
     const win = new BrowserWindow({ width: 1850, height: 1000, show: false, icon: __dirname + '/icons/CV.png', autoHideMenuBar: true, })
 
+    sleep(8000)
     // Load a remote URL
     win.loadURL('http://localhost:3000')
 
     win.once('ready-to-show', async () => {
         console.log('ready-to-show')
         win.show()
-        machineId().then((id) => {
-            sendInstanceIDToWeb({ instanceID: id })
-        })
     })
 
     win.once('closed', async () => {
@@ -69,15 +65,13 @@ const serverDBReq = async (req, data) => {
 	return { status: 'error', error: 'Server not available' }
 }
 
-
-// Web
-
-const sendInstanceIDToWeb = async (data) => {
-    return await serverWebReq('instanceID', data)
-}
-
 const serverWebReq = async (req, data) => {
 	const res = await got.post(`http://localhost:3000/${req}/`, { json: data });
 	if(res.statusCode == 200 && JSON.parse(res.body).status) return true 
 	return false
+}
+
+
+const sleep = async (ms) => {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }

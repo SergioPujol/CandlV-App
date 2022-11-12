@@ -2,30 +2,20 @@ const User = require('../model/user');
 
 const verify = async (data) => {
     console.log('login')
-    const { key, email, instanceID } = data
-    const userData = await User.findOne({ key, email }).lean()
+    const { key, email } = data
+    const userData = await User.findOne({ email }).lean()
 	console.log(userData)
 	if (!userData) {
 		return { status: 'error', error: 'Invalid credentials' }
 	}
 
-	if(userData.instanceID === '' && userData.key === key) {
-		// put instanceID
-		const response = await updateInstace(key, instanceID)
-		console.log('User instace updated: ', response)
-		if(response.nModified == 0) return { status: 'error', error: 'User trying to update does not exist' }
-		return { status: 'ok' }
-	} else if(userData.instanceID === instanceID && userData.key === key) {
-		return { status: 'ok' }
-	} else if(userData.instanceID != instanceID) {
-		return { status: 'error', error: 'Key already being used, contact support for reseting the key' }
+	if(userData.key === key) {
+		return { status: 'ok', id: userData._id }
+	} else if(userData.key != key) {
+		return { status: 'error', error: 'Invalid credentials' }
 	}
     
 }
-
-const updateInstace = async (key, instanceID) => {
-	return await User.updateOne({ key }, { instanceID })
-} 
 
 module.exports = {
     verify

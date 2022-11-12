@@ -21,12 +21,6 @@ ws.addEventListener("message", ({ data }) => {
             updateHtmlOperation(operation)
         break;
 
-        case "instanceID":
-            // instanceID
-            const instanceID = data.data.instanceID;
-            setInstanceID(instanceID)
-        break;
-
         case "error":
             // Show error from Server Process
             showError(data.data.message)
