@@ -55,7 +55,7 @@ class Server {
 
         this.app.post('/startOperation', async (req: any, res: any) => {
             const data = req.body; // ex {  }
-            console.log('stopOperation', data)
+            console.log('startOperation', data)
             if(await this.processBot.startBotOperation(data.bot_id)) res.send({status:true})
             else res.send({status:false})
         });

@@ -533,7 +533,7 @@ function createHtmlOperation(chartId, botId, values) {
     `
 
     operationContainer.querySelector('button').onclick = () => {
-        if(operation.state === 'None' || operation.state === 'InShort') startBotOperation(botId)
+        if(operation.state === 'None' || operation.state === 'InShort' || operation.state === 'Awaiting entry') startBotOperation(botId)
         else stopBotOperation(botId)
     }
 
@@ -658,8 +658,8 @@ function changeProcess(chartId, botId) {
 
 (async function () {
     /*const status = await checkLoginStatus()
-    if(!status) location.href = 'home.html'*/
+    if(!status) location.href = 'home.html'*/   
+    await loadCustomStrategies();
     await loadChartsFromDB();
     await getAllTrades();
-    loadCustomStrategies();
 })();

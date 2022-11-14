@@ -50,6 +50,7 @@ class processBot {
             await this.bots[bot_id].stopOperation();
             return true
         } catch (error) {
+            console.log('stopBotOperation', error)
             return false
         }
     }
@@ -59,6 +60,7 @@ class processBot {
             await this.bots[bot_id].startOperation();
             return true
         } catch (error) {
+            console.log('startBotOperation', error)
             return false
         }
     }

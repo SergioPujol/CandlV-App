@@ -214,7 +214,6 @@ const stopOperationFromWeb = async (data) => {
 	const { botId } = data;
 	// send request to Server Process
 	let serverProcessRes = await ServerProcess.sendStopOperation({bot_id: botId})
-
 	if(serverProcessRes) return { status: 'ok' }
 	return { status: 'error', error: 'Bot operation could not be stopped' }
 
@@ -225,7 +224,6 @@ const startOperationFromWeb = async (data) => {
 	const { botId } = data;
 	// send request to Server Process
 	let serverProcessRes = await ServerProcess.sendStartOperation({bot_id: botId})
-
 	if(serverProcessRes) return { status: 'ok' }
 	return { status: 'error', error: 'Bot operation could not be started' }
 
