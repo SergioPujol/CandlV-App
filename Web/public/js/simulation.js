@@ -4,6 +4,7 @@ document.getElementById('add-chart-simulation').onclick = await generateChart
 
 var botOpts = {}
 var simulationOpts = {}
+var investmentOpts = {}
 
 async function generateChart() {
 
@@ -20,6 +21,11 @@ async function generateChart() {
 
     if(Object.keys(botOpts).length === 0) {
         showError('Bot options have to be selected')
+        return
+    }
+
+    if(Object.keys(investmentOpts).length === 0) {
+        showError('Investment options have to be filled')
         return
     }
 
@@ -117,6 +123,41 @@ function saveBotOptionsModal() {
     
 }
 
+var investmentBenefit = 0, currentBalance = 0
+function saveInvestmentOptions() {
+
+    if(document.getElementById('fixedInvestment').checked) {
+        investmentOpts = {
+            fixedInvestment: {
+                usdt: document.getElementById('fixedInvestment-value').value,
+            }
+        }
+        currentBalance = parseFloat(investmentOpts.fixedInvestment.usdt)
+    } else if(document.getElementById('percentageInvestment').checked) {
+        investmentOpts = {
+            percentageInvestment: {
+                balance: document.getElementById('percentageInvestment-portfolio-value').value,
+                percentage: document.getElementById('percentageInvestment-value').value
+            }
+        }
+        currentBalance = parseFloat(investmentOpts.percentageInvestment.balance)
+    }
+    investmentBenefit = 0
+    showSuccess('Saved investment options')
+
+}
+
+function calculateSimulationBalance(tradePercentage) {
+    if(investmentOpts.fixedInvestment) {
+        investmentBenefit += parseFloat(investmentOpts.fixedInvestment.usdt)*parseFloat(tradePercentage.replace('%','')/100);
+        currentBalance = parseFloat(investmentOpts.fixedInvestment.usdt) + investmentBenefit;
+    } else if(investmentOpts.percentageInvestment) {
+        let benefit = (currentBalance * parseFloat(investmentOpts.percentageInvestment.percentage/100))*parseFloat(tradePercentage.replace('%','')/100)
+        investmentBenefit += benefit
+        currentBalance += benefit
+    }
+}
+
 function updateModalWithStrategy(strategy) {
     let strategyContainer = document.querySelector(`#add-bot-modal-simulation .container-strategy-options`);
     strategyContainer.innerHTML = ''
@@ -163,6 +204,7 @@ async function startSimulation() {
     if(result.status) {
         loadInvestingPoints(result.data)
         await loadTradeContainers(result.data)
+        showInfo(investmentBenefit, currentBalance)
     } else {
         loadingSpinner();
         showError(result.error)
@@ -262,6 +304,7 @@ async function loadTradeContainers(trades) {
             <div class="trade-time">${dateFormat}</div>
         `
         tradesContainer.append(tradeCont)
+        if(trade.decision == 'Sell') calculateSimulationBalance(trade.percentage)
         await sleep(25)
     }
 
@@ -274,4 +317,6 @@ async function loadTradeContainers(trades) {
     await loadCustomStrategies();
     loadBotModal();
     document.getElementById('open-bot-options').onclick = () => loadBotStrategyModal()
+    document.getElementById('saveInvestment-button').onclick = () => saveInvestmentOptions()
+    
 })();

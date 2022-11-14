@@ -233,6 +233,15 @@ function showSuccess(message) {
     })
 }
 
+function showInfo(benefit, balance) {
+    console.log(benefit, balance)
+    Swal.fire({
+        icon: benefit > 0 ? 'success' : 'error',
+        title: 'Finished Simulation',
+        text: `Benefit would have been ${benefit.toFixed(2)} USDT with a final balance of ${balance.toFixed(2)} USDT`,
+    })
+}
+
 function appendOptionsToStrategySelect(element) {
     Object.keys(strategies).forEach(strategy => {
         let opt = document.createElement('option');

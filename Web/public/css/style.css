@@ -553,16 +553,16 @@ main.landing-page .start-trading {
     margin-right: 10px;
 }
 
-#simulation-bot-options {
+#simulation-bot-options, #investment-options {
     overflow-x: auto;
     padding: 8px;
 }
 
-#simulation-bot-options .modal-content {
+#simulation-bot-options .modal-content, #investment-options .modal-content {
     color: black;
 }
 
-#simulation-bot-options > button {
+#simulation-bot-options > button, #investment-options > button {
     width: 100%;
     height: 100%;
 }

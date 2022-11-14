@@ -71,7 +71,7 @@
   <main class="flex-grow-1">
     <!-- SIMULATION INFO -->
     <div class="simulation-info d-flex">
-      <div id="simulation-chart-options" class="col-md-8 d-flex flex-row">
+      <div id="simulation-chart-options" class="col-md-6 d-flex flex-row">
         <div class="d-flex flex-row align-items-center col-md-3">
           <span>From</span>
           <input type="datetime-local" id="from-time"
@@ -158,6 +158,53 @@
             </div>
         </div>
       </div>
+
+      <div id="investment-options" class="col-md-2 d-flex flex-row">
+        <button class="btn btn-2" id="open-investment-options" data-bs-toggle="modal" data-bs-target="#investment-modal-simulation">Investment Options</button>
+
+        <div class="modal fade" id="investment-modal-simulation" tabindex="-1" aria-labelledby="investmentModalSimulationLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <h5 class="modal-title" id="investmentModalSimulationLabel">Configure investment for simulation</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                      <!-- MODAL BODY FOR THE CREATION OF THE BOT -->
+                      <div class="investment-options-div">
+                        <div class="fixed-investment-container d-flex flex-row align-items-center mb-2">
+                            <div class="form-check col-md-6">
+                                <input class="form-check-input" type="radio" name="investmentRadioButtons" id="fixedInvestment" checked>
+                                <label class="form-check-label" for="fixedInvestment">
+                                    Fixed investment
+                                </label>
+                            </div>
+                            <input class="col-md-6 form-control" type="number" id="fixedInvestment-value" placeholder="USDT Investment">
+                        </div>
+                        <br>
+                        <div class="fixed-investment-container d-flex flex-row align-items-center mb-2">
+                            <div class="form-check col-md-6">
+                                <input class="form-check-input" type="radio" name="investmentRadioButtons" id="percentageInvestment">
+                                <label class="form-check-label" for="percentageInvestment">
+                                    Percentage investment
+                                </label>
+                            </div>
+                            <div class="col-md-6 d-flex flex-column">
+                              <input class="form-control w-100 mb-1" type="number" id="percentageInvestment-portfolio-value" placeholder="Portfolio USDT balance">
+                              <input class="form-control w-100" type="number" id="percentageInvestment-value" placeholder="% Investment">
+                            </div>
+                            
+                        </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-primary" id="saveInvestment-button">Save Investment</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
 
       <!-- ADD BUTTON -->
       <div id="simulation-add-button" class="col-md-2">
