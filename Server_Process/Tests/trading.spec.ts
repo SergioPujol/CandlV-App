@@ -1,4 +1,3 @@
-import { hello } from './helloworld';
 import { expect } from 'chai';
 import 'mocha';
 import { Bot } from '../Classes/Bot';
@@ -7,15 +6,6 @@ const dotenv = require('dotenv');
 import path from "path";
 
 dotenv.config({ path: path.resolve(__dirname, "./tests.env") })
-
-describe('Hello function', () => {
-
-  it('should return hello world', () => {
-    const result = hello();
-    expect(result).to.equal('Hello world!');
-  });
-
-});
 
 describe('Bot creation', () => {
 
