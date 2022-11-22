@@ -68,6 +68,11 @@ class Bot {
         clearInterval(this.botInterval)
     }
 
+    isBotActive() {
+        if(this.isBotDeleted) return false
+        return true
+    }
+
     getId() {
         return this.id
     }
