@@ -12,7 +12,7 @@ class Bot {
 
     client: Client | false;
 
-    private strategy: Strategy;
+    strategy: Strategy;
     private isStrategyCustom: boolean;
 
     private bot: BotModel;
