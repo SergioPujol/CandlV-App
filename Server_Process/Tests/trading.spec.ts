@@ -17,22 +17,22 @@ describe('Hello function', () => {
 
 });
 
-const bot_settings = {
-    client: false,
-    id: 'testBot',
-    chartId: 'testChart',
-    symbol: 'BTCUSDT',
-    interval: '5m',
-    strategy: '2EMA',
-    botOptions: { ema_short_period:"3", ema_long_period: "6"},
-    investment: {
-        "investmentType": "fixedInvestment",
-        "quantity": "100"
-    },
-    isStrategyCustom: false
-}
-
 describe('Bot creation', () => {
+
+    const bot_settings = {
+        client: false,
+        id: 'testBot',
+        chartId: 'testChart',
+        symbol: 'BTCUSDT',
+        interval: '5m',
+        strategy: '2EMA',
+        botOptions: { ema_short_period:"3", ema_long_period: "6"},
+        investment: {
+            "investmentType": "fixedInvestment",
+            "quantity": "100"
+        },
+        isStrategyCustom: false
+    }
 
     it('should create a client', () => {
         var client = new Client('', '', true)
