@@ -183,6 +183,7 @@ main .charts-information .window .data .bot-settings.collapse.show {
 }
 
 .charts-information .minimized-charts .minimized-window {
+    z-index: 999;
     width: 250px;
     background-color: var(--primary-color);
     border: 1px solid var(--white-color);
@@ -203,6 +204,10 @@ main .charts-information .window .data .bot-settings.collapse.show {
 }   
 .button-collapse[aria-expanded=true] .text-collapsed {
     display: none;
+}
+
+.accordion {
+    width: fit-content;
 }
 
 .accordion-button::after {
@@ -250,9 +255,9 @@ main .charts-information .window .data .bot-settings.collapse.show {
 }
 
 .window .chart .chart-buttons {
-    z-index: 9999;
     display: flex;
     padding: 5px 10px 5px 5px;
+    z-index: 999;
 }
 
 .buy-sell-buttons {
