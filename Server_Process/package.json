@@ -5,6 +5,8 @@
   "main": "index.ts",
   "scripts": {
     "test": "mocha -r ts-node/register Tests/*.spec.ts",
+    "testTrading": "mocha -r ts-node/register Tests/trading.spec.ts",
+    "testSimulation": "mocha -r ts-node/register Tests/simulation.spec.ts",
     "start": "ts-node ./index.ts"
   },
   "keywords": [],

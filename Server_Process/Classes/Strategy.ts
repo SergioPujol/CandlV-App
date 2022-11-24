@@ -204,11 +204,9 @@ class Strategy {
             nPeriods -= 1001
         }
         candles = [...(await getPeriodCandleList(this.bot.symbol, this.bot.interval, { from: ((to - (Tperiods)*60*parseInt(this.bot.interval)) * 1000).toString(), to: ((to - (Tperiods - nPeriods)*60*parseInt(this.bot.interval)) * 1000).toString() })), ...candles]
-        
         for(let i=0; i < (Tperiods - 400); i++) {
             this.selectedStrategy.flow(candles.slice(i, 402 + i))
         }
-
         return this.simulationList;
 
     }

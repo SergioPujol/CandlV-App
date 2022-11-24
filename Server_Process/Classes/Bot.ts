@@ -78,13 +78,17 @@ class Bot {
     }
 
     async startSimulation() {
-
+        
         const strategy = new Strategy(this.bot, this.isStrategyCustom, true)
 
         const simulationData = await strategy.simulation()
 
         return simulationData
 
+    }
+
+    isBotSimulation() {
+        return this.bot.simulationPeriod ? true : false;
     }
 
     async stopOperation() {
