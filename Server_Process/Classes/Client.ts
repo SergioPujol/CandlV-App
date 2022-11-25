@@ -93,7 +93,6 @@ class Client {
           .update(queryString)
           .digest('hex');
 
-        console.log(`${queryString}&signature=${signature}`)
         return createRequest({
           method,
           baseURL: this.testnet ? 'https://testnet.binance.vision/' : 'https://api.binance.com/api/',
