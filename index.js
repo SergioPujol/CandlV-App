@@ -8,7 +8,7 @@ app.whenReady().then(async () => {
   
     const win = new BrowserWindow({ width: 1850, height: 1000, show: false, icon: __dirname + '/icons/CV.png', autoHideMenuBar: true, })
 
-    sleep(8000)
+    await sleep(10000)
     // Load a remote URL
     win.loadURL('http://localhost:3000')
 

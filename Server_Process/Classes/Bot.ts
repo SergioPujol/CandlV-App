@@ -12,7 +12,7 @@ class Bot {
 
     client: Client | false;
 
-    private strategy: Strategy;
+    strategy: Strategy;
     private isStrategyCustom: boolean;
 
     private bot: BotModel;
@@ -68,18 +68,27 @@ class Bot {
         clearInterval(this.botInterval)
     }
 
+    isBotActive() {
+        if(this.isBotDeleted) return false
+        return true
+    }
+
     getId() {
         return this.id
     }
 
     async startSimulation() {
-
+        
         const strategy = new Strategy(this.bot, this.isStrategyCustom, true)
 
         const simulationData = await strategy.simulation()
 
         return simulationData
 
+    }
+
+    isBotSimulation() {
+        return this.bot.simulationPeriod ? true : false;
     }
 
     async stopOperation() {
