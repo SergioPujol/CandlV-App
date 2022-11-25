@@ -67,8 +67,10 @@ class Strategy {
                 else if(decision.decision === DecisionType.Hold) this.notification!.sendNotification(decision)
                 else if(decision.decision === DecisionType.Buy) {
                     const investmentQuantity = await this.calculateInvestment()
+                    console.log('investmentQuantity', investmentQuantity)
                     await this.bot.client.buy(this.bot.symbol, investmentQuantity).then((res: any) => {
-                        if(!res) return
+                        console.log(res)
+                        if(!res) sendErrorToWeb('Order could not be completed', this.bot.botId);
                         else {
                             const trade: Trade = {
                                 type: 'BUY',
@@ -95,22 +97,25 @@ class Strategy {
                         this.notification!.sendNotification(decision)
                     } else {
                         await this.bot.client.sell(this.bot.symbol, this.symbolBoughtQuantity).then((res: any) => {
-                            const trade: Trade = {
-                                type: 'SELL',
-                                symbol: this.bot.symbol,
-                                entry_price: res.fills[0].price,
-                                percentage: this.getPercentageFromLastCross(res.fills[0].price),
-                                symbol_quantity: res.executedQty,
-                                usdt_quantity: res.cummulativeQuoteQty,
-                                time: res.transactTime,
-                                bot_strategy: this.bot.strategy,
-                                bot_options: this.bot.botOptions,
-                                chart_id: this.bot.chartId,
-                                bot_id: this.bot.botId
+                            if(!res) sendErrorToWeb('Order could not be completed', this.bot.botId);
+                            else {
+                                const trade: Trade = {
+                                    type: 'SELL',
+                                    symbol: this.bot.symbol,
+                                    entry_price: res.fills[0].price,
+                                    percentage: this.getPercentageFromLastCross(res.fills[0].price),
+                                    symbol_quantity: res.executedQty,
+                                    usdt_quantity: res.cummulativeQuoteQty,
+                                    time: res.transactTime,
+                                    bot_strategy: this.bot.strategy,
+                                    bot_options: this.bot.botOptions,
+                                    chart_id: this.bot.chartId,
+                                    bot_id: this.bot.botId
+                                }
+                                // get values to send to Trade DB
+                                this.symbolBoughtQuantity = 0
+                                this.notification!.sendNotification(decision, trade)
                             }
-                            // get values to send to Trade DB
-                            this.symbolBoughtQuantity = 0
-                            this.notification!.sendNotification(decision, trade)
                         })
                     }
                 } 
