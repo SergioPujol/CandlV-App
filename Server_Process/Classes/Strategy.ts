@@ -37,7 +37,7 @@ class Strategy {
     private macd: MACD;
     private bollinger: Bollinger;
 
-    constructor(_bot: BotModel, customStrategy: Boolean = false , _simulation: Boolean = false) {
+    constructor(_bot: BotModel, _customStrategy: Boolean = false , _simulation: Boolean = false) {
         this.bot = _bot
         if(_simulation) this.simulationBool = true;
         else this.notification = new Notification(this.bot.botId, this.bot.chartId);
@@ -49,7 +49,7 @@ class Strategy {
 
         // selected strategy
         this.selectedStrategy = this.dema
-        if(customStrategy) this.customStrategy(this.bot.strategy)
+        if(_customStrategy) this.customStrategy(this.bot.strategy)
         else this.selectStrategy(this.bot.strategy)
     }
 
@@ -148,7 +148,6 @@ class Strategy {
 
     private async customStrategy(strategyName: string) {
         // request strategy code
-        console.log('customStrategy');
         var strategyPath = ''
         await serverDBRequests.getStrategyPathFromName(strategyName).then((res) => {
             strategyPath = res.path;
@@ -191,6 +190,10 @@ class Strategy {
         console.log('trading')
         // get candles by calling BinanceAPI
         const candles = await getCandlelist(this.bot.symbol, this.bot.interval, '500');
+        if(!candles) {
+            sendErrorToWeb('Failed request to binance', this.bot.botId)
+            return
+        }
         this.selectedStrategy.flow(candles);
     }
 
@@ -208,7 +211,7 @@ class Strategy {
             nPeriods -= 1001
         }
         candles = [...(await getPeriodCandleList(this.bot.symbol, this.bot.interval, { from: ((to - (Tperiods)*60*parseInt(this.bot.interval)) * 1000).toString(), to: ((to - (Tperiods - nPeriods)*60*parseInt(this.bot.interval)) * 1000).toString() })), ...candles]
-        
+
         for(let i=0; i < (Tperiods - 400); i++) {
             this.selectedStrategy.flow(candles.slice(i, 402 + i))
         }

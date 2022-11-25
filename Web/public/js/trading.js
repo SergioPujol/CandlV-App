@@ -147,6 +147,7 @@ async function createHtmlWindow(chartId, options) {
                     <i class="bi bi-dash"></i>
                 </button>
             </div>
+            <div class="chart-title">Chart ${chartId}</div>
             <div class="chart-menu" id="window-${chartId}-chart-menu">
                 <button type="button" class="btn btn-2">
                     <i class="bi bi-list"></i>

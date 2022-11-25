@@ -264,21 +264,16 @@ main .charts-information .window .data .bot-settings.collapse.show {
     margin-top: auto;
 }
 
-.window .chart .chart-options {
-    /*position: absolute;
-    top: 5px;
-    left: 5px;*/
+.window .chart .chart-title {
+    color: var(--white-color);
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
 }
 
 .toast  {
     z-index: 99999;
-}
-
-.window .chart .chart-menu {
-    /*position: absolute;
-    top: 5px;
-    left: 5px;*/
-    margin-left: auto;
 }
 
 /* login-register-modals */

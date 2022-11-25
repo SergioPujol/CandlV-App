@@ -202,6 +202,7 @@ async function startSimulation() {
     }).then((res) => res.json())
 
     if(result.status) {
+        investmentBenefit = 0, currentBalance = 0
         loadInvestingPoints(result.data)
         await loadTradeContainers(result.data)
         showInfo(investmentBenefit, currentBalance)

@@ -42,7 +42,7 @@ class Bot {
             }))
         }
 
-        this.strategy = new Strategy(this.bot, this.isStrategyCustom);
+        this.strategy = new Strategy(this.bot, this.isStrategyCustom, _period ? true : false);
     }
 
     async startBot() {
@@ -79,9 +79,7 @@ class Bot {
 
     async startSimulation() {
         
-        const strategy = new Strategy(this.bot, this.isStrategyCustom, true)
-
-        const simulationData = await strategy.simulation()
+        const simulationData = await this.strategy.simulation()
 
         return simulationData
 
@@ -89,6 +87,10 @@ class Bot {
 
     isBotSimulation() {
         return this.bot.simulationPeriod ? true : false;
+    }
+
+    isBotStrategyCustom() {
+        return this.isStrategyCustom ? true : false;
     }
 
     async stopOperation() {
