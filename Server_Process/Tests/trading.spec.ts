@@ -82,6 +82,7 @@ describe('Trading tests', function () {
         const spy = Sinon.spy(strategy, "trading");
         const miliseconds = await bot.getWaitStart();
         await bot.startBot()
+        console.log('Waiting next minut for the test')
         await sleep(miliseconds!+1000)
         expect(spy.calledOnce).to.be.true;
         bot.deleteBot()
