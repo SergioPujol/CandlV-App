@@ -75,6 +75,10 @@ describe('Simulation tests', function () {
     })
 
     // it should use a custom strategy --> create simulation with custom strategy
-    it('should iniciate a simulation with a custom strategy')
+    it('should iniciate a simulation with a custom strategy', async () => {
+        const simulationBot = new Bot(false, bot_settings.id, bot_settings.chartId, bot_settings.symbol, bot_settings.interval, '2EMA', { ema_short_period:"50", ema_long_period: "400"}, bot_settings.investment, bot_settings.isStrategyCustom, { from: '1667430000000', to: '1667516400000' })
+        const simulationData = await simulationBot.startSimulation();
+        expect(simulationData.length).to.equal(0)
+    })
     
 })

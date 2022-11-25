@@ -63,7 +63,8 @@ class Strategy {
             // then, if respond its fine, sendNotification
             // if decision is hold or await, just sendNotification
             try {
-                if(!this.bot.client || decision.decision === DecisionType.Hold) this.notification!.sendNotification(decision)
+                if(!this.bot.client) sendErrorToWeb('Invalid client', this.bot.botId);
+                else if(decision.decision === DecisionType.Hold) this.notification!.sendNotification(decision)
                 else if(decision.decision === DecisionType.Buy) {
                     const investmentQuantity = await this.calculateInvestment()
                     await this.bot.client.buy(this.bot.symbol, investmentQuantity).then((res: any) => {
@@ -204,9 +205,11 @@ class Strategy {
             nPeriods -= 1001
         }
         candles = [...(await getPeriodCandleList(this.bot.symbol, this.bot.interval, { from: ((to - (Tperiods)*60*parseInt(this.bot.interval)) * 1000).toString(), to: ((to - (Tperiods - nPeriods)*60*parseInt(this.bot.interval)) * 1000).toString() })), ...candles]
+        
         for(let i=0; i < (Tperiods - 400); i++) {
             this.selectedStrategy.flow(candles.slice(i, 402 + i))
         }
+
         return this.simulationList;
 
     }
