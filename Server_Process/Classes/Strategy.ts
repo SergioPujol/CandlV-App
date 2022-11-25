@@ -67,9 +67,7 @@ class Strategy {
                 else if(decision.decision === DecisionType.Hold) this.notification!.sendNotification(decision)
                 else if(decision.decision === DecisionType.Buy) {
                     const investmentQuantity = await this.calculateInvestment()
-                    console.log('investmentQuantity', investmentQuantity)
                     await this.bot.client.buy(this.bot.symbol, investmentQuantity).then((res: any) => {
-                        console.log(res)
                         if(!res) sendErrorToWeb('Order could not be completed', this.bot.botId);
                         else {
                             const trade: Trade = {
