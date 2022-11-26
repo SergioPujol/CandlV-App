@@ -60,7 +60,7 @@ class Bot {
 
     async getWaitStart() {
         const nextCandleTimestamp = await getTimeRemainingToNextCandle(this.bot.symbol, this.bot.interval)
-        if(nextCandleTimestamp) return nextCandleTimestamp - Date.now();
+        if(nextCandleTimestamp) return nextCandleTimestamp[0][6] + 1001 - Date.now();
     }
 
     deleteBot() {

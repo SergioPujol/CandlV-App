@@ -166,7 +166,7 @@ async function createHtmlWindow(chartId, options) {
         <div id="window-${chartId}-data" class="data d-flex flex-column">
 
         <div class="d-flex flex-column overflow-hidden">
-            <button class="btn btn-2 mb-2 button-collapse show" type="button" data-bs-toggle="collapse" data-bs-target="#window-${chartId}-data-market" aria-expanded="true" aria-controls="window-${chartId}-data-market">
+            <button class="btn btn-2 mb-2 button-collapse" type="button" data-bs-toggle="collapse" data-bs-target="#window-${chartId}-data-market" aria-expanded="true" aria-controls="window-${chartId}-data-market">
             <div class="charts-info-button-container">
                 <span class="charts-info-button-container-span">Market Settings</span>
                 <i class="bi bi-caret-down-fill text-collapsed"></i>

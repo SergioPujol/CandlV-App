@@ -24,7 +24,6 @@ const requestGot = async (url:any) => {
     }).catch((error: any) => {
         return false
     })
-
     return result
 }
 
