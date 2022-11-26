@@ -207,7 +207,9 @@ main .charts-information .window .data .bot-settings.collapse.show {
 }
 
 .accordion {
-    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .accordion-button::after {
